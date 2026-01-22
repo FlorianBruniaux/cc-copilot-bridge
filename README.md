@@ -1,8 +1,19 @@
 # cc-copilot-bridge
 
+<div align="center">
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/github/v/tag/FlorianBruniaux/cc-copilot-bridge?label=version)](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue.svg)]()
+[![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
+
 **Bridge GitHub Copilot to Claude Code CLI for free AI-powered coding**
 
 Turn your $10/month GitHub Copilot Pro+ subscription into unlimited Claude Code access with 25+ models (GPT-4.1, Claude Opus/Sonnet/Haiku, Gemini, etc.).
+
+[Quick Start](#-quick-start) • [Features](#-features) • [Documentation](docs/) • [Troubleshooting](docs/TROUBLESHOOTING.md)
+
+</div>
 
 ---
 
@@ -44,8 +55,8 @@ A **Copilot bridge** for Claude Code CLI that enables **free** access to 25+ AI 
 ### Installation
 
 ```bash
-# Clone or download
-curl -sSL https://raw.githubusercontent.com/YOU/cc-copilot-bridge/main/install.sh | bash
+# Automated install (recommended)
+curl -fsSL https://raw.githubusercontent.com/FlorianBruniaux/cc-copilot-bridge/main/install.sh | bash
 
 # Or manual install
 cp claude-switch ~/bin/

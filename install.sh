@@ -82,7 +82,7 @@ fi
 
 # Download claude-switch script
 echo "Downloading claude-switch script..."
-SCRIPT_URL="https://raw.githubusercontent.com/YOUR_USERNAME/claude-switch/main/claude-switch"
+SCRIPT_URL="https://raw.githubusercontent.com/FlorianBruniaux/cc-copilot-bridge/main/claude-switch"
 SCRIPT_PATH="$HOME/bin/claude-switch"
 
 # For local testing, use the current directory
@@ -173,7 +173,7 @@ echo -e "   ${BLUE}cco${NC}        # Ollama Local"
 echo -e "   ${BLUE}ccc-opus${NC}   # Copilot with Opus model"
 echo ""
 echo "Documentation:"
-echo "  https://github.com/YOUR_USERNAME/claude-switch"
+echo "  https://github.com/FlorianBruniaux/cc-copilot-bridge"
 echo ""
 echo -e "${ORANGE}⚠ Don't forget to: source $SHELL_RC${NC}"
 echo ""
