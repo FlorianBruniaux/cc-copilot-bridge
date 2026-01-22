@@ -2,7 +2,7 @@
 # Claude Code Multi-Provider Switcher
 # Usage: claude-switch <mode> [claude args...]
 # Modes: direct (d), copilot (c), ollama (o), status (s)
-# Version: 1.3.0 - Fixed prompt injection using bash arrays
+# Version: 1.4.0 - Updated Ollama: Devstral default, 64K context warning
 
 set -euo pipefail
 
@@ -58,11 +58,16 @@ _check_ollama() {
   fi
 
   # Vérifier que le modèle existe
-  local model="${OLLAMA_MODEL:-qwen2.5-coder:32b-instruct}"
-  if ! ollama list 2>/dev/null | grep -q "qwen2.5-coder"; then
-    _log "ERROR" "No qwen2.5-coder model found"
-    echo "  Pull it with: ollama pull qwen2.5-coder:32b-instruct"
+  local model="${OLLAMA_MODEL:-devstral-small-2}"
+  local model_base="${model%%:*}"  # Extract base name (e.g., "devstral-small-2" from "devstral-small-2:latest")
+  if ! ollama list 2>/dev/null | grep -qi "${model_base}"; then
+    _log "ERROR" "Model ${model} not found"
+    echo "  Pull it with: ollama pull ${model}"
     echo "  Or set OLLAMA_MODEL to use a different model"
+    echo ""
+    echo "  Recommended models:"
+    echo "    devstral-small-2      Best agentic coding (68% SWE-bench)"
+    echo "    ibm/granite4:small-h  Long context, 70% less VRAM"
     return 1
   fi
   _log "INFO" "Ollama health: OK (model: ${model})"
@@ -150,6 +155,34 @@ _set_prompt_args() {
   _log "INFO" "Injecting model identity prompt for ${model}"
 }
 
+# === Ollama Context Check ===
+_check_ollama_context() {
+  local min_context=32768  # 32K minimum for Claude Code
+
+  # Check if OLLAMA_CONTEXT_LENGTH is defined
+  local current="${OLLAMA_CONTEXT_LENGTH:-4096}"
+
+  if [[ "$current" -lt "$min_context" ]]; then
+    _log "WARN" "Ollama context ($current) < recommended ($min_context) for Claude Code"
+    echo ""
+    echo -e "${ORANGE}⚠️  Context Warning: Ollama default context (${current}) is too low for Claude Code.${NC}"
+    echo "   Claude Code requires ~18K tokens for system prompt + tools alone."
+    echo ""
+    echo "   Recommended fix (persistent via Modelfile):"
+    echo "   1. Create file: ~/.ollama/Modelfile.devstral-64k"
+    echo "      FROM devstral-small-2"
+    echo "      PARAMETER num_ctx 65536"
+    echo "      PARAMETER temperature 0.15"
+    echo ""
+    echo "   2. Run: ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k"
+    echo "   3. Use: OLLAMA_MODEL=devstral-64k cco"
+    echo ""
+    echo "   Quick fix (global, less priority):"
+    echo "   launchctl setenv OLLAMA_CONTEXT_LENGTH 65536 && brew services restart ollama"
+    echo ""
+  fi
+}
+
 # === Provider Functions ===
 _run_direct() {
   _log "INFO" "Provider: Anthropic Direct"
@@ -202,7 +235,10 @@ _run_ollama() {
   _check_ollama || return 1
 
   # Allow model override via env var or use default
-  local model="${OLLAMA_MODEL:-qwen2.5-coder:32b-instruct}"
+  local model="${OLLAMA_MODEL:-devstral-small-2}"
+
+  # Check context configuration
+  _check_ollama_context
 
   _log "INFO" "Provider: Ollama Local - Model: ${model}"
   echo -e "${ORANGE}━━━ Claude Code [Ollama Local: ${model}] ━━━${NC}"
@@ -252,7 +288,7 @@ _show_status() {
 
 _show_usage() {
   cat << 'EOF'
-Claude Code Multi-Provider Switcher v1.3.0
+Claude Code Multi-Provider Switcher v1.4.0
 
 Usage: claude-switch <mode> [claude args...]
 
@@ -283,8 +319,8 @@ Dynamic Model Selection:
   COPILOT_MODEL=gpt-4.1 claude-switch copilot
 
   # Switch Ollama models via environment variable
-  OLLAMA_MODEL=qwen2.5-coder:7b claude-switch ollama
-  OLLAMA_MODEL=deepseek-coder:6.7b claude-switch ollama
+  OLLAMA_MODEL=devstral-64k claude-switch ollama
+  OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama
 
 Model Aliases (for Copilot):
   alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
@@ -292,10 +328,23 @@ Model Aliases (for Copilot):
   alias ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
   alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
 
+Model Aliases (for Ollama):
+  alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
+  alias cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
+
 Available Models (via Copilot):
   Claude:  opus-4.5, sonnet-4.5, sonnet-4, haiku-4.5
   GPT:     4.1 (0x), 5 (1x), 5-mini (0x)
            Codex variants NOT compatible (require /responses endpoint)
+
+Available Models (via Ollama - recommended):
+  devstral-small-2      Best agentic coding (68% SWE-bench, 24B)
+  ibm/granite4:small-h  Long context, 70% less VRAM (9B active)
+  qwen3-coder:30b       Highest accuracy, needs template work
+
+Ollama Context Setup:
+  IMPORTANT: Create a 64K Modelfile for best results with Claude Code
+  See: https://docs.ollama.com/context-length
 
 MCP Profiles & System Prompts:
   Auto-detection of problematic MCP servers for strict models (GPT-4.1, Gemini)
@@ -321,7 +370,7 @@ main() {
     c|copilot) _run_copilot "$@" ;;
     o|ollama)  _run_ollama "$@" ;;
     s|status)  _show_status ;;
-    -v|--version) echo "claude-switch v1.3.0" ;;
+    -v|--version) echo "claude-switch v1.4.0" ;;
     -h|--help|"") _show_usage ;;
     *)
       _log "ERROR" "Unknown mode: ${mode}"

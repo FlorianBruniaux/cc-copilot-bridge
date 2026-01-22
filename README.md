@@ -181,7 +181,7 @@ No config changes, no restarts, no environment variable juggling.
 |----------|--------|------------|
 | **Anthropic** | opus-4.5, sonnet-4.5, haiku-4.5 | Per token |
 | **Copilot** | claude-*, gpt-4.1, gpt-5, gemini-* | Premium requests quota |
-| **Ollama** | qwen2.5-coder, deepseek-coder, codellama | Free (local) |
+| **Ollama** | devstral, granite4, qwen3-coder | Free (local) |
 
 ```bash
 # Switch models mid-session
@@ -189,6 +189,11 @@ ccc                     # Default: claude-sonnet-4.5
 ccc-opus                # Claude Opus 4.5
 ccc-gpt                 # GPT-4.1
 COPILOT_MODEL=gemini-2.5-pro ccc  # Gemini
+
+# Ollama models
+cco                     # Default: devstral-small-2
+cco-devstral            # Explicit Devstral
+cco-granite             # Granite4 (long context)
 ```
 
 ### 3. **MCP Profiles System** (Auto-Compatibility)
@@ -276,8 +281,9 @@ COPILOT_MODEL=gemini-2.5-pro ccc # Gemini
 **Use Case**: Offline work, proprietary code, air-gapped environments
 
 ```bash
-cco                                          # Default: qwen2.5-coder:32b
-OLLAMA_MODEL=deepseek-coder:33b cco          # DeepSeek Coder
+cco                                          # Default: devstral-small-2
+OLLAMA_MODEL=devstral-64k cco               # With 64K context (recommended)
+OLLAMA_MODEL=ibm/granite4:small-h cco       # Granite4 (long context, 70% less VRAM)
 ```
 
 **How It Works**:
@@ -288,9 +294,32 @@ OLLAMA_MODEL=deepseek-coder:33b cco          # DeepSeek Coder
 
 **Important**: Ollama is **architecturally independent** from Copilot bridging. It's a separate provider for local inference, not related to copilot-api.
 
+**⚠️ Critical: Context Configuration**
+
+Claude Code sends ~18K tokens of system prompt + tools. Default Ollama context (4K) causes hallucinations and slow responses.
+
+**Create a 64K Modelfile (recommended)**:
+```bash
+mkdir -p ~/.ollama
+cat > ~/.ollama/Modelfile.devstral-64k << 'EOF'
+FROM devstral-small-2
+PARAMETER num_ctx 65536
+PARAMETER temperature 0.15
+EOF
+ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
+OLLAMA_MODEL=devstral-64k cco
+```
+
+**Recommended Models (January 2026)**:
+| Model | SWE-bench | Use Case |
+|-------|-----------|----------|
+| **devstral-small-2** | 68% | Best agentic coding (default) |
+| ibm/granite4:small-h | ~62% | Long context, 70% less VRAM |
+| qwen3-coder:30b | 85% | Highest accuracy (needs template work) |
+
 **Requirements**:
 1. Ollama installed (`ollama.ai`)
-2. Models downloaded (`ollama pull qwen2.5-coder:32b-instruct`)
+2. Models downloaded (`ollama pull devstral-small-2`)
 
 ---
 
@@ -514,7 +543,7 @@ cco
 
 ## 🚀 Version
 
-**Current**: v1.2.0
+**Current**: v1.4.0
 
 **Changelog**: See [CHANGELOG.md](CHANGELOG.md)
 

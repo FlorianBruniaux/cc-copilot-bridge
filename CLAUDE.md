@@ -40,7 +40,8 @@ ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this value
 **Model Switching:**
 - Default Copilot model: `claude-sonnet-4.5`
 - Override via `COPILOT_MODEL` env var (25+ models supported)
-- Ollama model: `qwen2.5-coder:32b` (configurable via `OLLAMA_MODEL`)
+- Default Ollama model: `devstral-small-2` (configurable via `OLLAMA_MODEL`)
+- Backup Ollama model: `ibm/granite4:small-h` (long context, 70% less VRAM)
 
 ### 2. install.sh (Installation)
 Auto-installer that:
@@ -59,6 +60,8 @@ ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
 ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
 ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
+cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
+cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
 ```
 
 ### 3. mcp-check.sh (MCP Diagnostics)
@@ -100,7 +103,7 @@ Before launching, `claude-switch` verifies:
 | Copilot-Claude | /chat/completions | claude-*-4.5 | 100% (permissive) |
 | Copilot-GPT | /chat/completions | gpt-4.1, gpt-5, gpt-5-mini | ~80% (strict validation) |
 | Copilot-Codex | /responses | gpt-*-codex | ❌ Incompatible (copilot-api v0.7.0) |
-| Ollama | Native | qwen2.5-coder | 100% (permissive) |
+| Ollama | Native | devstral, granite4, qwen3-coder | 100% (permissive) |
 
 **Critical Note:** ALL GPT Codex models (`gpt-5.2-codex`, `gpt-5.1-codex`, etc.) require OpenAI's `/responses` endpoint (launched Oct 2025), which copilot-api doesn't support. Use `gpt-4.1`, `gpt-5`, or `gpt-5-mini` instead.
 
@@ -132,22 +135,48 @@ Before launching, `claude-switch` verifies:
 
 ### Ollama Context Size vs Claude Code Requirements
 
-**Critical Issue:** Claude Code sends ~60K tokens of context (Memory files + MCP tools + System prompt), but default Ollama optimization uses 8K context.
+**Critical Issue:** Claude Code sends ~18K tokens of system prompt + tools. Default Ollama context (4K) causes truncation, hallucinations, and slow responses.
 
-**Consequences:**
-- 8K context: ⚡ 26-39 tok/s, but ❌ truncates 87% of context → 2-6 min responses
-- 16K context: 🐢 15-25 tok/s, works for medium projects
-- 32K context: 🐌 8-15 tok/s, works for large projects
+**Solution: Create a 64K Modelfile (persistent):**
+```bash
+mkdir -p ~/.ollama
+cat > ~/.ollama/Modelfile.devstral-64k << 'EOF'
+FROM devstral-small-2
+PARAMETER num_ctx 65536
+PARAMETER temperature 0.15
+EOF
+
+ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
+```
+
+**Verify effective context:** `ollama ps` (not `ollama show`)
+
+**Memory footprint on M4 Pro 48GB with 64K context:**
+- Devstral Q4_K_M: 15GB model + 8-12GB cache = **23-27GB total** → ~21GB libre
+- Recommendation: 32K for comfort, 64K possible but tight
 
 **Recommendations by Project Size:**
 | Project Size | Files | Recommended Solution |
 |--------------|-------|---------------------|
-| Small | <500 | Ollama 8K ⚡ |
-| Medium | 500-2K | Copilot ⚡ |
+| Small | <500 | Ollama with Modelfile 64K ⚡ |
+| Medium | 500-2K | Copilot ⚡ or Ollama 64K |
 | Large | >2K | Copilot/Anthropic ⚡ |
-| Privacy-critical | Any | Ollama 32K 🐌 |
+| Privacy-critical | Any | Ollama 64K (private) 🔒 |
 
 **Check context usage:** Run `/context` in Claude Code session
+
+### Ollama Models (Updated January 2026)
+
+| Model | Size | SWE-bench | Context | Use Case |
+|-------|------|-----------|---------|----------|
+| **devstral-small-2** (default) | 24B | 68% | 256K native | Best agentic coding |
+| ibm/granite4:small-h | 32B (9B active) | ~62% | 1M | Long context, 70% less VRAM |
+| qwen3-coder:30b | 30B | 85% | 256K | Highest accuracy, needs template work |
+
+**Sources:**
+- [Taletskiy blog](https://taletskiy.com/blogs/ollama-claude-code/)
+- [docs.ollama - Context](https://docs.ollama.com/context-length)
+- [r/LocalLLaMA benchmarks](https://www.reddit.com/r/LocalLLaMA/comments/1plbjqg/)
 
 ## Commands for Development
 
@@ -166,8 +195,9 @@ ccc
 
 # Test Ollama (requires ollama serve + model pulled)
 brew services restart ollama
-ollama pull qwen2.5-coder:32b
-cco
+ollama pull devstral-small-2
+# Create 64K Modelfile (see Performance Considerations section)
+OLLAMA_MODEL=devstral-64k cco
 ```
 
 ### Debugging Session Issues
@@ -195,9 +225,9 @@ COPILOT_MODEL=claude-opus-4.5 ccc      # Best quality
 COPILOT_MODEL=claude-haiku-4.5 ccc     # Fastest
 COPILOT_MODEL=gpt-4.1 ccc              # GPT alternative
 
-# Ollama with different models
-OLLAMA_MODEL=qwen2.5-coder:7b cco      # Smaller model
-OLLAMA_MODEL=qwen2.5-coder:14b cco     # Medium model
+# Ollama with different models (use 64K Modelfile versions)
+OLLAMA_MODEL=devstral-64k cco          # Default (best agentic)
+OLLAMA_MODEL=ibm/granite4:small-h cco  # Long context, 70% less VRAM
 ```
 
 ### MCP Troubleshooting
@@ -217,16 +247,26 @@ cat ~/.claude/mcp-profiles/generated/gpt.json | jq -r '.mcpServers | keys[]'
 
 ## Common Issues & Solutions
 
-### Issue: Ollama Extremely Slow (2-6 minutes per response)
-**Cause:** Context mismatch (Claude Code sends 60K tokens, Ollama expects 8K)
+### Issue: Ollama Extremely Slow or Hallucinating
+**Cause:** Default Ollama context (4K) is too low for Claude Code (~18K system prompt + tools)
 **Solution:**
-1. **Preferred:** Switch to Copilot (`ccc`) or Anthropic (`ccd`) for large projects
-2. **Alternative:** Increase Ollama context (slower but functional):
+1. **Recommended:** Create a 64K Modelfile (persistent):
    ```bash
-   launchctl setenv OLLAMA_CONTEXT_LENGTH 32768
+   mkdir -p ~/.ollama
+   cat > ~/.ollama/Modelfile.devstral-64k << 'EOF'
+   FROM devstral-small-2
+   PARAMETER num_ctx 65536
+   PARAMETER temperature 0.15
+   EOF
+   ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
+   OLLAMA_MODEL=devstral-64k cco
+   ```
+2. **Alternative:** Quick fix (global, less priority):
+   ```bash
+   launchctl setenv OLLAMA_CONTEXT_LENGTH 65536
    brew services restart ollama
    ```
-3. **Alternative:** Create `.claudeignore` to reduce project context
+3. **Verify:** `ollama ps` should show CONTEXT = 65536
 
 ### Issue: "copilot-api not running on :4141"
 **Solution:**
@@ -235,11 +275,13 @@ copilot-api start
 # Keep running in separate terminal
 ```
 
-### Issue: "Model qwen2.5-coder not found"
+### Issue: Model not found
 **Solution:**
 ```bash
-ollama pull qwen2.5-coder:32b-instruct-q4_k_m
-# Or override: OLLAMA_MODEL=qwen2.5-coder:7b cco
+# Pull recommended model
+ollama pull devstral-small-2
+# Or backup model for long context
+ollama pull ibm/granite4:small-h
 ```
 
 ### Issue: MCP Schema Validation Error (GPT-4.1)
@@ -286,7 +328,8 @@ ollama pull qwen2.5-coder:32b-instruct-q4_k_m
 | Learning/prototyping | `ccc` | Cost-effective iteration |
 | Proprietary code | `cco` | 100% private, no data leaves machine |
 | Offline work | `cco` | No internet required |
-| Small scripts | `cco` (8K) | Fast local inference |
+| Best agentic local | `cco-devstral` | Devstral-small-2 (68% SWE-bench) |
+| Long context local | `cco-granite` | Granite4 (70% less VRAM) |
 
 ## Known Issues & Patches
 
@@ -328,10 +371,10 @@ cp ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js.backu
 
 ## Version Information
 
-- **claude-switch**: v1.3.0 (2026-01-22) - Fixed prompt injection bug
+- **claude-switch**: v1.4.0 (2026-01-22) - Updated Ollama: Devstral default, 64K context warning
 - **copilot-api**: v0.7.0 + patch #174 (endpoint limitation: /chat/completions only)
 - **Claude Code CLI**: v2.1.15 (@anthropic-ai/claude-code npm package)
-- **Ollama**: Homebrew service, default models: qwen2.5-coder family
+- **Ollama**: Homebrew service, default model: devstral-small-2 (backup: ibm/granite4:small-h)
 
 ## Testing Changes
 

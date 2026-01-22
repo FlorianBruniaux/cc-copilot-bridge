@@ -24,6 +24,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-01-22
+
+### Changed
+
+**Ollama Provider Overhaul**
+- 🔧 **Default model changed**: `qwen2.5-coder:32b-instruct` → `devstral-small-2` (68% SWE-bench, better agentic coding)
+- 🔧 **Backup model added**: `ibm/granite4:small-h` (70% less VRAM with hybrid Mamba architecture)
+- 🔧 **Context warning**: Script now warns if Ollama context < 32K (Claude Code needs ~18K for system prompt + tools)
+
+**New Aliases**
+- `cco-devstral` → Devstral-small-2 (default, best agentic)
+- `cco-granite` → Granite4 (long context, RAM-efficient)
+
+### Added
+
+**Ollama Context Configuration**
+- ✨ New `_check_ollama_context()` function warns when context is too low
+- 📝 Instructions for creating 64K Modelfile (persistent context configuration)
+- 📝 Verification command: `ollama ps` shows effective context
+
+**Documentation Updates**
+- 📝 CLAUDE.md: Updated Ollama section with new models, context setup, memory footprint
+- 📝 TROUBLESHOOTING.md: Complete rewrite of Ollama slow/hallucination section with 64K Modelfile solution
+- 📝 MODEL-SWITCHING.md: New "Modèles Ollama" section with Devstral, Granite4, and context configuration
+- 📝 README.md: Updated Ollama section with context warning and new recommended models
+
+### Technical Details
+
+**Why Devstral over Qwen2.5?**
+- Devstral uses Mistral/OpenAI-style tool-calling format → more compatible with Claude Code
+- Qwen2.5 emits tools in `content` instead of structured `tool_calls` → parsing issues
+- Confirmed bug: "stuck on Explore" behavior with Qwen2.5 ([GitHub issue](https://github.com/QwenLM/Qwen3-Coder/issues/180))
+
+**Context Configuration**
+- Claude Code sends ~18K tokens of system prompt + tools
+- Default Ollama context (4K) causes: hallucinations, "stuck on Explore", 2-6 min responses
+- Recommended: 64K Modelfile (persistent) > environment variable (global fallback)
+- Verification: `ollama ps` shows CONTEXT column (not `ollama show`)
+
+**Memory Footprint (M4 Pro 48GB with 64K context)**
+- Devstral Q4_K_M: 15GB model + 8-12GB cache = ~27GB total → ~21GB free
+- Granite4 hybrid: ~10GB active → more headroom for context
+
+### Sources
+
+- [Taletskiy blog](https://taletskiy.com/blogs/ollama-claude-code/) - Original Ollama + Claude Code research
+- [docs.ollama - Context](https://docs.ollama.com/context-length) - Official context configuration
+- [r/LocalLLaMA benchmarks](https://www.reddit.com/r/LocalLLaMA/comments/1plbjqg/) - Community SWE-bench results
+- [Devstral HuggingFace](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512) - Model card
+- [Granite4 InfoQ](https://www.infoq.com/news/2025/11/ibm-granite-mamba2-enterprise/) - Architecture details
+
+### Links
+
+- Release: [v1.4.0](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.4.0)
+- Commits: [v1.3.0...v1.4.0](https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.3.0...v1.4.0)
+
+---
+
 ## [1.3.0] - 2026-01-22
 
 ### Fixed
@@ -317,7 +375,8 @@ See [REPO-STRUCTURE.md](REPO-STRUCTURE.md) for contribution guidelines.
 - **Repository**: https://github.com/FlorianBruniaux/cc-copilot-bridge
 - **Issues**: https://github.com/FlorianBruniaux/cc-copilot-bridge/issues
 
+[1.4.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.4.0
 [1.3.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.3.0
 [1.2.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.2.0
 [1.0.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.0.0
-[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.4.0...HEAD

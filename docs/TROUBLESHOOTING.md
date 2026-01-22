@@ -1,10 +1,10 @@
 # Troubleshooting Guide
 
-**Reading time**: 20 minutes | **Skill level**: All levels | **Version**: v1.2.0 | **Last updated**: 2026-01-22
+**Reading time**: 20 minutes | **Skill level**: All levels | **Version**: v1.4.0 | **Last updated**: 2026-01-22
 
 ---
 
-## 🐌 Ollama Extremely Slow with Claude Code
+## 🐌 Ollama Extremely Slow or Hallucinating with Claude Code
 
 ### Symptom
 
@@ -14,106 +14,133 @@ cco
 ⏱️ Response: 2-6 MINUTES (should be 3-10 seconds)
 💻 CPU at 100%
 🔥 Mac fans spinning
+# OR: hallucinations, "stuck on Explore" behavior, incoherent responses
 ```
 
 ### Root Cause
 
-**Context mismatch**: Claude Code sends ~60K tokens of context, but Ollama is configured for 8K tokens.
+**Context mismatch**: Claude Code sends ~18K tokens of system prompt + tools, but default Ollama context is 4K tokens.
 
-**Result**: 87% of context is truncated → model constantly reprocesses → extreme slowness.
+**Result**: Context is truncated → model hallucinates → regenerates constantly → extreme slowness.
 
 ### Diagnosis
 
-1. **Check your context usage**:
+1. **Verify effective context**:
    ```bash
-   # During cco session
+   # During cco session (in another terminal)
+   ollama ps
+   # Look at CONTEXT column - should be 65536 for Claude Code
+   ```
+
+2. **Check context usage in Claude Code**:
+   ```bash
+   # During session
    /context
    ```
-
-   Look for:
-   - Memory files: >20K tokens
-   - Total context: >50K tokens
-   - Free space: negative or very low
-
-2. **Verify Ollama context**:
-   ```bash
-   launchctl getenv OLLAMA_CONTEXT_LENGTH
-   # Should show: 8192
-   ```
-
-3. **Check model loading**:
-   ```bash
-   ollama ps
-   # Look at SIZE column (should be 26 GB for 32B model)
-   ```
+   Look for: Free space negative or very low
 
 ### Solutions
 
-#### Option 1: Use Copilot or Anthropic (Recommended)
+#### Option 1: Create a 64K Modelfile (Recommended - Persistent)
 
-**For large projects (>500 files)**, switch to a cloud provider:
+This is the **official recommended method** from Ollama documentation. It persists across restarts.
+
+```bash
+# 1. Create Modelfile directory
+mkdir -p ~/.ollama
+
+# 2. Create the Modelfile
+cat > ~/.ollama/Modelfile.devstral-64k << 'EOF'
+FROM devstral-small-2
+PARAMETER num_ctx 65536
+PARAMETER temperature 0.15
+EOF
+
+# 3. Create the model variant
+ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
+
+# 4. Use the 64K model
+OLLAMA_MODEL=devstral-64k cco
+```
+
+**Why this works**:
+- `PARAMETER num_ctx` is embedded in the model → persists across restarts
+- `temperature 0.15` reduces hallucinations for code generation
+- Custom model variants can be listed with `ollama list`
+
+#### Option 2: Global Environment Variable (Quick Fix)
+
+Less priority than Modelfile, but works as fallback:
+
+```bash
+# Set global context length
+launchctl setenv OLLAMA_CONTEXT_LENGTH 65536
+brew services restart ollama
+
+# Verify
+launchctl getenv OLLAMA_CONTEXT_LENGTH
+# Should show: 65536
+```
+
+**Note**: Environment variable has lower priority than Modelfile PARAMETER.
+
+#### Option 3: Use Copilot or Anthropic (Alternative)
+
+**For large projects or when local performance is insufficient**:
 
 ```bash
 # Copilot (free with subscription)
 ccc
-❯ same prompt
 ⏱️ Response: 1-3 seconds ✅
 
 # Anthropic Direct (paid)
 ccd
-❯ same prompt
 ⏱️ Response: 1-2 seconds ✅
 ```
 
-**Why this works**: Both handle 100K+ tokens context natively.
+**Why this works**: Both handle 200K+ tokens context natively.
 
-#### Option 2: Increase Ollama Context
-
-**Warning**: This will make Ollama slower (but still functional).
+### Verify the Fix
 
 ```bash
-# For medium projects (500-2K files)
-launchctl setenv OLLAMA_CONTEXT_LENGTH 16384
-brew services restart ollama
+# 1. Pull recommended model
+ollama pull devstral-small-2
 
-# For large projects (>2K files)
-launchctl setenv OLLAMA_CONTEXT_LENGTH 32768
-brew services restart ollama
+# 2. Create 64K Modelfile (see Option 1 above)
+
+# 3. Start session
+OLLAMA_MODEL=devstral-64k cco
+
+# 4. Check effective context (in another terminal)
+ollama ps
+# Expected: CONTEXT = 65536
+
+# 5. Test agentic task
+❯ create a file hello.py with print("Hello")
+# Should complete in 5-15 seconds, not 2-6 minutes
 ```
 
-**Trade-offs**:
-| Context | RAM | Speed | Works with Claude Code |
-|---------|-----|-------|------------------------|
-| 8K | 26 GB | ⚡ 26-39 tok/s | ❌ Small projects only |
-| 16K | 30-32 GB | 🐢 15-25 tok/s | ⚠️ Medium projects |
-| 32K | 36-40 GB | 🐌 8-15 tok/s | ✅ Large projects |
+### Memory Considerations (M4 Pro 48GB)
 
-#### Option 3: Reduce Claude Code Context
+| Context Size | Model RAM | Cache RAM | Total | Free RAM |
+|--------------|-----------|-----------|-------|----------|
+| 32K | 15 GB | 4-6 GB | ~21 GB | ~27 GB |
+| 64K | 15 GB | 8-12 GB | ~27 GB | ~21 GB |
 
-Create a `.claudeignore` file in your project root:
+**Recommendation**: Use 64K if possible. If RAM is tight, use 32K or switch to Copilot.
 
-```bash
-# .claudeignore
-node_modules/
-dist/
-build/
-.next/
-.git/
-coverage/
-*.log
-*.lock
-```
+### Recommended Ollama Models (Updated January 2026)
 
-**Effect**: Reduces Memory files tokens → smaller total context.
+| Model | Size | SWE-bench | Use Case |
+|-------|------|-----------|----------|
+| **devstral-small-2** (default) | 24B | 68% | Best agentic coding |
+| ibm/granite4:small-h | 32B (9B active) | ~62% | Long context, 70% less VRAM |
+| qwen3-coder:30b | 30B | 85% | Highest accuracy (needs template work) |
 
-### Recommended Approach by Project Size
-
-| Project Size | Files | Recommended Solution |
-|--------------|-------|---------------------|
-| Small | <500 | Keep Ollama 8K ⚡ |
-| Medium | 500-2K | Switch to Copilot ⚡ |
-| Large | >2K | Switch to Copilot/Anthropic ⚡ |
-| Privacy-critical | Any | Ollama 32K (slow but private) 🐌 |
+**Sources**:
+- [Ollama Context Documentation](https://docs.ollama.com/context-length)
+- [Taletskiy blog](https://taletskiy.com/blogs/ollama-claude-code/)
+- [r/LocalLLaMA benchmarks](https://www.reddit.com/r/LocalLLaMA/comments/1plbjqg/)
 
 ---
 
@@ -123,29 +150,34 @@ coverage/
 
 ```bash
 cco
-ERROR: Model qwen2.5-coder not found
-  Pull it with: ollama pull qwen2.5-coder:32b
+ERROR: Model devstral-small-2 not found
+  Pull it with: ollama pull devstral-small-2
 ```
 
 ### Cause
 
-Model name mismatch between script and installed model.
+Model not installed or model name mismatch.
 
 ### Solution
 
-1. **Check installed models**:
+1. **Pull the recommended model**:
+   ```bash
+   ollama pull devstral-small-2
+   ```
+
+2. **Or pull backup model for long context**:
+   ```bash
+   ollama pull ibm/granite4:small-h
+   ```
+
+3. **Check installed models**:
    ```bash
    ollama list
    ```
 
-2. **Pull the correct model**:
+4. **Override model if needed**:
    ```bash
-   ollama pull qwen2.5-coder:32b-instruct
-   ```
-
-3. **Or override model**:
-   ```bash
-   OLLAMA_MODEL=qwen2.5-coder:7b cco
+   OLLAMA_MODEL=ibm/granite4:small-h cco
    ```
 
 ---
@@ -712,7 +744,7 @@ curl http://localhost:11434/api/tags
 ```bash
 ollama ps
 NAME                          SIZE      PROCESSOR
-qwen2.5-coder:32b-instruct    12 GB     50% GPU  # Should be 26 GB, 100% GPU
+devstral-small-2              12 GB     50% GPU  # Should be ~15 GB, 100% GPU
 ```
 
 ### Cause
@@ -726,18 +758,13 @@ Not enough RAM or model not fully loaded.
    # macOS
    vm_stat | grep free
 
-   # Should have 25GB+ free for 32B model
+   # Should have 20GB+ free for devstral-small-2
    ```
 
-2. **Use smaller model** if RAM-limited:
+2. **Use Granite4 if RAM-limited** (70% less VRAM with hybrid Mamba architecture):
    ```bash
-   # For 24GB RAM
-   ollama pull qwen2.5-coder:14b
-   OLLAMA_MODEL=qwen2.5-coder:14b cco
-
-   # For 16GB RAM
-   ollama pull qwen2.5-coder:7b
-   OLLAMA_MODEL=qwen2.5-coder:7b cco
+   ollama pull ibm/granite4:small-h
+   OLLAMA_MODEL=ibm/granite4:small-h cco
    ```
 
 3. **Close other applications** to free RAM.
@@ -801,7 +828,7 @@ cco
 ⏺ I am Claude, created by Anthropic...
 ```
 
-But you're using Qwen2.5-Coder (not Claude).
+But you're using Devstral (not Claude).
 
 ### Explanation
 
@@ -812,7 +839,7 @@ But you're using Qwen2.5-Coder (not Claude).
 - Performance
 - Functionality
 
-The model is still **Qwen2.5-Coder**, just confused about its identity from the prompt.
+The model is still **Devstral** (or Granite4), just confused about its identity from the prompt.
 
 ---
 
@@ -826,7 +853,7 @@ tail -5 ~/.claude/claude-switch.log
 
 **Look for**:
 ```
-[INFO] Provider: Ollama Local - Model: qwen2.5-coder:32b-instruct
+[INFO] Provider: Ollama Local - Model: devstral-64k
 [INFO] Session started: mode=ollama:...
 ```
 

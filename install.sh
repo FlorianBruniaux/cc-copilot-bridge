@@ -133,6 +133,10 @@ alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 alias ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
 alias ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
 alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
+
+# Ollama Model Shortcuts
+alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
+alias cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
 "
 
 if grep -q "Claude Code Multi-Provider" "$SHELL_RC" 2>/dev/null; then
@@ -165,10 +169,22 @@ echo "   📦 GitHub Copilot (free with subscription):"
 echo -e "      ${BLUE}npm install -g copilot-api${NC}"
 echo -e "      ${BLUE}copilot-api start${NC}"
 echo ""
-echo "   🔒 Ollama (local, private):"
+echo "   🔒 Ollama (local, private - recommended: devstral-small-2):"
 echo -e "      ${BLUE}brew install ollama${NC}  # macOS"
 echo -e "      ${BLUE}ollama serve${NC}"
-echo -e "      ${BLUE}ollama pull qwen2.5-coder:32b${NC}"
+echo -e "      ${BLUE}ollama pull devstral-small-2${NC}"
+echo ""
+echo "   ⚠️  IMPORTANT: Create 64K context Modelfile for Claude Code:"
+echo -e "      ${BLUE}mkdir -p ~/.ollama${NC}"
+echo -e "      ${BLUE}cat > ~/.ollama/Modelfile.devstral-64k << 'EOF'${NC}"
+echo "      FROM devstral-small-2"
+echo "      PARAMETER num_ctx 65536"
+echo "      PARAMETER temperature 0.15"
+echo "      EOF"
+echo -e "      ${BLUE}ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k${NC}"
+echo ""
+echo "   📦 Alternative: Pull backup model for long-context tasks:"
+echo -e "      ${BLUE}ollama pull ibm/granite4:small-h${NC}"
 echo ""
 echo "4. Start using:"
 echo -e "   ${BLUE}ccd${NC}        # Anthropic Direct"

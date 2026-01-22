@@ -1,10 +1,10 @@
 # Dynamic Model Switching Guide
 
-**Reading time**: 15 minutes | **Skill level**: Intermediate | **Version**: v1.2.0 | **Last updated**: 2026-01-22
+**Reading time**: 15 minutes | **Skill level**: Intermediate | **Version**: v1.4.0 | **Last updated**: 2026-01-22
 
 ---
 
-Le script `claude-switch` supporte maintenant le changement dynamique de modèle pour GitHub Copilot via la variable d'environnement `COPILOT_MODEL`.
+Le script `claude-switch` supporte maintenant le changement dynamique de modèle pour GitHub Copilot via la variable d'environnement `COPILOT_MODEL` et pour Ollama via `OLLAMA_MODEL`.
 
 ## Modèles disponibles via copilot-api
 
@@ -211,6 +211,87 @@ COPILOT_MODEL=gpt-5-mini ccc
 
 **Usage**: Refactoring basique, questions rapides
 
+## Modèles Ollama (Local - Updated January 2026)
+
+### Modèles recommandés
+
+| Model | Size | SWE-bench | Context | Use Case |
+|-------|------|-----------|---------|----------|
+| **devstral-small-2** (default) | 24B | 68% | 256K native | Best agentic coding |
+| ibm/granite4:small-h | 32B (9B active) | ~62% | 1M | Long context, 70% less VRAM |
+| qwen3-coder:30b | 30B | 85% | 256K | Highest accuracy (needs template work) |
+
+### Devstral-small-2 (Recommandé)
+
+```bash
+# Default
+cco
+# Or explicit
+OLLAMA_MODEL=devstral-small-2 cco
+# Or with 64K context Modelfile (recommended)
+OLLAMA_MODEL=devstral-64k cco
+```
+
+**Avantages**:
+- ✅ Meilleur modèle agentic pour coding (68% SWE-bench)
+- ✅ Format tool-calling Mistral/OpenAI standard → compatible Claude Code
+- ✅ Pas de problème "stuck on Explore" (contrairement à Qwen2.5)
+- 24B paramètres → ~15GB VRAM
+
+**Usage**: Développement quotidien offline, code propriétaire
+
+### IBM Granite4 (Long Context)
+
+```bash
+OLLAMA_MODEL=ibm/granite4:small-h cco
+# Or alias
+cco-granite
+```
+
+**Avantages**:
+- ✅ Architecture hybride Mamba → 70% moins de VRAM pour long contexte
+- ✅ 1M tokens contexte natif
+- ✅ 9B paramètres actifs seulement → rapide
+
+**Limitations**:
+- SWE-bench ~62% (inférieur à Devstral)
+
+**Usage**: Projets avec beaucoup de fichiers, contexte limité RAM
+
+### Configuration contexte 64K (CRITIQUE)
+
+⚠️ **IMPORTANT**: Claude Code envoie ~18K tokens de system prompt + tools. Le contexte par défaut (4K) cause:
+- Hallucinations
+- Comportement "stuck on Explore"
+- Réponses lentes (2-6 minutes au lieu de 5-15 secondes)
+
+**Solution recommandée (Modelfile persistant)**:
+
+```bash
+# 1. Créer le Modelfile
+mkdir -p ~/.ollama
+cat > ~/.ollama/Modelfile.devstral-64k << 'EOF'
+FROM devstral-small-2
+PARAMETER num_ctx 65536
+PARAMETER temperature 0.15
+EOF
+
+# 2. Créer le modèle
+ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
+
+# 3. Utiliser
+OLLAMA_MODEL=devstral-64k cco
+```
+
+**Vérifier le contexte effectif**: `ollama ps` (pas `ollama show`)
+
+### Sources
+
+- [Ollama Context Documentation](https://docs.ollama.com/context-length)
+- [Taletskiy blog](https://taletskiy.com/blogs/ollama-claude-code/)
+- [r/LocalLLaMA benchmarks](https://www.reddit.com/r/LocalLLaMA/comments/1plbjqg/)
+- [Devstral HuggingFace](https://huggingface.co/mistralai/Devstral-Small-2-24B-Instruct-2512)
+
 ## Logs avec modèles
 
 Le script log maintenant le modèle utilisé:
@@ -244,14 +325,17 @@ grep "mode=copilot:" ~/.claude/claude-switch.log | cut -d':' -f4 | sort | uniq -
 Éditez `~/.zshrc`:
 
 ```bash
-# Gemini
+# Copilot models
 alias ccc-gemini='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
-
-# Grok
 alias ccc-grok='COPILOT_MODEL=grok-code-fast-1 claude-switch copilot'
-
-# GPT-4
 alias ccc-gpt4='COPILOT_MODEL=gpt-4o-2024-11-20 claude-switch copilot'
+
+# Ollama models (already in install.sh)
+alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
+alias cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
+
+# Custom 64K Modelfile variant
+alias cco-64k='OLLAMA_MODEL=devstral-64k claude-switch ollama'
 
 # Reload
 source ~/.zshrc
