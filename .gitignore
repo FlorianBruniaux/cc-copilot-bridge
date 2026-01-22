@@ -30,4 +30,6 @@ temp*.sh
 .env
 .env.local
 
-.serenaclaudedocs/
+.serena
+
+claudedocs/

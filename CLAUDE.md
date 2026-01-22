@@ -28,13 +28,13 @@ Location: `~/bin/claude-switch` (installed via `install.sh`)
 ```bash
 # Copilot mode
 ANTHROPIC_BASE_URL="http://localhost:4141"
-ANTHROPIC_AUTH_TOKEN="sk-dummy"
+ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # copilot-api ignores this value
 ANTHROPIC_MODEL="${COPILOT_MODEL:-claude-sonnet-4.5}"
 DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
 
 # Ollama mode
 ANTHROPIC_BASE_URL="http://localhost:11434"
-ANTHROPIC_AUTH_TOKEN="ollama"
+ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this value
 ```
 
 **Model Switching:**

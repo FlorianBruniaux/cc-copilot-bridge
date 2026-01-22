@@ -160,7 +160,7 @@ _run_copilot() {
 
   # Configure proxy routing
   export ANTHROPIC_BASE_URL="http://localhost:4141"
-  export ANTHROPIC_AUTH_TOKEN="sk-dummy"  # copilot-api ignores this
+  export ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # copilot-api ignores this
   export ANTHROPIC_MODEL="${model}"
   export ANTHROPIC_DEFAULT_HAIKU_MODEL="gpt-5-mini"
   export DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
@@ -185,7 +185,7 @@ _run_copilot() {
 | Variable | Purpose | Value |
 |----------|---------|-------|
 | `ANTHROPIC_BASE_URL` | Redirect API calls to copilot-api | `http://localhost:4141` |
-| `ANTHROPIC_AUTH_TOKEN` | Dummy auth (copilot-api handles real auth) | `sk-dummy` |
+| `ANTHROPIC_AUTH_TOKEN` | Dummy auth (copilot-api handles real auth) | `<PLACEHOLDER>` |
 | `ANTHROPIC_MODEL` | Tell copilot-api which model to use | `gpt-4.1`, `claude-opus-4.5`, etc. |
 | `DISABLE_NON_ESSENTIAL_MODEL_CALLS` | Reduce API traffic | `1` |
 | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | Further traffic optimization | `1` |
@@ -208,7 +208,7 @@ _run_ollama() {
 
   # Configure Ollama endpoint
   export ANTHROPIC_BASE_URL="http://localhost:11434"
-  export ANTHROPIC_AUTH_TOKEN="ollama"
+  export ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this
   export ANTHROPIC_API_KEY="ollama"
 
   _session_start "ollama"
@@ -735,7 +735,7 @@ Claude Code CLI → HTTP request to :4141 → copilot-api
 POST http://localhost:4141/v1/messages
 Headers:
   anthropic-version: 2023-06-01
-  x-api-key: sk-dummy
+  x-api-key: <PLACEHOLDER>
   anthropic-model: gpt-4.1
 Body:
   { "model": "gpt-4.1", "messages": [...] }

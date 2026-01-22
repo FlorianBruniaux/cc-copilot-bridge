@@ -157,7 +157,7 @@ Model name mismatch between script and installed model.
 ```bash
 cco
 Detected a custom API key in your environment
-ANTHROPIC_API_KEY: sk-ant-...ollama
+ANTHROPIC_API_KEY: <YOUR_API_KEY>
 Do you want to use this API key?
   1. Yes
   2. No (recommended) ✓

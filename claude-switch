@@ -180,7 +180,7 @@ _run_copilot() {
   echo -e "${GREEN}━━━ Claude Code [GitHub Copilot: ${model}] ━━━${NC}"
 
   export ANTHROPIC_BASE_URL="http://localhost:4141"
-  export ANTHROPIC_AUTH_TOKEN="sk-dummy"
+  export ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # copilot-api ignores this value
   export ANTHROPIC_MODEL="${model}"
   export ANTHROPIC_DEFAULT_HAIKU_MODEL="gpt-5-mini"
   export DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
@@ -208,7 +208,7 @@ _run_ollama() {
   echo -e "${ORANGE}━━━ Claude Code [Ollama Local: ${model}] ━━━${NC}"
 
   export ANTHROPIC_BASE_URL="http://localhost:11434"
-  export ANTHROPIC_AUTH_TOKEN="ollama"
+  export ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this value
   # Note: ANTHROPIC_API_KEY not set to avoid API key prompt
   # Ollama authentication works through ANTHROPIC_BASE_URL only
 

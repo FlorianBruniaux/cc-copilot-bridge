@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+**Security**
+- 🔐 Added `.gitleaks.toml` configuration for secret detection
+- 🔐 Added GitHub Actions workflow `.github/workflows/security-scan.yml` for automated security scanning
+- 🔐 Gitleaks scans on every push/PR to detect accidentally committed credentials
+
+### Changed
+
+**Security Hardening**
+- 🔧 Replaced `sk-dummy` placeholder with `<PLACEHOLDER>` in `claude-switch` script
+- 🔧 Replaced token-like examples (`sk-...`) with `<YOUR_API_KEY>` in documentation
+- 🔧 Sanitized all credential placeholders across docs (CLAUDE.md, ARCHITECTURE.md, FEATURES.md, BEST-PRACTICES.md, TROUBLESHOOTING.md)
+- 🔧 Added explanatory comments for placeholder values (e.g., "copilot-api ignores this value")
+
 ---
 
 ## [1.3.0] - 2026-01-22

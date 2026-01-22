@@ -331,7 +331,7 @@ ccs  # Check all provider status
 **Day 2: Provider configuration**
 ```bash
 # Configure Anthropic (optional but recommended for critical work)
-export ANTHROPIC_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="<YOUR_API_KEY>"
 
 # Configure Copilot (primary provider)
 npm install -g copilot-api

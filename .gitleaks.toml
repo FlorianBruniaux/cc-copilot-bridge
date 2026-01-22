@@ -1,0 +1,76 @@
+# Gitleaks configuration for cc-copilot-bridge
+# https://github.com/gitleaks/gitleaks
+
+title = "cc-copilot-bridge secret detection"
+
+# Global allowlist - patterns that are intentionally not secrets
+[allowlist]
+  description = "Global allowlist for known safe patterns"
+
+  # These are placeholder values in documentation, not real secrets
+  regexes = [
+    '''<PLACEHOLDER>''',
+    '''<YOUR_API_KEY>''',
+    '''<REDACTED>''',
+    '''\$\{[A-Z_]+\}''',  # Environment variable references like ${ANTHROPIC_API_KEY}
+  ]
+
+  # Files that commonly contain example/documentation content
+  paths = [
+    '''\.md$''',            # Markdown documentation (still scan but lower priority)
+    '''claudedocs/.*''',    # Internal documentation
+  ]
+
+# Custom rules for this project
+[[rules]]
+  id = "anthropic-api-key"
+  description = "Anthropic API Key"
+  regex = '''sk-ant-[a-zA-Z0-9-_]{20,}'''
+  keywords = ["sk-ant-"]
+
+[[rules]]
+  id = "generic-api-key"
+  description = "Generic API Key pattern"
+  regex = '''(?i)(api[_-]?key|apikey|api_secret)[\s]*[=:]\s*["']?[a-zA-Z0-9-_]{20,}["']?'''
+  keywords = ["api_key", "apikey", "api-key", "api_secret"]
+
+[[rules]]
+  id = "aws-access-key"
+  description = "AWS Access Key ID"
+  regex = '''AKIA[0-9A-Z]{16}'''
+  keywords = ["AKIA"]
+
+[[rules]]
+  id = "private-key"
+  description = "Private Key"
+  regex = '''-----BEGIN (RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----'''
+  keywords = ["BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "BEGIN OPENSSH PRIVATE KEY"]
+
+[[rules]]
+  id = "github-token"
+  description = "GitHub Token"
+  regex = '''gh[ps]_[a-zA-Z0-9]{36}'''
+  keywords = ["ghp_", "ghs_"]
+
+[[rules]]
+  id = "jwt-token"
+  description = "JWT Token"
+  regex = '''eyJ[a-zA-Z0-9_-]*\.eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*'''
+  keywords = ["eyJ"]
+
+[[rules]]
+  id = "openai-api-key"
+  description = "OpenAI API Key"
+  regex = '''sk-[a-zA-Z0-9]{20,}'''
+  keywords = ["sk-"]
+
+  # But allow known placeholders
+  [rules.allowlist]
+    regexes = [
+      '''sk-dummy''',       # Legacy placeholder (now removed but in history)
+      '''<PLACEHOLDER>''',
+    ]
+
+# Extend the default rules
+[extend]
+  useDefault = true

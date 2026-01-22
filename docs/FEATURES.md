@@ -5,7 +5,7 @@
 **Before claude-switch**:
 ```bash
 # Stuck with one provider
-export ANTHROPIC_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="<YOUR_API_KEY>"
 claude
 # 💸 Costs $$ per session
 # 🔒 Can't go offline
