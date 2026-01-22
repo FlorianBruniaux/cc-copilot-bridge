@@ -190,7 +190,8 @@ _run_copilot() {
 
   # Execute claude with proper array expansion (no eval!)
   # Arrays handle spaces, newlines, and special chars correctly
-  claude "${MCP_ARGS[@]}" "${PROMPT_ARGS[@]}" "$@"
+  # Use ${array[@]+"${array[@]}"} to handle empty arrays with set -u
+  claude ${MCP_ARGS[@]+"${MCP_ARGS[@]}"} ${PROMPT_ARGS[@]+"${PROMPT_ARGS[@]}"} "$@"
 
   local rc=$?
   _session_end $rc

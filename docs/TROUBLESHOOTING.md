@@ -258,6 +258,266 @@ gemini-2.5-pro → gemini-3-pro-preview
 
 ---
 
+## ❌ Reserved Billing Header Error (copilot-api)
+
+### Symptom
+
+```bash
+ccc
+❯ 1+1
+API Error: 400 Bad Request
+{"error":{"message":"x-anthropic-billing-header is a reserved keyword and may not be used in the system prompt",
+  "code":"invalid_request_body"}}
+```
+
+### Cause
+
+**Claude Code v2.1.15+** injecte la chaîne `x-anthropic-billing-header` dans son system prompt pour le tracking billing interne. L'API Anthropic (via copilot-api proxy) rejette cette requête car c'est un **mot-clé réservé** qui ne peut pas apparaître dans les prompts utilisateur.
+
+**Cause technique** : Anthropic réserve certains mots-clés (comme `x-anthropic-billing-header`) pour son infrastructure interne. Quand Claude Code inclut ces mots dans le system prompt, l'API les détecte et rejette la requête pour éviter les conflits.
+
+**Issue GitHub** : [ericc-ch/copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174) (ouverte le 22 janvier 2026)
+
+### Qui est affecté
+
+- ✅ **Anthropic Direct (`ccd`)** : Non affecté (API native gère correctement)
+- ❌ **Copilot via copilot-api (`ccc`)** : AFFECTÉ (proxy rejette le header)
+- ✅ **Ollama Local (`cco`)** : Non affecté (pas d'API Anthropic)
+
+### Solutions
+
+**Option 1: Utiliser Anthropic Direct (Recommandé)** ⭐
+
+```bash
+ccd  # Anthropic API native, gère x-anthropic-billing-header correctement
+```
+
+**Avantages**:
+- ✅ 100% compatible avec toutes les versions Claude Code
+- ✅ Meilleure qualité (pas de proxy)
+- ✅ Support officiel Anthropic
+
+**Inconvénients**:
+- 💰 Payant (facturation au token)
+
+**Option 2: Utiliser Ollama Local**
+
+```bash
+cco  # 100% privé, pas d'API Anthropic
+```
+
+**Avantages**:
+- ✅ Gratuit, illimité
+- ✅ 100% privé (aucune donnée ne quitte la machine)
+- ✅ Pas affecté par les problèmes API Anthropic
+
+**Inconvénients**:
+- 🐌 Plus lent que cloud (voir [Optimisation M4 Pro](OPTIMISATION-M4-PRO.md))
+
+**Option 3: Attendre un fix de copilot-api**
+
+L'issue est activement suivie sur GitHub. Possibles solutions en développement :
+1. Filtrage automatique du header réservé par copilot-api
+2. Patch Claude Code pour exclure le header des proxies
+3. Configuration Anthropic API pour accepter le header via proxies
+
+**Suivi** : [ericc-ch/copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174)
+
+### Workaround temporaire (NON RECOMMANDÉ)
+
+Un utilisateur a reporté que retirer manuellement `x-anthropic-billing-header` du system message permet de contourner l'erreur, mais :
+
+❌ **Ne PAS utiliser** : Modifier le system prompt casse la session Claude Code
+❌ **Fragile** : Cassera à chaque update de Claude Code
+❌ **Complexe** : Nécessite d'intercepter et modifier les requêtes
+
+**Préférez les Options 1 ou 2 ci-dessus.**
+
+### Diagnostic
+
+Si tu vois cette erreur sporadiquement :
+
+```bash
+# Vérifier la version Claude Code
+claude --version
+# Si v2.1.15+, le problème est présent
+
+# Vérifier les logs récents
+tail -50 ~/.claude/claude-switch.log | grep "400\|billing"
+
+# Tester avec Anthropic Direct
+ccd
+❯ 1+1
+# Si ça fonctionne → confirme que le problème vient de copilot-api
+```
+
+### Patch communautaire (Solution avancée)
+
+**⚠️ AVERTISSEMENT** : Cette solution modifie le code source de copilot-api. À utiliser uniquement si tu es à l'aise avec le debugging et prêt à restaurer en cas de problème.
+
+Un utilisateur de la communauté [@mrhanhan](https://github.com/ericc-ch/copilot-api/issues/174) a proposé un patch fonctionnel qui filtre automatiquement le header réservé.
+
+#### Étape 1: Localiser le fichier à patcher
+
+```bash
+# Trouver l'installation de copilot-api
+which copilot-api
+# → /Users/YOU/.nvm/versions/node/vXX.XX.X/bin/copilot-api
+
+# Le fichier à modifier est dans dist/main.js
+# Exemple: ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
+```
+
+#### Étape 2: Créer un backup
+
+```bash
+cd ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist
+cp main.js main.js.backup
+echo "✅ Backup créé: main.js.backup"
+```
+
+#### Étape 3: Appliquer le patch
+
+Éditer `dist/main.js` et trouver la fonction `translateAnthropicMessagesToOpenAI` (autour de la ligne 897).
+
+**Avant (original)** :
+```javascript
+function translateAnthropicMessagesToOpenAI(anthropicMessages, system) {
+	const systemMessages = handleSystemPrompt(system);
+	const otherMessages = anthropicMessages.flatMap((message) =>
+		message.role === "user" ? handleUserMessage(message) : handleAssistantMessage(message)
+	);
+	return [...systemMessages, ...otherMessages];
+}
+```
+
+**Après (patché)** :
+```javascript
+function translateAnthropicMessagesToOpenAI(anthropicMessages, system) {
+	let systemMessages = handleSystemPrompt(system);
+	// FIX #174: Filter x-anthropic-billing-header from system prompt
+	systemMessages = systemMessages.map((it) => {
+		if (typeof it.content === "string" && it.content.startsWith("x-anthropic-billing-header")) {
+			it.content = it.content.replace(
+				/x-anthropic-billing-header: \?cc_version=.+; \?cc_entrypoint=\\+\n{0,2}\./,
+				""
+			);
+			console.info('Filtered x-anthropic-billing-header from system message');
+		}
+		return it;
+	});
+	const otherMessages = anthropicMessages.flatMap((message) =>
+		message.role === "user" ? handleUserMessage(message) : handleAssistantMessage(message)
+	);
+	return [...systemMessages, ...otherMessages];
+}
+```
+
+**Modifications apportées** :
+1. `const systemMessages` → `let systemMessages` (ligne 2)
+2. Ajout du filtre `systemMessages.map()` (lignes 3-12)
+3. Log de confirmation quand le header est filtré
+
+#### Étape 4: Redémarrer copilot-api
+
+```bash
+# Arrêter le processus actuel
+kill $(ps aux | grep "copilot-api start" | grep -v grep | awk '{print $2}')
+
+# Redémarrer avec le patch
+copilot-api start
+```
+
+#### Étape 5: Tester le patch
+
+**Test automatique** :
+
+Un script de test est disponible dans le projet cc-copilot-bridge :
+
+```bash
+# Dans le dépôt cc-copilot-bridge
+./scripts/test-billing-header-fix.sh
+```
+
+**Test manuel** :
+
+```bash
+# Test 1: Requête avec billing header
+curl -s -X POST http://localhost:4141/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "claude-sonnet-4.5",
+    "max_tokens": 100,
+    "system": "x-anthropic-billing-header: test\n\nYou are helpful.",
+    "messages": [{"role": "user", "content": "Say hello"}]
+  }' | jq '.content[0].text // .error'
+
+# Résultat attendu: Réponse normale (pas d'erreur 400)
+```
+
+**Test avec Claude Code** :
+
+```bash
+ccc
+❯ 1+1
+```
+
+**Résultat attendu** : Réponse normale sans erreur `invalid_request_body`
+
+#### Vérification des logs
+
+Dans le terminal où copilot-api tourne, tu devrais voir :
+
+```
+Filtered x-anthropic-billing-header from system message
+```
+
+Chaque fois que Claude Code envoie une requête avec le header réservé.
+
+#### Restaurer l'original
+
+Si le patch cause des problèmes :
+
+```bash
+# Arrêter copilot-api
+kill $(ps aux | grep "copilot-api start" | grep -v grep | awk '{print $2}')
+
+# Restaurer le backup
+cd ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist
+cp main.js.backup main.js
+
+# Redémarrer
+copilot-api start
+```
+
+#### Limitations du patch
+
+**⚠️ Patch temporaire** :
+- ❌ Sera écrasé à chaque `npm update copilot-api`
+- ❌ Non testé sur toutes les versions de copilot-api
+- ❌ Peut ne pas couvrir tous les cas edge
+
+**Après update de copilot-api** :
+```bash
+# Vérifier si le patch existe toujours
+grep -n "FIX #174" ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
+
+# Si vide → ré-appliquer le patch
+```
+
+#### Suivi de l'issue officielle
+
+Surveille [copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174) pour un fix officiel dans une future version.
+
+Une fois le fix intégré officiellement :
+```bash
+npm update -g copilot-api  # Mettre à jour
+# Plus besoin du patch manuel
+```
+
+---
+
 ## ⚠️ MCP Schema Validation Error (GPT-4.1)
 
 ### Symptom
