@@ -1,0 +1,210 @@
+#!/bin/bash
+# Claude Code Multi-Provider Switcher
+# Usage: claude-switch <mode> [claude args...]
+# Modes: direct (d), copilot (c), ollama (o), status (s)
+
+set -euo pipefail
+
+# === Configuration ===
+LOG_FILE="${HOME}/.claude/claude-switch.log"
+LOG_DIR="${HOME}/.claude"
+
+# === Colors ===
+BLUE='\033[0;34m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# === Logging ===
+_log() {
+  local level="$1" msg="$2"
+  local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+  mkdir -p "${LOG_DIR}"
+  echo "[${timestamp}] [${level}] ${msg}" >> "${LOG_FILE}"
+
+  case "${level}" in
+    ERROR) echo -e "${RED}ERROR: ${msg}${NC}" >&2 ;;
+    WARN)  echo -e "${ORANGE}WARN: ${msg}${NC}" >&2 ;;
+    INFO)  echo -e "${GREEN}${msg}${NC}" ;;
+  esac
+}
+
+# === Health Checks ===
+_check_port() {
+  local host="$1" port="$2" timeout="${3:-2}"
+  nc -z -w"${timeout}" "${host}" "${port}" 2>/dev/null
+}
+
+_check_copilot() {
+  if ! _check_port "localhost" "4141"; then
+    _log "ERROR" "copilot-api not running on :4141"
+    echo "  Start it with: copilot-api start"
+    return 1
+  fi
+  _log "INFO" "copilot-api health: OK"
+}
+
+_check_ollama() {
+  if ! _check_port "localhost" "11434"; then
+    _log "ERROR" "Ollama not running on :11434"
+    echo "  Start it with: ollama serve"
+    return 1
+  fi
+
+  # Vérifier que le modèle existe
+  if ! ollama list 2>/dev/null | grep -q "qwen2.5-coder"; then
+    _log "ERROR" "Model qwen2.5-coder not found"
+    echo "  Pull it with: ollama pull qwen2.5-coder:32b"
+    return 1
+  fi
+  _log "INFO" "Ollama health: OK (qwen2.5-coder found)"
+}
+
+# === Session Tracking ===
+_session_start() {
+  local mode="$1"
+  export CLAUDE_SESSION_START=$(date +%s)
+  export CLAUDE_SESSION_MODE="${mode}"
+  _log "INFO" "Session started: mode=${mode} pid=$$ pwd=${PWD}"
+}
+
+_session_end() {
+  local exit_code="$1"
+  local duration=$(($(date +%s) - ${CLAUDE_SESSION_START:-0}))
+  local mins=$((duration / 60))
+  local secs=$((duration % 60))
+  _log "INFO" "Session ended: mode=${CLAUDE_SESSION_MODE} duration=${mins}m${secs}s exit=${exit_code}"
+}
+
+# === Provider Functions ===
+_run_direct() {
+  _log "INFO" "Provider: Anthropic Direct"
+  echo -e "${BLUE}━━━ Claude Code [Anthropic Direct] ━━━${NC}"
+
+  unset ANTHROPIC_BASE_URL
+  unset DISABLE_NON_ESSENTIAL_MODEL_CALLS
+  unset CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC
+
+  _session_start "direct"
+  claude "$@"
+  local rc=$?
+  _session_end $rc
+  return $rc
+}
+
+_run_copilot() {
+  _check_copilot || return 1
+
+  # Allow model override via env var or use default
+  local model="${COPILOT_MODEL:-claude-sonnet-4.5}"
+
+  _log "INFO" "Provider: GitHub Copilot (via copilot-api) - Model: ${model}"
+  echo -e "${GREEN}━━━ Claude Code [GitHub Copilot: ${model}] ━━━${NC}"
+
+  export ANTHROPIC_BASE_URL="http://localhost:4141"
+  export ANTHROPIC_AUTH_TOKEN="sk-dummy"
+  export ANTHROPIC_MODEL="${model}"
+  export ANTHROPIC_DEFAULT_HAIKU_MODEL="gpt-5-mini"
+  export DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
+  export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
+
+  _session_start "copilot:${model}"
+  claude "$@"
+  local rc=$?
+  _session_end $rc
+  return $rc
+}
+
+_run_ollama() {
+  _check_ollama || return 1
+
+  _log "INFO" "Provider: Ollama Local"
+  echo -e "${ORANGE}━━━ Claude Code [Ollama Local] ━━━${NC}"
+
+  export ANTHROPIC_BASE_URL="http://localhost:11434"
+  export ANTHROPIC_AUTH_TOKEN="ollama"
+  export ANTHROPIC_API_KEY="ollama"
+
+  _session_start "ollama"
+  claude --model qwen2.5-coder:32b "$@"
+  local rc=$?
+  _session_end $rc
+  return $rc
+}
+
+_show_status() {
+  echo "=== Claude Code Provider Status ==="
+  echo ""
+
+  echo -n "Anthropic API:  "
+  if curl -s --max-time 2 https://api.anthropic.com/v1/messages -H "x-api-key: test" 2>/dev/null | grep -q "invalid"; then
+    echo -e "${GREEN}✓ Reachable${NC}"
+  else
+    echo -e "${ORANGE}? Unknown${NC}"
+  fi
+
+  echo -n "copilot-api:    "
+  if _check_port "localhost" "4141"; then
+    echo -e "${GREEN}✓ Running (:4141)${NC}"
+  else
+    echo -e "${RED}✗ Not running${NC}"
+  fi
+
+  echo -n "Ollama:         "
+  if _check_port "localhost" "11434"; then
+    local models=$(ollama list 2>/dev/null | grep -c ":" || echo "0")
+    echo -e "${GREEN}✓ Running (${models} models)${NC}"
+  else
+    echo -e "${RED}✗ Not running${NC}"
+  fi
+
+  echo ""
+  echo "=== Recent Sessions ==="
+  tail -5 "${LOG_FILE}" 2>/dev/null || echo "(no logs yet)"
+}
+
+_show_usage() {
+  cat << 'EOF'
+Usage: claude-switch <mode> [claude args...]
+
+Modes:
+  d, direct   Anthropic API direct (best quality, paid)
+  c, copilot  GitHub Copilot via copilot-api (free with subscription)
+  o, ollama   Local models via Ollama (private, offline)
+  s, status   Check all providers status
+
+Examples:
+  claude-switch direct              # Use Anthropic API
+  claude-switch copilot             # Use GitHub Copilot
+  claude-switch ollama              # Use local Ollama
+  claude-switch copilot -c          # Copilot + resume session
+  claude-switch status              # Check what's running
+
+Aliases (add to .zshrc):
+  alias ccd='claude-switch direct'
+  alias ccc='claude-switch copilot'
+  alias cco='claude-switch ollama'
+EOF
+}
+
+# === Main ===
+main() {
+  local mode="${1:-}"
+  shift 2>/dev/null || true
+
+  case "${mode}" in
+    d|direct)  _run_direct "$@" ;;
+    c|copilot) _run_copilot "$@" ;;
+    o|ollama)  _run_ollama "$@" ;;
+    s|status)  _show_status ;;
+    -h|--help|"") _show_usage ;;
+    *)
+      _log "ERROR" "Unknown mode: ${mode}"
+      _show_usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
