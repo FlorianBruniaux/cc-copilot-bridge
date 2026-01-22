@@ -1,7 +1,6 @@
-# Claude Code Multi-Provider - Troubleshooting Guide
+# Troubleshooting Guide
 
-**Version**: 1.1.0
-**Date**: 2026-01-21
+**Reading time**: 20 minutes | **Skill level**: All levels | **Version**: v1.2.0 | **Last updated**: 2026-01-22
 
 ---
 
@@ -637,3 +636,17 @@ If issues persist:
 
 **Last Updated**: 2026-01-21
 **Version**: 1.1.0
+
+---
+
+## 📚 Related Documentation
+
+- [FAQ](FAQ.md) - Frequently asked questions
+- [Decision Trees](DECISION-TREES.md) - Choose the right command/model
+- [Best Practices](BEST-PRACTICES.md) - Strategic usage patterns
+- [Security Guide](SECURITY.md) - Privacy and data flow
+- [Quick Start Guide](../QUICKSTART.md) - Installation guide
+
+---
+
+**Back to**: [Documentation Index](README.md) | [Main README](../README.md)

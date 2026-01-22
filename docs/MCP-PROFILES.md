@@ -1,5 +1,7 @@
 # MCP Profiles System
 
+**Reading time**: 20 minutes | **Skill level**: Advanced | **Version**: v1.2.0 | **Last updated**: 2026-01-22
+
 **Problem**: GPT-4.1 applies strict JSON Schema validation to MCP tools, causing some MCP servers with incomplete schemas to fail.
 
 **Solution**: Dynamic profile generation with model-specific exclusions.
@@ -599,3 +601,17 @@ EOF
 - Support for GPT and Gemini model families
 - Automatic profile selection in `claude-switch`
 - `grepai` excluded from strict validation models
+
+---
+
+## 📚 Related Documentation
+
+- [Architecture Deep Dive](ARCHITECTURE.md) - How MCP profiles work internally
+- [Security Guide](SECURITY.md) - MCP server privacy implications
+- [Model Switching Guide](MODEL-SWITCHING.md) - Model compatibility matrix
+- [Troubleshooting](TROUBLESHOOTING.md) - MCP-related issues
+- [FAQ](FAQ.md) - MCP compatibility questions
+
+---
+
+**Back to**: [Documentation Index](README.md) | [Main README](../README.md)

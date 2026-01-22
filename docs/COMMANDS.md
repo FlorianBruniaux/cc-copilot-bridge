@@ -1,6 +1,6 @@
 # Claude Code Multi-Provider - Quick Command Reference
 
-**Version**: 1.1.0
+**Reading time**: 10 minutes | **Skill level**: Beginner | **Version**: v1.2.0 | **Last updated**: 2026-01-22
 
 ---
 
@@ -354,4 +354,17 @@ cat examples/multi-provider/OPTIMISATION-M4-PRO.md
 
 **All commands tested and working on macOS (M4 Pro 48GB) ✅**
 
-For more information, see: `examples/multi-provider/README.md`
+---
+
+## 📚 Related Documentation
+
+- [Quick Start Guide](../QUICKSTART.md) - Get started in 5 minutes
+- [Cheatsheet](../CHEATSHEET.md) - One-page printable reference
+- [Decision Trees](DECISION-TREES.md) - Choose the right command
+- [Model Switching Guide](MODEL-SWITCHING.md) - Dynamic model selection
+- [Best Practices](BEST-PRACTICES.md) - Strategic usage patterns
+
+---
+
+**Back to**: [Documentation Index](README.md) | [Main README](../README.md)
+

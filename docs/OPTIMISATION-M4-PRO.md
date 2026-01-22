@@ -1,8 +1,8 @@
-# Optimisation Ollama pour M4 Pro 48GB
+# Apple Silicon Optimization Guide (M1/M2/M3/M4)
 
-**Version**: Ollama 0.14.2
-**Date**: 2026-01-21
-**Modèle**: Qwen2.5-Coder-32B Q4_K_M
+**Reading time**: 15 minutes | **Skill level**: Advanced | **Ollama version**: 0.14.2+ | **Last updated**: 2026-01-22
+
+**Target**: Qwen2.5-Coder-32B Q4_K_M on M4 Pro 48GB
 
 ---
 
@@ -444,3 +444,16 @@ Le système multi-provider est maintenant prêt avec :
 - Ollama optimisé pour M4 Pro 48GB
 - Documentation complète (10 fichiers, ~52KB)
 - Scripts de diagnostic et optimisation
+
+---
+
+## 📚 Related Documentation
+
+- [Best Practices](BEST-PRACTICES.md) - Performance optimization strategies
+- [Architecture](ARCHITECTURE.md) - Ollama integration details
+- [Troubleshooting](TROUBLESHOOTING.md) - Ollama slow performance issues
+- [FAQ](FAQ.md) - Ollama performance questions
+
+---
+
+**Back to**: [Documentation Index](README.md) | [Main README](../README.md)

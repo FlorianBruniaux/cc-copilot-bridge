@@ -1,6 +1,8 @@
 # Dynamic Model Switching Guide
 
-## Overview
+**Reading time**: 15 minutes | **Skill level**: Intermediate | **Version**: v1.2.0 | **Last updated**: 2026-01-22
+
+---
 
 Le script `claude-switch` supporte maintenant le changement dynamique de modèle pour GitHub Copilot via la variable d'environnement `COPILOT_MODEL`.
 
@@ -365,3 +367,17 @@ Le tout **gratuitement** avec votre abonnement Copilot Pro+ existant.
 ```bash
 alias cc='ccc-sonnet'  # Votre go-to command
 ```
+
+---
+
+## 📚 Related Documentation
+
+- [Command Reference](COMMANDS.md) - All available commands
+- [Decision Trees](DECISION-TREES.md) - Which model for which task
+- [Best Practices](BEST-PRACTICES.md) - Strategic model selection
+- [MCP Profiles](MCP-PROFILES.md) - Model compatibility with MCP
+- [FAQ](FAQ.md) - Model switching questions
+
+---
+
+**Back to**: [Documentation Index](README.md) | [Main README](../README.md)
