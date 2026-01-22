@@ -288,11 +288,49 @@ ollama pull qwen2.5-coder:32b-instruct-q4_k_m
 | Offline work | `cco` | No internet required |
 | Small scripts | `cco` (8K) | Fast local inference |
 
+## Known Issues & Patches
+
+### copilot-api Issue #174: Reserved Billing Header
+
+**Status**: ⚠️ Patch appliqué localement (en attente de fix officiel)
+
+**Problème**: Claude Code v2.1.15+ injecte `x-anthropic-billing-header` dans le system prompt, causant une erreur `invalid_request_body` avec copilot-api.
+
+**Patch appliqué**: Filtre automatique du header réservé dans `translateAnthropicMessagesToOpenAI`
+
+**Fichier modifié**:
+```
+~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
+```
+
+**Vérification**:
+```bash
+# Vérifier que le patch est présent
+grep -n "FIX #174" ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
+
+# Tester le fix
+./scripts/test-billing-header-fix.sh
+```
+
+**Restauration** (si nécessaire):
+```bash
+cp ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js.backup \
+   ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
+```
+
+**⚠️ Important**: Le patch sera écrasé lors de `npm update -g copilot-api`. Après mise à jour, vérifier si le fix officiel est intégré ou ré-appliquer le patch.
+
+**Documentation complète**: [docs/TROUBLESHOOTING.md - Patch communautaire](docs/TROUBLESHOOTING.md#patch-communautaire-solution-avancée)
+
+**Suivi**: [ericc-ch/copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174)
+
+---
+
 ## Version Information
 
-- **claude-switch**: v1.1.0 (2026-01-21)
-- **copilot-api**: v0.7.0 (endpoint limitation: /chat/completions only)
-- **Claude Code CLI**: @anthropic-ai/claude-code (npm package)
+- **claude-switch**: v1.3.0 (2026-01-22) - Fixed prompt injection bug
+- **copilot-api**: v0.7.0 + patch #174 (endpoint limitation: /chat/completions only)
+- **Claude Code CLI**: v2.1.15 (@anthropic-ai/claude-code npm package)
 - **Ollama**: Homebrew service, default models: qwen2.5-coder family
 
 ## Testing Changes

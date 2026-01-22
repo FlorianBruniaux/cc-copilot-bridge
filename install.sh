@@ -128,7 +128,7 @@ alias ccs='claude-switch status'
 alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 alias ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
 alias ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
-alias ccc-gpt='COPILOT_MODEL=gpt-5.2-codex claude-switch copilot'
+alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
 "
 
 if grep -q "Claude Code Multi-Provider" "$SHELL_RC" 2>/dev/null; then

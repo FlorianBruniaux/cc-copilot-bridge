@@ -5,6 +5,85 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+**claude-switch v1.3.0 - Prompt Injection Bug**
+- 🐛 Fixed "am" appearing automatically at startup when using `ccc-gpt`
+- 🔧 Replaced `eval` string execution with native bash arrays for prompt injection
+- ✅ Proper handling of newlines and special characters in system prompts
+- 🔐 Eliminated command injection vulnerability from prompt content
+- 📝 Technical details: [BUGFIX-AM.md](BUGFIX-AM.md)
+
+**install.sh**
+- 🐛 Fixed `ccc-gpt` alias pointing to incompatible `gpt-5.2-codex` → changed to `gpt-4.1`
+
+### Added
+
+**Documentation**
+- 📝 Documentation complète de l'issue copilot-api #174 (Reserved Billing Header Error) dans TROUBLESHOOTING.md
+- 📝 Guide détaillé d'application du patch communautaire (@mrhanhan) pour filtrer `x-anthropic-billing-header`
+- 📝 Documentation du script de test automatique dans scripts/README.md
+
+**Scripts**
+- ✨ Nouveau script `scripts/test-billing-header-fix.sh` pour tester le fix de l'issue #174
+  - Vérifie que copilot-api filtre correctement le header réservé
+  - Test automatique avec requêtes système simulant Claude Code v2.1.15+
+  - Validation complète : requête avec billing header + requête normale (contrôle)
+- 📋 Nouveau `scripts/README.md` documentant tous les scripts utilitaires du projet
+
+**Patch Communautaire**
+- 🔧 Patch appliqué à copilot-api v0.7.0 pour filtrer `x-anthropic-billing-header`
+  - Modifie `dist/main.js` fonction `translateAnthropicMessagesToOpenAI`
+  - Ajoute filtrage regex pour supprimer le header réservé du system prompt
+  - Log de confirmation : "Filtered x-anthropic-billing-header from system message"
+  - Backup automatique créé : `dist/main.js.backup`
+
+### Fixed
+
+- ✅ Résolution de l'erreur `invalid_request_body` avec Claude Code v2.1.15+ via copilot-api
+- ✅ Compatibilité restaurée entre Claude Code CLI et GitHub Copilot proxy
+
+### Changed
+
+**TROUBLESHOOTING.md**
+- ⚠️ Ajout section "Reserved Billing Header Error" avec 3 solutions
+  - Option 1: Utiliser Anthropic Direct (`ccd`) - Recommandé
+  - Option 2: Utiliser Ollama Local (`cco`) - Alternative gratuite
+  - Option 3: Attendre fix officiel copilot-api
+- 🔧 Ajout section "Patch communautaire" avec guide étape par étape
+  - Localisation du fichier à patcher
+  - Création backup
+  - Application du patch
+  - Tests de validation
+  - Procédure de restauration
+  - Limitations et suivi de l'issue officielle
+
+### Technical Details
+
+**Patch copilot-api #174**
+- Fichier modifié : `~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js`
+- Fonction patchée : `translateAnthropicMessagesToOpenAI` (ligne 897)
+- Regex utilisée : `/x-anthropic-billing-header: \?cc_version=.+; \?cc_entrypoint=\\+\n{0,2}\./`
+- Impact : Filtre automatique du header réservé avant envoi à l'API Anthropic
+- Compatibilité : Testé avec copilot-api v0.7.0, Claude Code v2.1.15
+
+**Script de test**
+- Langage : Bash
+- Dépendances : `curl`, `nc`, `jq`
+- Tests : 2 requêtes POST /v1/messages (avec/sans billing header)
+- Exit code : 0 si succès, 1 si échec
+- Logs : Console + vérification logs copilot-api
+
+### Links
+
+- Issue GitHub : [copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174)
+- Patch original : [@mrhanhan comment](https://github.com/ericc-ch/copilot-api/issues/174#issuecomment)
+- Documentation : [TROUBLESHOOTING.md - Patch communautaire](docs/TROUBLESHOOTING.md#patch-communautaire-solution-avancée)
+
+---
+
 ## [1.0.0] - 2026-01-21
 
 ### Added

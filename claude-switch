@@ -2,6 +2,7 @@
 # Claude Code Multi-Provider Switcher
 # Usage: claude-switch <mode> [claude args...]
 # Modes: direct (d), copilot (c), ollama (o), status (s)
+# Version: 1.3.0 - Fixed prompt injection using bash arrays
 
 set -euo pipefail
 
@@ -15,6 +16,10 @@ GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
 RED='\033[0;31m'
 NC='\033[0m'
+
+# === Global arrays for command building ===
+declare -a MCP_ARGS=()
+declare -a PROMPT_ARGS=()
 
 # === Logging ===
 _log() {
@@ -53,12 +58,14 @@ _check_ollama() {
   fi
 
   # Vérifier que le modèle existe
+  local model="${OLLAMA_MODEL:-qwen2.5-coder:32b-instruct}"
   if ! ollama list 2>/dev/null | grep -q "qwen2.5-coder"; then
-    _log "ERROR" "Model qwen2.5-coder not found"
-    echo "  Pull it with: ollama pull qwen2.5-coder:32b"
+    _log "ERROR" "No qwen2.5-coder model found"
+    echo "  Pull it with: ollama pull qwen2.5-coder:32b-instruct"
+    echo "  Or set OLLAMA_MODEL to use a different model"
     return 1
   fi
-  _log "INFO" "Ollama health: OK (qwen2.5-coder found)"
+  _log "INFO" "Ollama health: OK (model: ${model})"
 }
 
 # === Session Tracking ===
@@ -75,6 +82,72 @@ _session_end() {
   local mins=$((duration / 60))
   local secs=$((duration % 60))
   _log "INFO" "Session ended: mode=${CLAUDE_SESSION_MODE} duration=${mins}m${secs}s exit=${exit_code}"
+}
+
+# === MCP Profile Management ===
+# Sets MCP_ARGS array (no eval needed)
+_set_mcp_args() {
+  local model="${1:-}"
+  local mcp_dir="${HOME}/.claude/mcp-profiles/generated"
+  local config_file=""
+
+  # Reset array
+  MCP_ARGS=()
+
+  # Determine which MCP profile to use based on model
+  case "${model}" in
+    gpt-*)    config_file="${mcp_dir}/gpt.json" ;;
+    gemini-*) config_file="${mcp_dir}/gemini.json" ;;
+    claude-*|*) return 0 ;;  # Claude uses default config
+  esac
+
+  # Check if profile exists
+  if [[ ! -f "${config_file}" ]]; then
+    _log "WARN" "MCP profile not found: ${config_file} (run ~/.claude/mcp-profiles/generate.sh)"
+    return 0
+  fi
+
+  # Validate JSON
+  if ! jq empty "${config_file}" 2>/dev/null; then
+    _log "ERROR" "Invalid MCP config: ${config_file}"
+    return 1
+  fi
+
+  # Set array elements (proper bash array, no eval needed)
+  MCP_ARGS=("--mcp-config" "${config_file}")
+  _log "INFO" "Using restricted MCP profile for ${model}"
+}
+
+# Sets PROMPT_ARGS array (no eval needed)
+_set_prompt_args() {
+  local model="${1:-}"
+  local prompts_dir="${HOME}/.claude/mcp-profiles/prompts"
+  local prompt_file=""
+
+  # Reset array
+  PROMPT_ARGS=()
+
+  # Determine which system prompt to use based on model
+  case "${model}" in
+    gpt-4.1*)     prompt_file="${prompts_dir}/gpt-4.1.txt" ;;
+    gpt-*)        prompt_file="${prompts_dir}/gpt-4.1.txt" ;;  # Fallback for other GPT
+    gemini-*)     prompt_file="${prompts_dir}/gemini.txt" ;;
+    claude-*|*)   return 0 ;;  # Claude uses default prompt
+  esac
+
+  # Check if prompt file exists
+  if [[ ! -f "${prompt_file}" ]]; then
+    _log "WARN" "System prompt not found: ${prompt_file}"
+    return 0
+  fi
+
+  # Read prompt content safely
+  local prompt_content
+  prompt_content=$(cat "${prompt_file}")
+
+  # Set array elements (proper bash array, handles newlines and special chars)
+  PROMPT_ARGS=("--append-system-prompt" "${prompt_content}")
+  _log "INFO" "Injecting model identity prompt for ${model}"
 }
 
 # === Provider Functions ===
@@ -99,6 +172,10 @@ _run_copilot() {
   # Allow model override via env var or use default
   local model="${COPILOT_MODEL:-claude-sonnet-4.5}"
 
+  # Set MCP and prompt args arrays (no eval, proper bash arrays)
+  _set_mcp_args "${model}" || return 1
+  _set_prompt_args "${model}" || return 1
+
   _log "INFO" "Provider: GitHub Copilot (via copilot-api) - Model: ${model}"
   echo -e "${GREEN}━━━ Claude Code [GitHub Copilot: ${model}] ━━━${NC}"
 
@@ -110,7 +187,11 @@ _run_copilot() {
   export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
 
   _session_start "copilot:${model}"
-  claude "$@"
+
+  # Execute claude with proper array expansion (no eval!)
+  # Arrays handle spaces, newlines, and special chars correctly
+  claude "${MCP_ARGS[@]}" "${PROMPT_ARGS[@]}" "$@"
+
   local rc=$?
   _session_end $rc
   return $rc
@@ -119,15 +200,19 @@ _run_copilot() {
 _run_ollama() {
   _check_ollama || return 1
 
-  _log "INFO" "Provider: Ollama Local"
-  echo -e "${ORANGE}━━━ Claude Code [Ollama Local] ━━━${NC}"
+  # Allow model override via env var or use default
+  local model="${OLLAMA_MODEL:-qwen2.5-coder:32b-instruct}"
+
+  _log "INFO" "Provider: Ollama Local - Model: ${model}"
+  echo -e "${ORANGE}━━━ Claude Code [Ollama Local: ${model}] ━━━${NC}"
 
   export ANTHROPIC_BASE_URL="http://localhost:11434"
   export ANTHROPIC_AUTH_TOKEN="ollama"
-  export ANTHROPIC_API_KEY="ollama"
+  # Note: ANTHROPIC_API_KEY not set to avoid API key prompt
+  # Ollama authentication works through ANTHROPIC_BASE_URL only
 
-  _session_start "ollama"
-  claude --model qwen2.5-coder:32b "$@"
+  _session_start "ollama:${model}"
+  claude --model "${model}" "$@"
   local rc=$?
   _session_end $rc
   return $rc
@@ -166,6 +251,8 @@ _show_status() {
 
 _show_usage() {
   cat << 'EOF'
+Claude Code Multi-Provider Switcher v1.3.0
+
 Usage: claude-switch <mode> [claude args...]
 
 Modes:
@@ -173,18 +260,53 @@ Modes:
   c, copilot  GitHub Copilot via copilot-api (free with subscription)
   o, ollama   Local models via Ollama (private, offline)
   s, status   Check all providers status
+  -h, --help  Show this help message
 
-Examples:
+Basic Examples:
   claude-switch direct              # Use Anthropic API
   claude-switch copilot             # Use GitHub Copilot
   claude-switch ollama              # Use local Ollama
   claude-switch copilot -c          # Copilot + resume session
   claude-switch status              # Check what's running
 
-Aliases (add to .zshrc):
+Provider Aliases (recommended):
   alias ccd='claude-switch direct'
   alias ccc='claude-switch copilot'
   alias cco='claude-switch ollama'
+  alias ccs='claude-switch status'
+
+Dynamic Model Selection:
+  # Switch Copilot models via environment variable
+  COPILOT_MODEL=claude-opus-4.5 claude-switch copilot
+  COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot
+  COPILOT_MODEL=gpt-4.1 claude-switch copilot
+
+  # Switch Ollama models via environment variable
+  OLLAMA_MODEL=qwen2.5-coder:7b claude-switch ollama
+  OLLAMA_MODEL=deepseek-coder:6.7b claude-switch ollama
+
+Model Aliases (for Copilot):
+  alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
+  alias ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
+  alias ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
+  alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
+
+Available Models (via Copilot):
+  Claude:  opus-4.5, sonnet-4.5, sonnet-4, haiku-4.5
+  GPT:     4.1 (0x), 5 (1x), 5-mini (0x)
+           Codex variants NOT compatible (require /responses endpoint)
+
+MCP Profiles & System Prompts:
+  Auto-detection of problematic MCP servers for strict models (GPT-4.1, Gemini)
+  System prompts injection for correct model identity
+  ~/.claude/mcp-profiles/generate.sh   # Generate MCP profiles
+  ~/.claude/mcp-profiles/excludes.yaml # Edit MCP server exclusions
+  ~/.claude/mcp-profiles/prompts/      # Custom model identity prompts
+
+Logs:
+  ~/.claude/claude-switch.log   # Session logs
+
+GitHub: https://github.com/FlorianBruniaux/cc-copilot-bridge
 EOF
 }
 
@@ -198,6 +320,7 @@ main() {
     c|copilot) _run_copilot "$@" ;;
     o|ollama)  _run_ollama "$@" ;;
     s|status)  _show_status ;;
+    -v|--version) echo "claude-switch v1.3.0" ;;
     -h|--help|"") _show_usage ;;
     *)
       _log "ERROR" "Unknown mode: ${mode}"
