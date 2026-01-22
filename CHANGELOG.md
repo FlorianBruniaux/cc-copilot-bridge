@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.3.0] - 2026-01-22
+
 ### Fixed
 
 **claude-switch v1.3.0 - Prompt Injection Bug**
@@ -33,6 +37,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Validation complète : requête avec billing header + requête normale (contrôle)
 - 📋 Nouveau `scripts/README.md` documentant tous les scripts utilitaires du projet
 
+**Visual Examples**
+- 📸 6 screenshots ajoutés dans `assets/` pour documentation visuelle
+  - Claude Sonnet 4.5 (default model)
+  - Claude Opus 4.5 (premium quality)
+  - GPT-4.1 (OpenAI)
+  - Ollama offline (100% private)
+  - Help menu (claude-switch --help)
+  - copilot-api proxy server logs
+- 🎨 Screenshots intégrés dans README.md (Usage + Features sections)
+- 🎨 Screenshots intégrés dans QUICKSTART.md (First Use section)
+
+**Documentation Overhaul**
+- 📝 **TL;DR technique** ajouté en haut du README (compréhension immédiate)
+- 📝 **Optimisation positionnement GitHub** : killer metrics en ligne 28 (au lieu de 101)
+- 📝 **Positionnement confiant** : "Serving Copilot Pro+ subscribers specifically"
+- 📝 Retrait langage défensif et marketing excessif
+- 📝 Structure claire : Core (Copilot) → Bonus (Ollama) → Fallback (Anthropic)
+
 **Patch Communautaire**
 - 🔧 Patch appliqué à copilot-api v0.7.0 pour filtrer `x-anthropic-billing-header`
   - Modifie `dist/main.js` fonction `translateAnthropicMessagesToOpenAI`
@@ -46,6 +68,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Compatibilité restaurée entre Claude Code CLI et GitHub Copilot proxy
 
 ### Changed
+
+**Repository Organization**
+- 🗂️ Création du dossier `claudedocs/` (non versionné) pour documentation interne
+- 🗂️ Documentation déplacée dans `docs/` (CHEATSHEET, CODE_OF_CONDUCT, CONTRIBUTING, FEATURES, ROADMAP)
+- 🗂️ VERSION déplacé dans `scripts/`
+- 🧹 Nettoyage : RECAP.md et SUMMARY.txt supprimés (obsolètes)
 
 **TROUBLESHOOTING.md**
 - ⚠️ Ajout section "Reserved Billing Header Error" avec 3 solutions
@@ -81,10 +109,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Issue GitHub : [copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174)
 - Patch original : [@mrhanhan comment](https://github.com/ericc-ch/copilot-api/issues/174#issuecomment)
 - Documentation : [TROUBLESHOOTING.md - Patch communautaire](docs/TROUBLESHOOTING.md#patch-communautaire-solution-avancée)
+- Release : [v1.3.0](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.3.0)
+- Commits : [v1.2.0...v1.3.0](https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.2.0...v1.3.0)
 
 ---
 
-## [1.0.0] - 2026-01-21
+## [1.2.0] - 2026-01-21
+
+### Added
+
+**MCP Profiles System**
+- ✨ Auto-generated MCP profiles for strict model validation (GPT-4.1)
+- ✨ Model identity injection via system prompts
+- ✨ Dynamic profile selection based on model type
+
+**Documentation**
+- 📝 MCP-PROFILES.md guide
+- 📝 MODEL-SWITCHING.md comprehensive guide
+
+---
+
+## [1.0.0] - 2026-01-20
 
 ### Added
 
@@ -254,9 +299,10 @@ See [REPO-STRUCTURE.md](REPO-STRUCTURE.md) for contribution guidelines.
 
 ## Links
 
-- **Repository**: https://github.com/FlorianBruniaux/claude-switch (upcoming)
-- **Ultimate Guide**: https://github.com/FlorianBruniaux/claude-code-ultimate-guide
-- **Issues**: https://github.com/FlorianBruniaux/claude-switch/issues (upcoming)
+- **Repository**: https://github.com/FlorianBruniaux/cc-copilot-bridge
+- **Issues**: https://github.com/FlorianBruniaux/cc-copilot-bridge/issues
 
-[1.0.0]: https://github.com/FlorianBruniaux/claude-switch/releases/tag/v1.0.0
-[Unreleased]: https://github.com/FlorianBruniaux/claude-switch/compare/v1.0.0...HEAD
+[1.3.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.3.0
+[1.2.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.2.0
+[1.0.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.0.0
+[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.3.0...HEAD
