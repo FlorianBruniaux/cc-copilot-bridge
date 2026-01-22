@@ -7,9 +7,9 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue.svg)]()
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 
-**Bridge GitHub Copilot to Claude Code CLI for free AI-powered coding**
+**Turn your $10/month GitHub Copilot Pro+ into unlimited Claude Code CLI access**
 
-Turn your $10/month GitHub Copilot Pro+ subscription into unlimited Claude Code access with 25+ models (GPT-4.1, Claude Opus/Sonnet/Haiku, Gemini, etc.).
+99.3% cost savings vs Anthropic Direct API. Unlimited AI coding for $10/month (flat rate). Access 25+ models: GPT-4.1, Claude Opus/Sonnet/Haiku, Gemini, and more.
 
 [Quick Start](#-quick-start) • [Features](#-features) • [Documentation](docs/) • [Troubleshooting](docs/TROUBLESHOOTING.md)
 
@@ -19,11 +19,25 @@ Turn your $10/month GitHub Copilot Pro+ subscription into unlimited Claude Code 
 
 ## 🎯 What Is This?
 
-A **Copilot bridge** for Claude Code CLI that enables **free** access to 25+ AI models (GPT-4.1, Claude Opus/Sonnet/Haiku, Gemini) using your existing GitHub Copilot Pro+ subscription.
+A **GitHub Copilot bridge** that transforms your existing **Copilot Pro+ subscription** ($10/month) into unlimited Claude Code CLI access with 25+ AI models.
 
-**Core Value**: Turn your $10/month Copilot subscription into unlimited Claude Code access.
+**No additional API costs. No per-token billing. Just unlimited AI coding.**
 
-**Bonus**: Includes Ollama offline mode (architecturally independent) for private/air-gapped development.
+### 💰 The Value Proposition
+
+| Scenario | Anthropic Direct | cc-copilot-bridge | Your Savings |
+|----------|------------------|-------------------|--------------|
+| **100M tokens/month** | $1,500 (Haiku) | $10 (Copilot flat) | **$1,490 (99.3%)** |
+| **10 sessions/day** | ~$300/month | $10/month | **$290 (96.7%)** |
+| **Heavy daily usage** | Pay per token | Fixed $10/month | **~$290/month** |
+
+**Prerequisites**: GitHub Copilot Pro+ subscription ($10/month) - *that's it*.
+
+### 🎁 Three Providers in One Tool
+
+✅ **CORE**: GitHub Copilot Bridge → Daily development (FREE via your $10/month subscription)
+✅ **BONUS**: Ollama Local → Offline mode for proprietary code (100% private, no internet)
+✅ **FALLBACK**: Anthropic Direct API → Production-critical analysis (pay per token)
 
 ### Architecture Overview
 
@@ -300,13 +314,13 @@ The Claude Code ecosystem includes 30+ routing and provider management tools. He
 
 ### 💡 Why cc-copilot-bridge Exists
 
-**We're not competing with the market leader** (@musistudio/claude-code-router with 31,917 weekly downloads).
+**Serving Copilot Pro+ subscribers specifically.**
 
-**We serve a different market**:
+For general multi-provider routing at scale, see [@musistudio/claude-code-router](https://www.npmjs.com/package/@musistudio/claude-code-router) (31.9k weekly downloads).
 
 | Dimension | cc-copilot-bridge | Other Tools |
 |-----------|-------------------|-------------|
-| **Primary Value** | **Leverage existing $10/month Copilot subscription** | Route to paid APIs |
+| **Primary Value** | Leverage existing $10/month Copilot subscription | Route to multiple paid APIs |
 | **Cost Structure** | Flat $10/month (unlimited usage) | Per-token billing |
 | **Prerequisites** | GitHub Copilot Pro+ subscription | API keys from multiple providers |
 | **Use Case** | Daily development, prototyping, learning | Production routing, cost optimization |
@@ -334,25 +348,25 @@ The Claude Code ecosystem includes 30+ routing and provider management tools. He
 
 **cc-copilot-bridge differentiates through**:
 1. **Copilot-First Architecture** - Only tool optimized for copilot-api proxy
-2. **Flat-Cost Model** - No per-token anxiety, unlimited usage
+2. **Flat-Cost Model** - Unlimited usage for $10/month (no per-token anxiety)
 3. **MCP Compatibility System** - Auto-generated profiles for strict models (GPT-4.1)
 4. **Model Identity Injection** - System prompts ensure models know who they are
 5. **Hybrid Provider Strategy** - Core (Copilot) + Bonus (Ollama) + Fallback (Anthropic)
 
-**We complement, not compete**:
+**Complementary tools**:
 - Use **cc-copilot-bridge** for daily dev (free via Copilot)
 - Use **@musistudio/router** for production multi-provider routing
-- Use **OpenCode** if you want open-source from scratch
+- Use **OpenCode** for complete open-source alternative
 
 ### 📈 Ecosystem Maturity
 
 | Maturity Level | Tools | Status |
 |----------------|-------|--------|
 | **Production-Ready** | 24/30 (80%) | ✅ Battle-tested |
-| **Pre-Release** | 3/30 (10%) | 🟡 Alpha/Beta (e.g., claude-flow v2.7) |
+| **Pre-Release** | 3/30 (10%) | 🟡 Alpha/Beta |
 | **Limited Maintenance** | 3/30 (10%) | ⚠️ Stale repos |
 
-**Conclusion**: The market is mature with a clear leader (musistudio), but **cc-copilot-bridge** serves an underserved niche: **Copilot Pro+ subscribers wanting free Claude Code access without additional API costs**.
+**Market positioning**: The Claude Code ecosystem is mature with established leaders. **cc-copilot-bridge** serves Copilot Pro+ subscribers specifically—an underserved niche wanting free Claude Code access without additional API costs.
 
 ---
 
