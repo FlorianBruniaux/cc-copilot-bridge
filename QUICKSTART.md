@@ -1,6 +1,17 @@
 # Quick Start Guide
 
+**Reading time**: 5 minutes | **Skill level**: Beginner | **Prerequisites**: Claude Code CLI installed
+
 **Get up and running in 2 minutes**
+
+---
+
+**What you'll achieve:**
+- ✅ Install cc-copilot-bridge and verify setup
+- ✅ Run your first command successfully
+- ✅ Know which command to use daily
+
+---
 
 ## Installation (30 seconds)
 
@@ -224,6 +235,31 @@ alias ccs
 
 ---
 
-**That's it!** You're ready to use claude-switch.
+**That's it!** You're ready to use cc-copilot-bridge.
 
-Questions? Open an issue on [GitHub](https://github.com/FlorianBruniaux/claude-switch).
+---
+
+## 📚 Next Steps
+
+Now that you're set up:
+
+1. 📖 **Learn all commands** → [Command Reference](docs/COMMANDS.md)
+2. 🎯 **Choose right tool** → [Decision Trees](docs/DECISION-TREES.md)
+3. 📋 **Print reference** → [Cheatsheet](CHEATSHEET.md)
+4. 🆘 **Troubleshooting** → [Common Issues](docs/TROUBLESHOOTING.md)
+
+---
+
+## 🆘 Need Help?
+
+- **Questions?** Check the [FAQ](docs/FAQ.md)
+- **Issues?** See [Troubleshooting Guide](docs/TROUBLESHOOTING.md)
+- **Bug reports**: [Open an issue](https://github.com/FlorianBruniaux/cc-copilot-bridge/issues)
+
+---
+
+**Related Documentation**:
+- [Full Documentation Index](docs/README.md)
+- [Model Switching Guide](docs/MODEL-SWITCHING.md)
+- [Main README](README.md)
+
