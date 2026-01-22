@@ -1,0 +1,195 @@
+# Claude Code Ignore File
+#
+# This file tells Claude Code which files to exclude from analysis
+# Prevents accidental exposure of secrets and sensitive data
+#
+# Usage: Place this file at project root as .claudeignore
+# Or at ~/.claudeignore for global exclusions
+
+# ═══════════════════════════════════════════════════════════
+# Credentials & Secrets
+# ═══════════════════════════════════════════════════════════
+
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Secret files
+secrets.json
+credentials.json
+secrets.yaml
+secrets.yml
+config/secrets.*
+
+# API keys
+*apikey*
+*api_key*
+*api-key*
+
+# ═══════════════════════════════════════════════════════════
+# Private Keys & Certificates
+# ═══════════════════════════════════════════════════════════
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+id_dsa
+id_dsa.pub
+id_ecdsa
+id_ecdsa.pub
+*.pem
+*.key
+*.ppk
+
+# SSL/TLS certificates (private)
+*.crt
+*.cer
+*.p12
+*.pfx
+*.p7b
+*.p7s
+
+# GPG keys
+*.gpg
+*.asc
+secring.gpg
+pubring.gpg
+
+# ═══════════════════════════════════════════════════════════
+# Cloud Provider Credentials
+# ═══════════════════════════════════════════════════════════
+
+# AWS
+.aws/credentials
+.aws/config
+
+# Google Cloud
+.gcloud/
+gcloud-credentials.json
+*-service-account.json
+
+# Azure
+.azure/
+azureProfile.json
+tokenCache.json
+
+# DigitalOcean
+.digitalocean/
+
+# Heroku
+.netrc
+
+# ═══════════════════════════════════════════════════════════
+# Database & Connection Strings
+# ═══════════════════════════════════════════════════════════
+
+# Database dumps
+*.sql
+*.dump
+*.db
+*.sqlite
+*.sqlite3
+
+# Connection strings
+database.yml
+database.yaml
+*connection-string*
+
+# ═══════════════════════════════════════════════════════════
+# Authentication & Tokens
+# ═══════════════════════════════════════════════════════════
+
+# OAuth tokens
+*.oauth
+oauth-tokens.json
+
+# JWT secrets
+jwt-secret.txt
+*.jwt
+
+# Session tokens
+*session-token*
+*auth-token*
+
+# ═══════════════════════════════════════════════════════════
+# Private Data
+# ═══════════════════════════════════════════════════════════
+
+# Customer data
+customers.csv
+users.json
+pii-data.*
+
+# Logs with sensitive data
+*.log
+logs/
+log/
+
+# Backup files
+*.backup
+*.bak
+*.swp
+*~
+
+# ═══════════════════════════════════════════════════════════
+# Configuration Files (with secrets)
+# ═══════════════════════════════════════════════════════════
+
+# Docker secrets
+docker-compose.override.yml
+.docker/
+
+# Kubernetes secrets
+*-secret.yaml
+*-secret.yml
+
+# Terraform
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# ═══════════════════════════════════════════════════════════
+# Development & Testing
+# ═══════════════════════════════════════════════════════════
+
+# Local development
+.vscode/settings.json
+.idea/
+*.iml
+
+# Test data (if sensitive)
+test-data/sensitive/
+fixtures/private/
+
+# ═══════════════════════════════════════════════════════════
+# Compliance-Specific Exclusions
+# ═══════════════════════════════════════════════════════════
+
+# HIPAA - Protected Health Information
+phi/
+ePHI/
+*-phi-*
+
+# PCI-DSS - Cardholder Data
+cardholder-data/
+*-pci-*
+
+# GDPR - Personal Data
+personal-data/
+gdpr/
+
+# ═══════════════════════════════════════════════════════════
+# Custom Exclusions
+# ═══════════════════════════════════════════════════════════
+
+# Add your project-specific exclusions below
+# Example:
+# proprietary-algorithm/
+# internal-tools/
+# confidential-docs/

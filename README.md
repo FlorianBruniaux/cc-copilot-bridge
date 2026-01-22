@@ -340,6 +340,7 @@ cco
 - **QUICKSTART.md** - 2-minute setup
 - **MODEL-SWITCHING.md** - Dynamic model selection guide
 - **MCP-PROFILES.md** - MCP Profiles & System Prompts
+- **SECURITY.md** - Security, privacy, and compliance guide
 - **OPTIMISATION-M4-PRO.md** - Apple Silicon optimization
 - **TROUBLESHOOTING.md** - Problem resolution
 
