@@ -1,5 +1,7 @@
 # cc-copilot-bridge
 
+> **TL;DR**: Bash script that routes Claude Code CLI through different AI providers. Use your existing Copilot Pro+ subscription to access Claude/GPT/Gemini models, or run 100% offline with Ollama. Three aliases (`ccc`, `cco`, `ccd`) switch between providers instantly.
+
 <div align="center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
