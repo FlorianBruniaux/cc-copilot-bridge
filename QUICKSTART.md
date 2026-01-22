@@ -232,7 +232,7 @@ source ~/.zshrc  # or ~/.bashrc
 ### Test Drive: Copilot Mode (Recommended)
 
 **Prerequisites**:
-- ✅ GitHub Copilot Pro+ subscription active
+- ✅ GitHub Copilot Pro ($10/mo) or Pro+ ($39/mo) subscription active
 - ✅ copilot-api running (`copilot-api start` in separate terminal)
 
 ```bash
@@ -311,7 +311,9 @@ You're in! Start coding with Claude.
 
 ### GitHub Copilot (5 minutes)
 
-**Requirements**: Active Copilot Pro+ subscription
+**Requirements**: Active Copilot Pro ($10/mo) or Pro+ ($39/mo) subscription
+
+> **Note**: Usage consumes your premium request quota. See [Pricing & Limits](README.md#-github-copilot-pricing--limits) for details.
 
 ```bash
 # 1. Install copilot-api
@@ -362,19 +364,19 @@ cco
 ### Switch Providers
 
 ```bash
-ccd      # Anthropic (best quality)
-ccc      # Copilot (free)
-cco      # Ollama (private)
+ccd      # Anthropic (official API)
+ccc      # Copilot (uses quota)
+cco      # Ollama (offline)
 ccs      # Check status
 ```
 
 ### Use Different Models (Copilot)
 
 ```bash
-ccc-opus     # Claude Opus 4.5 (slowest, best)
-ccc-sonnet   # Claude Sonnet 4.5 (default)
-ccc-haiku    # Claude Haiku 4.5 (fastest)
-ccc-gpt      # GPT-5.2 Codex
+ccc-opus     # Claude Opus 4.5 (3x quota)
+ccc-sonnet   # Claude Sonnet 4.5 (1x quota)
+ccc-haiku    # Claude Haiku 4.5 (0.33x quota)
+ccc-gpt      # GPT-4.1 (0x = free)
 ```
 
 ### Pass Arguments
@@ -389,16 +391,16 @@ ccd --model opus    # Use Opus with Anthropic
 ## Example Workflow
 
 ```bash
-# Morning: Explore codebase (fast, free)
-ccc-haiku
+# Use GPT-4.1 for routine tasks (doesn't consume quota)
+ccc-gpt
 > Help me understand this React project structure
 
-# Afternoon: Implement feature (balanced)
+# Use Claude Sonnet for complex logic (1x quota)
 ccc-sonnet
 > Add user authentication with JWT
 
-# Before commit: Review with best quality
-ccc-opus
+# Use Anthropic Direct for production review (official API)
+ccd
 > Review this code for security issues
 
 # Private code: Use local model
@@ -456,11 +458,11 @@ alias ccs
 
 | Command | Provider | Model | Use Case |
 |---------|----------|-------|----------|
-| `ccd` | Anthropic | Sonnet | Production, critical |
-| `ccc` | Copilot | Sonnet 4.5 | Daily development |
-| `ccc-opus` | Copilot | Opus 4.5 | Code review, best quality |
-| `ccc-haiku` | Copilot | Haiku 4.5 | Quick questions |
-| `ccc-gpt` | Copilot | GPT Codex | Alternative perspective |
+| `ccd` | Anthropic | Sonnet | Production, official API |
+| `ccc` | Copilot | Sonnet 4.5 | Daily development (1x quota) |
+| `ccc-opus` | Copilot | Opus 4.5 | Complex analysis (3x quota) |
+| `ccc-haiku` | Copilot | Haiku 4.5 | Quick questions (0.33x quota) |
+| `ccc-gpt` | Copilot | GPT-4.1 | Routine tasks (0x = free) |
 | `cco` | Ollama | qwen2.5-coder | Privacy, offline |
 | `ccs` | - | - | Check all providers |
 

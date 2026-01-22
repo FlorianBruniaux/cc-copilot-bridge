@@ -1,6 +1,6 @@
 # cc-copilot-bridge
 
-> **TL;DR**: Bash script that routes Claude Code CLI through different AI providers. Use your existing Copilot Pro+ subscription to access Claude/GPT/Gemini models, or run 100% offline with Ollama. Three aliases (`ccc`, `cco`, `ccd`) switch between providers instantly.
+> **TL;DR**: Bash script that routes Claude Code CLI through multiple AI providers. Switch between Anthropic Direct API, GitHub Copilot (via copilot-api proxy), or Ollama local with simple aliases (`ccd`, `ccc`, `cco`).
 
 > 📖 **New to Claude Code?** Check out the [Claude Code Ultimate Guide](https://florianbruniaux.github.io/claude-code-ultimate-guide-landing/) for comprehensive documentation, tips, and best practices.
 
@@ -11,11 +11,11 @@
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue.svg)]()
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
 
-**Turn your $10/month GitHub Copilot Pro+ into unlimited Claude Code CLI access**
+**Multi-provider routing for Claude Code CLI**
 
-99.3% cost savings vs Anthropic Direct API. Unlimited AI coding for $10/month (flat rate). Access 25+ models: GPT-4.1, Claude Opus/Sonnet/Haiku, Gemini, and more.
+Use your existing GitHub Copilot subscription with Claude Code, or run 100% offline with Ollama. Access Claude, GPT, and Gemini models through a unified interface.
 
-[Quick Start](#-quick-start) • [Features](#-features) • [Documentation](docs/) • [Troubleshooting](docs/TROUBLESHOOTING.md)
+[Quick Start](#-quick-start) • [Pricing & Limits](#-github-copilot-pricing--limits) • [Features](#-features) • [Risk Disclosure](#-risk-disclosure)
 
 </div>
 
@@ -23,33 +23,15 @@
 
 ## 🎯 What Is This?
 
-A **GitHub Copilot bridge** that transforms your existing **Copilot Pro+ subscription** ($10/month) into unlimited Claude Code CLI access with 25+ AI models.
+A **multi-provider router** for Claude Code CLI that lets you switch between AI backends with simple aliases.
 
-**No additional API costs. No per-token billing. Just unlimited AI coding.**
+### Three Providers, One Interface
 
-### 💰 The Value Proposition
-
-| Scenario | Anthropic Direct | cc-copilot-bridge | Your Savings |
-|----------|------------------|-------------------|--------------|
-| **100M tokens/month** | $1,500 (Haiku) | $10 (Copilot flat) | **$1,490 (99.3%)** |
-| **10 sessions/day** | ~$300/month | $10/month | **$290 (96.7%)** |
-| **Heavy daily usage** | Pay per token | Fixed $10/month | **~$290/month** |
-
-**Prerequisites**: GitHub Copilot Pro+ subscription ($10/month) - *that's it*.
-
-### 🎁 Three Providers in One Tool
-
-✅ **CORE**: GitHub Copilot Bridge 
-
-→ Daily development (FREE via your $10/month subscription)
-
-✅ **BONUS**: Ollama Local 
-
-→ Offline mode for proprietary code (100% private, no internet)
-
-✅ **FALLBACK**: Anthropic Direct API 
-
-→ Production-critical analysis (pay per token)
+| Provider | Command | Use Case | Cost Model |
+|----------|---------|----------|------------|
+| **Anthropic Direct** | `ccd` | Production, maximum quality | Pay-per-token |
+| **GitHub Copilot** | `ccc` | Daily development | Premium requests quota |
+| **Ollama Local** | `cco` | Offline, proprietary code | Free (local compute) |
 
 ### Architecture Overview
 
@@ -70,8 +52,8 @@ A **GitHub Copilot bridge** that transforms your existing **Copilot Pro+ subscri
     │  API   │         │  (copilot-api) │   │ Local  │
     └────────┘         └────────────────┘   └────────┘
     Anthropic           GitHub Copilot       Self-hosted
-    $0.015/1M tokens    $10/month (flat)     Free (offline)
-    (Haiku example)     UNLIMITED usage      Apple Silicon
+    Pay-per-token       Premium requests     Free (offline)
+                        quota system
 ```
 
 ---
@@ -134,15 +116,43 @@ ccs
 
 ---
 
-## 💰 Cost Comparison
+## 💰 GitHub Copilot Pricing & Limits
 
-| Scenario | Anthropic Direct | cc-copilot-bridge | Savings |
-|----------|------------------|-------------------|---------|
-| **100M tokens/month** | $1,500 (Haiku) | $10 (Copilot flat) | **99.3%** |
-| **10 sessions/day** | ~$300/month | $10/month | **96.7%** |
-| **Heavy usage** | Pay per token | Fixed $10/month | **~$290/month** |
+**Important**: Using Claude Code via Copilot consumes your **premium request quota**. Usage is NOT unlimited.
 
-**Requirements**: GitHub Copilot Pro+ subscription ($10/month)
+### Current Plans (January 2026)
+
+| Plan | Monthly Cost | Premium Requests | Notes |
+|------|--------------|------------------|-------|
+| **Copilot Free** | $0 | 50 | Limited model access |
+| **Copilot Pro** | $10 | 300 | Access to most models |
+| **Copilot Pro+** | $39 | 1,500 | Full model access |
+| **Copilot Business** | $19/user | 300 | Organization features |
+| **Copilot Enterprise** | $39/user | 1,000 | Custom models, knowledge bases |
+
+### Model Multipliers
+
+Different models consume different amounts of premium requests per interaction:
+
+| Model | Multiplier | Effective Quota (Pro, 300 req) | Effective Quota (Pro+, 1500 req) |
+|-------|-----------|-------------------------------|----------------------------------|
+| **GPT-4.1, GPT-4o, GPT-5-mini** | 0x | **Unlimited** | **Unlimited** |
+| Claude Haiku 4.5 | 0.33x | ~900 interactions | ~4,500 interactions |
+| Claude Sonnet 4.5 | 1x | 300 interactions | 1,500 interactions |
+| Gemini 2.5 Pro | 1x | 300 interactions | 1,500 interactions |
+| GPT-5.1/5.2 | 1x | 300 interactions | 1,500 interactions |
+| **Claude Opus 4.5** | 3x | ~100 interactions | ~500 interactions |
+
+**Key insight**: GPT-4.1 and GPT-4o are **free** (0x multiplier) on paid plans. Use them for routine tasks to preserve premium requests for Claude/Opus.
+
+### Quota Behavior
+
+- Quotas reset on the **1st of each month** (00:00 UTC)
+- Unused requests **do not carry over**
+- When quota is exhausted, system **falls back to free models** (GPT-4.1)
+- Optional: Enable spending budgets for overflow at $0.04/request
+
+**Source**: [GitHub Copilot Plans](https://docs.github.com/en/copilot/about-github-copilot/subscription-plans-for-github-copilot)
 
 ---
 
@@ -167,11 +177,11 @@ No config changes, no restarts, no environment variable juggling.
 
 ### 2. **Dynamic Model Selection** (25+ models)
 
-| Provider | Models | Cost |
-|----------|--------|------|
+| Provider | Models | Cost Model |
+|----------|--------|------------|
 | **Anthropic** | opus-4.5, sonnet-4.5, haiku-4.5 | Per token |
-| **Copilot** | claude-*, gpt-4.1, gpt-5, gemini-* | Flat $10/month |
-| **Ollama** | qwen2.5-coder, deepseek-coder, codellama | Free |
+| **Copilot** | claude-*, gpt-4.1, gpt-5, gemini-* | Premium requests quota |
+| **Ollama** | qwen2.5-coder, deepseek-coder, codellama | Free (local) |
 
 ```bash
 # Switch models mid-session
@@ -233,20 +243,20 @@ tail ~/.claude/claude-switch.log
 
 ## 🏗️ Provider Architecture
 
-### 🎯 CORE: GitHub Copilot Bridge
+### 🎯 GitHub Copilot Bridge
 
-**Use Case**: Daily coding, prototyping, exploration (FREE*)
+**Use Case**: Daily coding, prototyping, exploration
 
 ```bash
 ccc                               # Default: claude-sonnet-4.5
-ccc-gpt                          # GPT-4.1
-ccc-opus                         # Claude Opus 4.5
+ccc-gpt                          # GPT-4.1 (0x multiplier = free)
+ccc-opus                         # Claude Opus 4.5 (3x multiplier)
 COPILOT_MODEL=gemini-2.5-pro ccc # Gemini
 ```
 
 **How It Works**:
 - Routes through [copilot-api](https://github.com/ericc-ch/copilot-api) proxy
-- **Unlimited** usage for $10/month (Copilot Pro+ subscription)
+- Uses your Copilot premium request quota (see [Pricing & Limits](#-github-copilot-pricing--limits))
 - Access to 15+ models (Claude, GPT, Gemini families)
 - Best for: Daily development, experimentation, learning
 
@@ -256,7 +266,7 @@ COPILOT_MODEL=gemini-2.5-pro ccc # Gemini
 *Screenshot: copilot-api proxy server logs showing active connections*
 
 **Requirements**:
-1. GitHub Copilot Pro+ subscription ($10/month)
+1. GitHub Copilot Pro ($10/mo) or Pro+ ($39/mo) subscription
 2. copilot-api running locally (`copilot-api start`)
 
 ---
@@ -324,7 +334,7 @@ The Claude Code ecosystem includes 30+ routing and provider management tools. He
 |---------|----------------------|-------------------|-------------------|----------|
 | **Weekly Downloads** | N/A (new) | **31,917** 🏆 | Unknown | 48,000 stars |
 | **Architecture** | Copilot proxy | Multi-provider API router | OpenAI-compatible proxy | Full IDE replacement |
-| **Cost Model** | **$10/month flat** 💰 | Per-token ($0.14-$75/1M) | Per-token | Free (self-hosted) |
+| **Cost Model** | Premium requests quota | Per-token ($0.14-$75/1M) | Per-token | Free (self-hosted) |
 | **Copilot Integration** | ✅ **Primary feature** | ❌ Not supported | ❌ Not supported | ❌ Not supported |
 | **Providers Supported** | 3 (Direct, Copilot, Ollama) | 8+ native | OpenAI-compatible only | 75+ providers |
 | **Offline Mode** | ✅ Ollama provider | ❌ Cloud only | ❌ Cloud only | ✅ Local models |
@@ -334,13 +344,13 @@ The Claude Code ecosystem includes 30+ routing and provider management tools. He
 | **Setup Complexity** | ⚡ 1 command | 🔧 Medium (config.json) | ⚡ Simple (.env) | 🔧 Complex |
 | **GitHub Actions** | ❌ Not supported | ✅ Native integration | ❌ Not supported | ✅ Workflows |
 | **Target Audience** | **Copilot Pro+ subscribers** | API users, enterprises | OpenAI-centric teams | Open-source purists |
-| **Best For** | **Unlimited coding for $10/month** | Production routing at scale | Simple OpenAI fallback | Full IDE replacement |
+| **Best For** | Use Copilot quota with Claude Code | Production routing at scale | Simple OpenAI fallback | Full IDE replacement |
 
 ### 🎯 Unique Value Propositions
 
 | Tool | Core USP | When to Choose |
 |------|----------|----------------|
-| **cc-copilot-bridge** | **Turn $10 Copilot → unlimited Claude Code** | You have Copilot Pro+, want free access |
+| **cc-copilot-bridge** | Route Copilot quota to Claude Code | You have Copilot subscription, want to use Claude Code |
 | @musistudio/router | Market leader (31.9k/week), mature ecosystem | Production-grade multi-provider routing |
 | fuergaosi233/proxy | Python-based, minimal setup | Python stack, OpenAI fallback only |
 | 1rgs/proxy | LiteLLM integration (100+ providers) | Maximum provider coverage |
@@ -358,11 +368,11 @@ For general multi-provider routing at scale, see [@musistudio/claude-code-router
 
 | Dimension | cc-copilot-bridge | Other Tools |
 |-----------|-------------------|-------------|
-| **Primary Value** | Leverage existing $10/month Copilot subscription | Route to multiple paid APIs |
-| **Cost Structure** | Flat $10/month (unlimited usage) | Per-token billing |
-| **Prerequisites** | GitHub Copilot Pro+ subscription | API keys from multiple providers |
+| **Primary Value** | Use existing Copilot subscription with Claude Code | Route to multiple paid APIs |
+| **Cost Structure** | Premium requests quota (plan-dependent) | Per-token billing |
+| **Prerequisites** | GitHub Copilot Pro or Pro+ subscription | API keys from multiple providers |
 | **Use Case** | Daily development, prototyping, learning | Production routing, cost optimization |
-| **Philosophy** | "You already pay for Copilot, use it with Claude Code" | "Route to best API for each task" |
+| **Philosophy** | "Use your Copilot quota with Claude Code CLI" | "Route to best API for each task" |
 
 ### 🏆 Market Insights
 
@@ -386,13 +396,13 @@ For general multi-provider routing at scale, see [@musistudio/claude-code-router
 
 **cc-copilot-bridge differentiates through**:
 1. **Copilot-First Architecture** - Only tool optimized for copilot-api proxy
-2. **Flat-Cost Model** - Unlimited usage for $10/month (no per-token anxiety)
+2. **Quota-Based Model** - Uses your existing Copilot subscription (no additional API costs)
 3. **MCP Compatibility System** - Auto-generated profiles for strict models (GPT-4.1)
 4. **Model Identity Injection** - System prompts ensure models know who they are
-5. **Hybrid Provider Strategy** - Core (Copilot) + Bonus (Ollama) + Fallback (Anthropic)
+5. **Hybrid Provider Strategy** - Copilot + Ollama (offline) + Anthropic (fallback)
 
 **Complementary tools**:
-- Use **cc-copilot-bridge** for daily dev (free via Copilot)
+- Use **cc-copilot-bridge** for daily dev (uses Copilot quota)
 - Use **@musistudio/router** for production multi-provider routing
 - Use **OpenCode** for complete open-source alternative
 
@@ -404,39 +414,35 @@ For general multi-provider routing at scale, see [@musistudio/claude-code-router
 | **Pre-Release** | 3/30 (10%) | 🟡 Alpha/Beta |
 | **Limited Maintenance** | 3/30 (10%) | ⚠️ Stale repos |
 
-**Market positioning**: The Claude Code ecosystem is mature with established leaders. **cc-copilot-bridge** serves Copilot Pro+ subscribers specifically—an underserved niche wanting free Claude Code access without additional API costs.
+**Market positioning**: The Claude Code ecosystem is mature with established leaders. **cc-copilot-bridge** serves Copilot subscribers who want to use Claude Code CLI without additional API costs.
 
 ---
 
 ## 🎬 Real-World Workflows
 
-### Workflow 1: Cost-Optimized Development
+### Workflow 1: Quota-Optimized Development
 
 ```bash
-# Morning: Prototype with free Copilot
-ccc
+# Use GPT-4.1 for routine tasks (0x multiplier = doesn't consume quota)
+ccc-gpt
 ❯ Build user authentication flow
 
-# Afternoon: Review with Anthropic quality
+# Use Claude Sonnet for complex logic (1x multiplier)
+ccc
+❯ Design database schema
+
+# Use Anthropic Direct for production review (official API)
 ccd
 ❯ Security audit of auth implementation
-
-# Evening: Refactor sensitive parts offline
-cco
-❯ Optimize password hashing module
 ```
-
-**Savings**: ~70% cost reduction vs Anthropic-only
 
 ### Workflow 2: Multi-Model Validation
 
 ```bash
-# Test algorithm with 3 different perspectives
-ccc-opus      # Claude Opus analysis
-ccc-gpt       # GPT-4.1 analysis
-COPILOT_MODEL=gemini-2.5-pro ccc  # Gemini analysis
-
-# Compare approaches, choose best
+# Compare approaches across models
+ccc-gpt       # GPT-4.1 analysis (free)
+ccc           # Claude Sonnet analysis (1x)
+ccc-opus      # Claude Opus analysis (3x - use sparingly)
 ```
 
 ### Workflow 3: Offline Development
@@ -494,16 +500,15 @@ cco
 
 ## 🎯 Who Should Use This?
 
-### Primary Audience (Copilot Bridge)
-✅ **Copilot Pro+ subscribers** who want to extend their $10/month subscription to Claude Code CLI
-✅ **Cost-conscious developers** who want unlimited AI coding for flat $10/month instead of per-token pricing
-✅ **Multi-model users** who want to experiment with Claude + GPT + Gemini without multiple API keys
+### Primary Audience
+- **Copilot subscribers** who want to use Claude Code CLI with their existing subscription
+- **Multi-model users** who want to compare Claude, GPT, and Gemini responses
+- **Developers** who want a unified interface across multiple AI providers
 
-### Secondary Audience (Bonus Features)
-✅ **Privacy-conscious developers** who need offline mode for proprietary code (Ollama)
-✅ **Teams in air-gapped environments** who can't use cloud APIs (Ollama)
-✅ **Apple Silicon users** (M1/M2/M3/M4) who want optimized local inference (Ollama)
-✅ **Production users** who need Anthropic Direct for critical analysis (fallback)
+### Secondary Audience
+- **Privacy-conscious developers** who need offline mode for proprietary code (Ollama)
+- **Teams in air-gapped environments** who can't use cloud APIs (Ollama)
+- **Production users** who need Anthropic Direct API for critical analysis
 
 ---
 
@@ -512,6 +517,40 @@ cco
 **Current**: v1.2.0
 
 **Changelog**: See [CHANGELOG.md](CHANGELOG.md)
+
+---
+
+## ⚠️ Risk Disclosure
+
+### Terms of Service Considerations
+
+This project uses [copilot-api](https://github.com/ericc-ch/copilot-api), a community tool that reverse-engineers GitHub Copilot's API.
+
+**Important disclaimers:**
+
+1. **Not officially supported**: copilot-api is not endorsed by GitHub, Microsoft, Anthropic, or any AI provider
+2. **ToS risk**: Using third-party proxies to access Copilot may violate [GitHub Copilot Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-copilot-product-specific-terms)
+3. **Account suspension**: GitHub reserves the right to suspend accounts for ToS violations "at its sole discretion" without prior notice
+4. **API changes**: This tool may stop working at any time if providers change their APIs
+5. **No guarantees**: The authors provide no warranty and accept no liability for account suspension or service interruption
+
+### Documented Risks
+
+Community reports indicate that:
+- Accounts using high volumes through third-party proxies have been suspended
+- Suspensions may affect your entire GitHub account, not just Copilot access
+- GitHub does not provide a public definition of "excessive usage" or "abuse"
+
+### Recommendations
+
+| Use Case | Recommended Provider |
+|----------|---------------------|
+| **Production code** | Anthropic Direct (`ccd`) - Official API, no ToS risk |
+| **Sensitive/proprietary code** | Ollama Local (`cco`) - 100% offline, no cloud |
+| **Daily development** | Copilot (`ccc`) - Understand the risks first |
+| **Risk-averse users** | Avoid copilot-api entirely |
+
+**Source**: [GitHub Terms of Service - API Terms](https://docs.github.com/site-policy/github-terms/github-terms-of-service#h-api-terms)
 
 ---
 

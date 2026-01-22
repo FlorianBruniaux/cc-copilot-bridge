@@ -525,9 +525,11 @@ Is code proprietary or unreleased?
 
 | Provider | Cost | Quality | Privacy | Use Case |
 |----------|------|---------|---------|----------|
-| **Anthropic Direct** | High (per-token) | Highest | Medium | Production code review, critical analysis |
-| **GitHub Copilot** | Low (flat $10/month) | High | Medium | Daily development, prototyping |
+| **Anthropic Direct** | Per-token ($0.015-$75/1M) | Highest | Medium | Production code review, no ToS risk |
+| **GitHub Copilot** | Premium requests quota | High | Medium | Daily development (understand ToS risks) |
 | **Ollama Local** | Free | Good | Highest | Proprietary code, offline work |
+
+**ToS Warning**: Using copilot-api may violate GitHub Copilot Terms of Service. See [Risk Disclosure](../README.md#-risk-disclosure) for details.
 
 **Hybrid Workflow** (recommended):
 ```bash

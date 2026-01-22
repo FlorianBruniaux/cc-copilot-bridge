@@ -72,11 +72,11 @@ Have Copilot Pro+? → Yes → ccc (FREE!)
 
 | Provider | Monthly Cost | Usage Limit | Best For |
 |----------|--------------|-------------|----------|
-| Anthropic Direct | $15-20* | Per-token | Production |
-| **Copilot Bridge** | **$10** | **UNLIMITED** | **Daily dev** |
-| Ollama Local | Free | Unlimited | Privacy |
+| Anthropic Direct | Per-token | Pay as you go | Production, no ToS risk |
+| **Copilot Bridge** | **$10-39** | **Premium requests quota** | **Daily dev** |
+| Ollama Local | Free | Local compute | Privacy |
 
-*Typical software development usage
+**Note**: Copilot uses premium request quotas with model multipliers. See [Pricing & Limits](../README.md#-github-copilot-pricing--limits).
 
 ---
 

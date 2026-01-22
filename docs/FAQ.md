@@ -99,27 +99,29 @@ See [INSTALLATION-VERIFICATION.md](INSTALLATION-VERIFICATION.md) for full checkl
 **A**: Use **`ccc`** (GitHub Copilot with Claude Sonnet 4.5).
 
 **Why?**
-- ✅ Free with your $10/month Copilot Pro+ subscription
-- ✅ Unlimited usage (no per-token charges)
-- ✅ Balanced quality and speed
+- ✅ Uses your existing Copilot subscription
+- ✅ 1x quota multiplier (balanced consumption)
 - ✅ 100% MCP compatible
 
-For critical code reviews, upgrade to `ccc-opus`.
+**Tip**: Use `ccc-gpt` (GPT-4.1) for routine tasks - it has 0x multiplier (doesn't consume quota).
+
+For critical code reviews, consider `ccd` (Anthropic Direct) to avoid ToS risks.
 
 ---
 
 ### Q: What's the difference between ccc, ccc-sonnet, and ccc-opus?
 
-**A**: They all use GitHub Copilot, but with different models:
+**A**: They all use GitHub Copilot, but with different models and quota consumption:
 
-| Command | Model | Quality | Speed | Use Case |
-|---------|-------|---------|-------|----------|
-| `ccc` | Sonnet 4.5 | ⭐⭐⭐⭐ | Fast | Daily dev (default) |
-| `ccc-sonnet` | Sonnet 4.5 | ⭐⭐⭐⭐ | Fast | Same as ccc |
-| `ccc-opus` | Opus 4.5 | ⭐⭐⭐⭐⭐ | Slower | Code reviews |
-| `ccc-haiku` | Haiku 4.5 | ⭐⭐⭐ | Fastest | Quick questions |
+| Command | Model | Quota Multiplier | Use Case |
+|---------|-------|------------------|----------|
+| `ccc-gpt` | GPT-4.1 | **0x (free)** | Routine tasks |
+| `ccc-haiku` | Haiku 4.5 | 0.33x | Quick questions |
+| `ccc` | Sonnet 4.5 | 1x | Daily dev (default) |
+| `ccc-sonnet` | Sonnet 4.5 | 1x | Same as ccc |
+| `ccc-opus` | Opus 4.5 | 3x | Complex analysis |
 
-**All are FREE** with Copilot Pro+ subscription.
+**Note**: All consume premium requests from your Copilot quota. See [Pricing & Limits](../README.md#-github-copilot-pricing--limits).
 
 ---
 
@@ -381,37 +383,39 @@ grep "Session ended" ~/.claude/claude-switch.log
 
 | Provider | Cost | Billing Model |
 |----------|------|---------------|
-| **GitHub Copilot** | $10/month | Flat rate, UNLIMITED usage |
-| **Anthropic Direct** | $15-20/month* | Pay-per-token usage |
+| **GitHub Copilot** | $10-39/month | Premium requests quota |
+| **Anthropic Direct** | Per-token | Pay-per-token usage |
 | **Ollama Local** | FREE | Self-hosted, no charges |
 
-*Typical software development usage
-
-**Best value**: GitHub Copilot ($10/month flat for unlimited usage).
+**Important**: Copilot is NOT unlimited. Different models consume different amounts of your quota. See [Pricing & Limits](../README.md#-github-copilot-pricing--limits).
 
 ---
 
 ### Q: Does Copilot charge extra for Claude models?
 
-**A**: **No**. All models available through copilot-api are included in your $10/month Copilot Pro+ subscription:
-- Claude Opus/Sonnet/Haiku
-- GPT-4.1, GPT-5, GPT-5-mini
-- Gemini models
+**A**: Models are included in your Copilot subscription, but they consume premium requests at different rates:
 
-**Unlimited usage** with no per-token charges.
+| Model | Quota Multiplier |
+|-------|------------------|
+| GPT-4.1, GPT-4o, GPT-5-mini | 0x (free) |
+| Claude Haiku 4.5 | 0.33x |
+| Claude Sonnet 4.5, Gemini | 1x |
+| Claude Opus 4.5 | 3x |
+
+**Pro ($10/mo)**: 300 premium requests → ~100 Opus interactions or ~300 Sonnet interactions.
+**Pro+ ($39/mo)**: 1,500 premium requests → ~500 Opus interactions.
 
 ---
 
 ### Q: How much can I save compared to Anthropic Direct?
 
-**A**: Significant savings:
+**A**: Depends on usage patterns. Copilot may be cheaper for moderate usage, but has quota limits.
 
-**Example** (typical monthly usage):
-- Anthropic Direct: ~$15-20/month
-- Copilot Bridge: $10/month flat
-- **Savings**: $5-10/month + unlimited usage peace of mind
+**Considerations**:
+- Anthropic Direct: Pay per token, no quota limits, official API
+- Copilot: Fixed monthly cost, quota limits, ToS risk with copilot-api
 
-**Heavy users** (>$50/month on Anthropic): Save $40+/month with Copilot.
+**Important**: Copilot is NOT unlimited. Heavy users may hit quota limits. See [Pricing & Limits](../README.md#-github-copilot-pricing--limits) and [Risk Disclosure](../README.md#-risk-disclosure).
 
 ---
 

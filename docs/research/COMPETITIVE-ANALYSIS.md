@@ -108,13 +108,13 @@
 │Router       │  │ ilot-    │  │Tools   │
 │31.9k/week   │  │ bridge   │  │Various │
 └─────────────┘  └──────────┘  └────────┘
-Pay per token    $10/month     Free
-$0.14-$75/1M     UNLIMITED     Private
+Pay per token    $10-39/month  Free
+$0.14-$75/1M     Quota-based   Private
 ```
 
 ### Our Niche
 
-**Target**: Developers with GitHub Copilot Pro+ subscription ($10/month) who want to extend it to Claude Code CLI **without paying Anthropic per-token pricing**.
+**Target**: Developers with GitHub Copilot Pro or Pro+ subscription who want to use Claude Code CLI with their existing subscription.
 
 **Not Competing With**:
 - **Claude Code Router**: Different market (API routing vs Copilot bridging)
@@ -266,8 +266,8 @@ If "cc-copilot-bridge" gets taken before we claim it:
 
 | Persona | Current Solution | Pain Point | cc-copilot-bridge Value |
 |---------|-----------------|------------|------------------------|
-| **Copilot Pro+ subscriber** | vs-cop-bridge (limited) | No Claude Code support | ✅ Claude Code + MCP + 3 providers |
-| **Claude Code power user** | Direct API (expensive) | High token costs | ✅ $10/month flat via Copilot |
+| **Copilot subscriber** | vs-cop-bridge (limited) | No Claude Code support | ✅ Claude Code + MCP + 3 providers |
+| **Claude Code user** | Direct API (per-token) | Variable costs | ✅ Use existing Copilot quota |
 | **Privacy-conscious dev** | Ollama only (limited) | No cloud access | ✅ 3 modes: Copilot/Direct/Ollama |
 | **Multi-model experimenter** | Multiple accounts/tools | Fragmented workflow | ✅ Unified switching (3 chars) |
 | **Apple Silicon user** | Ollama (slow) | Poor performance | ✅ M-series optimization |
@@ -278,11 +278,11 @@ If "cc-copilot-bridge" gets taken before we claim it:
 
 ### Positioning Statement
 
-> **cc-copilot-bridge**: The only tool that turns your $10/month GitHub Copilot Pro+ subscription into unlimited Claude Code access with 25+ models, MCP intelligence, and offline mode.
+> **cc-copilot-bridge**: Multi-provider routing for Claude Code CLI. Use your existing Copilot subscription, switch to Ollama for offline work, or fall back to Anthropic Direct for production.
 
 ### Key Messages
 
-1. **Cost Savings**: "Use Copilot's $10/month for Claude Code instead of paying $300+/month on Anthropic APIs"
+1. **Existing Investment**: "Use your Copilot subscription with Claude Code CLI"
 2. **MCP Intelligence**: "Only tool with auto-generated profiles for GPT-4.1 strict validation"
 3. **3 Modes**: "Free (Copilot), Premium (Anthropic Direct), Private (Ollama Local)"
 4. **Instant Switching**: "3 characters to switch providers: ccc, ccd, cco"

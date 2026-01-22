@@ -28,12 +28,12 @@ Choose your provider and model based on three dimensions: cost, quality, and pri
 
 | Scenario | Recommended Provider | Reason |
 |----------|---------------------|---------|
-| Daily feature development | `ccc` (Copilot) | Free with subscription, fast, balanced quality |
+| Daily feature development | `ccc` (Copilot) | Uses quota (1x), fast, balanced quality |
 | Code review / critical analysis | `ccd` (Anthropic) or `ccc-opus` | Best quality for security-critical decisions |
 | Proprietary/sensitive code | `cco` (Ollama) | 100% local, no data leaves machine |
-| Rapid prototyping | `ccc-haiku` (Copilot) | Fastest responses, good for quick iterations |
-| Learning/experimentation | `ccc` (Copilot) | Unlimited usage encourages exploration |
-| Production deployment review | `ccd --model opus` (Anthropic) | Highest quality, worth per-token cost |
+| Rapid prototyping | `ccc-gpt` (Copilot) | 0x multiplier = doesn't consume quota |
+| Learning/experimentation | `ccc` (Copilot) | Uses quota, good for exploration |
+| Production deployment review | `ccd --model opus` (Anthropic) | Official API, no ToS risk |
 | Offline/air-gapped development | `cco` (Ollama) | Only option without internet |
 
 #### Model Selection Within Copilot
@@ -1171,8 +1171,8 @@ grep "mode=copilot.*duration=" ~/.claude/claude-switch.log | \
 
 **Value metrics:**
 - Sessions per day: Target 3-5 for daily usage
-- Cost per session: $10 / sessions = decreasing cost per use
-- Unlimited usage = fixed budget (ideal for cost control)
+- Monthly quota: Pro = 300 requests, Pro+ = 1,500 requests
+- Different models consume different quota (see multipliers)
 
 #### Anthropic Tracking
 
@@ -1310,7 +1310,7 @@ ccd --model opus
 > Final review of caching strategy C
 ```
 
-**Savings**: Unlimited free iterations before spending money.
+**Cost strategy**: Iterate with Copilot (uses quota), finalize with Anthropic Direct (official API).
 
 ### Team Cost Sharing
 

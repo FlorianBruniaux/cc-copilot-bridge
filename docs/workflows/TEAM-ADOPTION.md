@@ -43,18 +43,19 @@ Complete guide for teams adopting cc-copilot-bridge across the organization.
 
 | Option | Cost/Dev/Month | What's Included |
 |--------|----------------|-----------------|
-| **Copilot Pro+** | $10 | Unlimited cc-copilot-bridge usage |
-| **Anthropic Direct** | $15-50* | Pay-per-token, varies by usage |
+| **Copilot Pro** | $10 | 300 premium requests/month |
+| **Copilot Pro+** | $39 | 1,500 premium requests/month |
+| **Anthropic Direct** | Per-token | Pay-per-token, official API |
 | **Ollama** | $0 | Self-hosted, requires hardware |
 
-*Typical range for software development
+**Important**: Copilot has quota limits with model multipliers. See [Pricing & Limits](../../README.md#-github-copilot-pricing--limits).
 
-**Team of 10 developers**:
-- Copilot only: $100/month (unlimited)
-- Anthropic only: $150-500/month
-- **Hybrid** (Copilot + Anthropic for critical): $200-300/month
+**Team of 10 developers** (example):
+- Copilot Pro: $100/month (3,000 total requests)
+- Copilot Pro+: $390/month (15,000 total requests)
+- Anthropic Direct: Varies by usage
 
-**Savings**: 40-60% vs Anthropic-only
+**Note**: Using copilot-api may violate GitHub ToS. See [Risk Disclosure](../../README.md#-risk-disclosure).
 
 ---
 
@@ -404,7 +405,7 @@ done
 
 **1. Default to Copilot**
 ```bash
-# Team default: Free unlimited
+# Team default: Uses Copilot quota
 ccc  # Not ccd
 ```
 

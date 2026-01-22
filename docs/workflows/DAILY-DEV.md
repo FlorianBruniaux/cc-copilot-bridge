@@ -60,10 +60,10 @@ ccc-sonnet
 **Why Sonnet?**
 - ⚖️ Best balance quality/speed
 - ✅ Reliable for production code
-- 💰 Free (unlimited with Copilot)
+- 💰 1x quota multiplier (uses your Copilot quota)
 - 🔧 100% MCP compatible
 
-**Pro tip**: Keep this session open all morning
+**Pro tip**: Use `ccc-gpt` for routine tasks (0x = doesn't consume quota)
 
 ---
 
