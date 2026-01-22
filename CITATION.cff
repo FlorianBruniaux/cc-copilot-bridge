@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this tool in your work, please cite it as below."
+type: software
+title: "cc-copilot-bridge"
+abstract: "Multi-provider bridge for Claude Code CLI. Free access to 25+ AI models via GitHub Copilot Pro+ subscription. Includes MCP Profiles System, System Prompts injection, and comprehensive security tools."
+authors:
+  - family-names: "Bruniaux"
+    given-names: "Florian"
+    email: "florian.bruniaux@gmail.com"
+    affiliation: "Independent"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+version: "1.2.0"
+date-released: "2026-01-22"
+license: "MIT"
+url: "https://github.com/FlorianBruniaux/cc-copilot-bridge"
+repository-code: "https://github.com/FlorianBruniaux/cc-copilot-bridge"
+keywords:
+  - claude-code
+  - github-copilot
+  - ai-tools
+  - cli
+  - mcp
+  - multi-provider
+  - developer-tools
+  - productivity
+  - cost-optimization
+  - copilot-bridge
+  - ollama
+  - anthropic
+identifiers:
+  - type: url
+    value: "https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.2.0"
+    description: "Release v1.2.0"
