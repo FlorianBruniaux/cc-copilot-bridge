@@ -84,6 +84,7 @@ alias ccs='claude-switch status'      # Check all providers
 # Model shortcuts
 alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
 alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
+alias ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
 ```
 
 ### Usage

@@ -117,6 +117,7 @@ alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 alias ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
 alias ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
 alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
+alias ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
 EOF
 
 # For bash users, replace ~/.zshrc with ~/.bashrc in the command above

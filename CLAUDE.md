@@ -60,6 +60,9 @@ ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
 ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
 ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
+ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
+ccc-gemini3='COPILOT_MODEL=gemini-3-flash-preview claude-switch copilot'
+ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
 cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
 cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
 ```
@@ -102,6 +105,7 @@ Before launching, `claude-switch` verifies:
 | Anthropic | Native | Opus/Sonnet/Haiku | 100% (permissive) |
 | Copilot-Claude | /chat/completions | claude-*-4.5 | 100% (permissive) |
 | Copilot-GPT | /chat/completions | gpt-4.1, gpt-5, gpt-5-mini | ~80% (strict validation) |
+| Copilot-Gemini | /chat/completions | gemini-3-flash-preview, gemini-3-pro-preview, gemini-2.5-pro | ~80% (strict validation) |
 | Copilot-Codex | /responses | gpt-*-codex | ❌ Incompatible (copilot-api v0.7.0) |
 | Ollama | Native | devstral, granite4, qwen3-coder | 100% (permissive) |
 
@@ -326,6 +330,8 @@ ollama pull ibm/granite4:small-h
 | Quick questions | `ccc-haiku` | Fastest responses |
 | Code review | `ccc-opus` | Maximum quality |
 | Learning/prototyping | `ccc` | Cost-effective iteration |
+| Fast iteration | `ccc-gemini` | Gemini 2.5 Pro (stable) |
+| Alternative perspective | `ccc-gpt` | GPT-4.1 for second opinion |
 | Proprietary code | `cco` | 100% private, no data leaves machine |
 | Offline work | `cco` | No internet required |
 | Best agentic local | `cco-devstral` | Devstral-small-2 (68% SWE-bench) |

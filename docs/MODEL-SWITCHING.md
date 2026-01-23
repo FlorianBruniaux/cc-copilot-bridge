@@ -29,8 +29,9 @@ Le script `claude-switch` supporte maintenant le changement dynamique de modèle
 - ❌ `gpt-5-codex` (Preview, `/responses` uniquement)
 
 ### ✅ Gemini Models
-- `gemini-3-pro-preview` (performant)
-- `gemini-3-flash-preview` (rapide)
+- `gemini-2.5-pro` (stable, recommandé)
+- `gemini-3-pro-preview` (preview, peut retourner 400)
+- `gemini-3-flash-preview` (preview, rapide mais instable)
 
 ### ⚠️ Autres
 - ✅ `grok-code-fast-1` (rapide, spécialisé code)
@@ -38,7 +39,6 @@ Le script `claude-switch` supporte maintenant le changement dynamique de modèle
 
 ### ❌ Modèles dépréciés (17 février 2026)
 - `claude-opus-4.1` → Utiliser `claude-opus-4.5` à la place
-- `gemini-2.5-pro` → Utiliser `gemini-3-pro-preview` à la place
 
 ## ⚠️ Compatibilité des modèles - Limitation Architecturale Majeure
 
@@ -326,7 +326,8 @@ grep "mode=copilot:" ~/.claude/claude-switch.log | cut -d':' -f4 | sort | uniq -
 
 ```bash
 # Copilot models
-alias ccc-gemini='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
+alias ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
+alias ccc-gemini3='COPILOT_MODEL=gemini-3-flash-preview claude-switch copilot'
 alias ccc-grok='COPILOT_MODEL=grok-code-fast-1 claude-switch copilot'
 alias ccc-gpt4='COPILOT_MODEL=gpt-4o-2024-11-20 claude-switch copilot'
 

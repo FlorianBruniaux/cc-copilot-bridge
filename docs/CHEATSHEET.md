@@ -12,6 +12,9 @@ COPILOT MODELS
   ccc-sonnet    Claude Sonnet 4.5 (1x quota)
   ccc-haiku     Claude Haiku 4.5 (0.33x quota)
   ccc-gpt       GPT-4.1 (0x = free)
+  ccc-gemini    Gemini 2.5 Pro (stable)
+  ccc-gemini3   Gemini 3 Flash (preview)
+  ccc-gemini3-pro Gemini 3 Pro (preview)
 
 OLLAMA MODELS
   cco-devstral  Devstral (default, best agentic)

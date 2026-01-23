@@ -133,6 +133,9 @@ alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 alias ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
 alias ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
 alias ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
+alias ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
+alias ccc-gemini3='COPILOT_MODEL=gemini-3-flash-preview claude-switch copilot'
+alias ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
 
 # Ollama Model Shortcuts
 alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
