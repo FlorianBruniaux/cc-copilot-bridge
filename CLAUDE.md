@@ -403,6 +403,144 @@ ccc -p "1+1"
 
 ---
 
+### copilot-api Issue #151: Gemini Agentic Mode Limitations
+
+**Problème**: Gemini models (2.5-pro, 3-pro-preview, 3-flash-preview) ont une compatibilité limitée avec le mode agentic (tool calling, file creation, MCP tools) via copilot-api.
+
+**Symptômes**:
+- ✅ Prompts simples fonctionnent : `COPILOT_MODEL=gemini-3-pro-preview ccc -p "1+1"` → OK
+- ❌ File creation échoue : `COPILOT_MODEL=gemini-3-pro-preview ccc -p "Create hello.txt"` → No file created
+- ❌ MCP tools instables : `Use grep to find TODOs` → Inconsistent results
+- ❌ Erreurs possibles : `model_not_supported`, `INVALID_ARGUMENT`, `invalid_request_body`
+
+**Cause**: Traduction Claude tool calling → OpenAI → Gemini format introduit des incompatibilités. Gemini utilise un format tool calling spécifique à Google qui diffère de Claude et OpenAI.
+
+**Modèles affectés**:
+
+| Modèle | Prompts Simples | Mode Agentic | Status |
+|--------|----------------|--------------|--------|
+| `gemini-2.5-pro` | ✅ OK | ⚠️ Limité | Deprecating 2/17/26 |
+| `gemini-3-pro-preview` | ✅ OK | ❌ Mauvais | Experimental |
+| `gemini-3-flash-preview` | ✅ OK | ❌ Mauvais | Experimental |
+
+**Solutions**:
+
+**Option 1: Utiliser Claude (Recommandé - 100% compatible)** ⭐
+
+```bash
+ccc-sonnet  # Claude Sonnet 4.5 (défaut)
+ccc-opus    # Claude Opus 4.5 (meilleure qualité)
+ccc-haiku   # Claude Haiku 4.5 (ultra rapide)
+
+❯ Create hello.txt with "test"
+✅ Fonctionne parfaitement
+```
+
+**Option 2: Workaround Subagent pour Gemini 3 Preview**
+
+Route les tool calls complexes via GPT-5-mini :
+
+```bash
+COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini ccc
+
+❯ Create hello.txt with "test"
+✅ Subagent GPT gère les tool calls
+```
+
+**Option 3: Utiliser Gemini UNIQUEMENT pour prompts simples**
+
+```bash
+# ✅ Scénarios adaptés
+COPILOT_MODEL=gemini-2.5-pro ccc -p "Explain this code"
+COPILOT_MODEL=gemini-2.5-pro ccc -p "Find bugs"
+
+# ❌ Scénarios à éviter (utiliser Claude à la place)
+# COPILOT_MODEL=gemini-3-pro-preview ccc -p "Create file"  # ❌
+ccc-sonnet -p "Create file"  # ✅
+```
+
+**Option 4: Utiliser GPT-4.1 (Alternative stable)**
+
+```bash
+COPILOT_MODEL=gpt-4.1 ccc
+# Bon compromis entre stabilité et compatibilité
+```
+
+**Workaround automatique dans claude-switch**:
+
+Ajouter dans `~/bin/claude-switch`, fonction `_run_copilot()`:
+
+```bash
+# Gemini workaround: auto-set subagent for preview models
+if [[ "$COPILOT_MODEL" == gemini-3-*-preview ]]; then
+    export CLAUDE_CODE_SUBAGENT_MODEL="${CLAUDE_CODE_SUBAGENT_MODEL:-gpt-5-mini}"
+    _log "INFO" "Gemini preview detected: subagent=$CLAUDE_CODE_SUBAGENT_MODEL"
+fi
+```
+
+**Diagnostic**:
+
+```bash
+# Dans le projet cc-copilot-bridge
+./scripts/test-gemini.sh
+
+# Voir le rapport
+cat debug-gemini/diagnostic-report.md
+
+# Analyser les logs copilot-api
+./scripts/analyze-copilot-logs.sh debug-gemini/copilot-api-verbose.log
+```
+
+**Tests de compatibilité**:
+
+Le script `test-gemini.sh` exécute 5 tests :
+1. **Test 1** - Baseline simple (non-agentic) → Vérifie si Gemini fonctionne de base
+2. **Test 2** - File creation → Détecte problème tool calling
+3. **Test 3** - MCP grep tool → Vérifie compatibilité MCP
+4. **Test 4** - Subagent workaround → Valide si GPT subagent corrige le problème
+5. **Test 5** - Gemini 2.5 stable → Compare avec version stable
+
+**Arbre de décision basé sur les tests**:
+```
+Test 1 échoue → Problème auth/config copilot-api (pas Gemini-spécifique)
+Test 2 échoue, Test 1 OK → Problème tool format (Gemini-spécifique)
+Test 3 échoue → Problème MCP schema validation
+Test 4 OK, Test 2 échoue → Workaround subagent fonctionne
+Test 5 OK, Test 2 échoue → Gemini 3 preview moins stable que 2.5
+```
+
+**Recommandations par scénario**:
+
+| Scénario | Commande Recommandée | Raison |
+|----------|---------------------|--------|
+| Production code | `ccc-sonnet` | 100% fiable, meilleure qualité |
+| Questions rapides | `ccc-haiku` | Rapide, fiable, pas de complexité Gemini |
+| Code review | `ccc-opus` | Qualité maximale |
+| Expérimentation Gemini | `COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini ccc` | Workaround subagent |
+| Alternative GPT | `COPILOT_MODEL=gpt-4.1 ccc` | Stable, bon compromis |
+
+**Migration Path**:
+
+```
+Actuellement Gemini 2.5 Pro:
+├─ Prompts simples → Continue avec gemini-2.5-pro
+├─ Agentic tasks → Migre vers ccc-sonnet
+└─ Après 17 fév 2026 → Tout vers ccc-sonnet
+
+Actuellement Gemini 3 Preview:
+└─ Tout → Migre vers ccc-sonnet (plus stable, meilleure qualité)
+```
+
+**Documentation complète**:
+- [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#-gemini-agentic-mode-issues-copilot-api) - Section Gemini Agentic Mode Issues
+- [docs/MODEL-SWITCHING.md](docs/MODEL-SWITCHING.md#modèles-gemini-via-copilot) - Tableau de compatibilité Gemini
+- [debug-gemini/README.md](debug-gemini/README.md) - Testing workspace
+- [scripts/test-gemini.sh](scripts/test-gemini.sh) - Automated diagnostic suite
+
+**Suivi**: [ericc-ch/copilot-api#151](https://github.com/ericc-ch/copilot-api/issues/151)
+
+---
+
 ## Version Information
 
 - **claude-switch**: v1.4.0 (2026-01-22) - Updated Ollama: Devstral default, 64K context warning

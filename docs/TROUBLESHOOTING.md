@@ -693,6 +693,329 @@ Option 3: Report issue to MCP server maintainer
 
 ---
 
+## 🤖 Gemini Agentic Mode Issues (copilot-api)
+
+### Symptom
+
+When using Gemini models with tool-calling (file creation, MCP tools, etc.), you experience:
+
+```bash
+COPILOT_MODEL=gemini-3-pro-preview ccc
+❯ Create a file called hello.txt with "test"
+
+# Possible symptoms:
+# 1. No response or timeout
+# 2. Error: model_not_supported
+# 3. Error: invalid_request_body
+# 4. Error: INVALID_ARGUMENT
+# 5. File not created despite "success" message
+```
+
+**Simple prompts work fine**:
+```bash
+COPILOT_MODEL=gemini-3-pro-preview ccc -p "1+1"
+✅ Returns: 2
+```
+
+**Agentic prompts fail**:
+```bash
+COPILOT_MODEL=gemini-3-pro-preview ccc -p "Create hello.txt"
+❌ No file created, errors in logs
+```
+
+### Cause
+
+**Root issue**: copilot-api translates Claude tool calling format → OpenAI format → Gemini format. This translation chain introduces incompatibilities:
+
+1. **Tool Format Mismatch**: Claude uses Anthropic tool schema, Gemini expects Google-specific format
+2. **Subagent Calls**: Claude Code spawns subagents (Task tool) that may not work correctly with Gemini
+3. **Preview Model Instability**: `gemini-3-*-preview` models are experimental and may have incomplete tool support
+
+**Issue reference**: [copilot-api#151](https://github.com/ericc-ch/copilot-api/issues/151)
+
+### Diagnosis
+
+Run automated diagnostic to identify the exact issue:
+
+```bash
+# In cc-copilot-bridge project
+cd /path/to/cc-copilot-bridge
+
+# Run test suite
+./scripts/test-gemini.sh
+
+# View results
+cat debug-gemini/summary.txt
+cat debug-gemini/diagnostic-report.md
+```
+
+**Diagnostic tests**:
+| Test | Scenario | What It Checks |
+|------|----------|----------------|
+| 1 | Simple calculation | Baseline (non-agentic) |
+| 2 | File creation | Direct tool calling |
+| 3 | MCP grep tool | MCP schema compatibility |
+| 4 | Subagent workaround | If routing through GPT fixes issue |
+| 5 | Gemini 2.5 stable | Stable model comparison |
+
+**Decision tree**:
+```
+Test 1 fails → copilot-api auth/config issue
+Test 2 fails, Test 1 OK → Tool format incompatibility
+Test 3 fails → MCP schema validation issue (see "MCP Schema Validation Error" section)
+Test 4 succeeds, Test 2 fails → Confirms subagent routing fixes issue
+Test 5 succeeds, Test 2 fails → Gemini 3 preview limitation
+```
+
+### Solutions
+
+**Option 1: Use Stable Gemini 2.5 Pro** ⭐ Recommended
+
+```bash
+COPILOT_MODEL=gemini-2.5-pro ccc
+# OR
+ccc-gemini  # Alias for gemini-2.5-pro
+
+❯ Create hello.txt with "test"
+✅ Works reliably for most scenarios
+```
+
+**Pros**:
+- ✅ More stable than preview models
+- ✅ Better tool calling support
+- ✅ Production-ready
+
+**Cons**:
+- ⚠️ May still have occasional issues with complex multi-tool workflows
+- ⚠️ Deprecation scheduled: 17 Feb 2026 → migrate to gemini-3-pro-preview once stable
+
+**Option 2: Use Subagent Workaround (Gemini 3 Preview)**
+
+For preview models, route complex operations through a stable subagent:
+
+```bash
+# Manual usage
+COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini ccc
+
+❯ Create hello.txt with "test"
+✅ Subagent (GPT-5-mini) handles tool calls
+```
+
+**How it works**:
+- Main agent: Gemini 3 (planning, reasoning)
+- Subagent: GPT-5-mini (tool execution)
+- When Claude Code spawns Task tool → uses GPT instead of Gemini
+
+**Pros**:
+- ✅ Keeps Gemini 3 for main reasoning
+- ✅ Stable tool execution via GPT
+- ✅ No need to disable MCP servers
+
+**Cons**:
+- ⚠️ Slight latency increase (2 models involved)
+- ⚠️ Mixed model behavior
+
+**Option 3: Use Claude Models (100% Compatible)** 🚀 Best Quality
+
+```bash
+ccc-sonnet  # Claude Sonnet 4.5 (default, balanced)
+ccc-opus    # Claude Opus 4.5 (best quality)
+ccc-haiku   # Claude Haiku 4.5 (fastest)
+
+❯ Create hello.txt with "test"
+✅ Works flawlessly, no workarounds needed
+```
+
+**Pros**:
+- ✅ 100% tool calling compatibility
+- ✅ Best agentic performance
+- ✅ No translation issues (native Anthropic format)
+- ✅ Best code quality
+
+**Cons**:
+- None (Claude via Copilot is the gold standard)
+
+**Option 4: Use GPT Models (Reliable Alternative)**
+
+```bash
+COPILOT_MODEL=gpt-4.1 ccc    # Balanced, 0x premium
+COPILOT_MODEL=gpt-5 ccc      # Advanced reasoning, 1x premium
+COPILOT_MODEL=gpt-5-mini ccc # Ultra fast, 0x premium
+
+❯ Create hello.txt with "test"
+✅ Reliable tool calling (with MCP exclusions if needed)
+```
+
+**Pros**:
+- ✅ Stable tool calling
+- ✅ Good agentic performance
+- ✅ Fast responses
+
+**Cons**:
+- ⚠️ MCP schema validation (see "MCP Schema Validation Error" section)
+- ⚠️ May need to disable `grepai` MCP server
+
+### Automated Workaround (claude-switch Integration)
+
+The subagent workaround can be automated in `claude-switch` script:
+
+```bash
+# In ~/bin/claude-switch, add to _run_copilot() function:
+
+# Gemini workaround: auto-set subagent for preview models
+if [[ "$COPILOT_MODEL" == gemini-3-*-preview ]]; then
+    export CLAUDE_CODE_SUBAGENT_MODEL="${CLAUDE_CODE_SUBAGENT_MODEL:-gpt-5-mini}"
+    _log "INFO" "Gemini preview detected: subagent=$CLAUDE_CODE_SUBAGENT_MODEL"
+fi
+```
+
+**Benefits**:
+- 🔄 Automatic workaround activation
+- 📝 Logged in session logs
+- 🎯 Only affects Gemini preview models
+
+### Model Compatibility Matrix
+
+| Model | Simple Prompts | Agentic/Tools | Status | Recommendation |
+|-------|----------------|---------------|--------|----------------|
+| `claude-sonnet-4.5` | ✅ Excellent | ✅ Excellent | Stable | ⭐ **Best choice** |
+| `claude-opus-4.5` | ✅ Excellent | ✅ Excellent | Stable | ⭐ Best quality |
+| `gpt-4.1` | ✅ Excellent | ✅ Good | Stable | ✅ Reliable |
+| `gpt-5` | ✅ Excellent | ✅ Good | Stable | ✅ Advanced reasoning |
+| `gemini-2.5-pro` | ✅ Good | ⚠️ Fair | Deprecating 2/17/26 | ⚠️ Use with caution |
+| `gemini-3-pro-preview` | ✅ Good | ❌ Poor | Experimental | ❌ Use subagent workaround |
+| `gemini-3-flash-preview` | ✅ Good | ❌ Poor | Experimental | ❌ Use subagent workaround |
+
+### Known Limitations
+
+**Gemini 3 Preview Models**:
+- ❌ Direct tool calling unreliable
+- ❌ Subagent spawning may fail
+- ❌ MCP tool execution inconsistent
+- ⚠️ File operations may silently fail
+
+**Gemini 2.5 Pro** (Stable but deprecating):
+- ⚠️ Occasional tool calling failures
+- ⚠️ Complex multi-tool workflows problematic
+- ⚠️ Deprecation: 17 Feb 2026
+
+**Recommended Migration Path**:
+```
+Current: gemini-2.5-pro
+↓
+Short-term: gemini-2.5-pro + monitor stability
+↓
+If issues: Switch to claude-sonnet-4.5 (ccc-sonnet)
+↓
+When stable: Migrate to gemini-3-pro-preview (with subagent)
+```
+
+### Manual Testing
+
+If you prefer manual testing:
+
+```bash
+# Create test directory
+cd /tmp && mkdir -p gemini-test && cd gemini-test
+
+# Test 1: Baseline (should work)
+COPILOT_MODEL=gemini-3-pro-preview ccc -p "Calculate 1+1"
+
+# Test 2: File creation (may fail)
+COPILOT_MODEL=gemini-3-pro-preview ccc -p "Create hello.txt with 'test'"
+
+# Test 3: With subagent workaround (should work)
+COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini \
+  ccc -p "Create hello2.txt with 'test'"
+
+# Test 4: Stable model (should work)
+COPILOT_MODEL=gemini-2.5-pro ccc -p "Create hello3.txt with 'test'"
+
+# Verify files created
+ls -la hello*.txt
+```
+
+### Verify copilot-api Logs
+
+If you see errors, check copilot-api logs:
+
+```bash
+# Terminal 1: Start copilot-api in verbose mode
+pkill -f copilot-api || true
+copilot-api start -v 2>&1 | tee copilot-api-verbose.log
+
+# Terminal 2: Run tests
+# ... execute tests ...
+
+# Terminal 1: Look for errors
+grep -iE "(error|invalid|model_not_supported)" copilot-api-verbose.log
+```
+
+**Common error patterns**:
+```
+ERROR  HTTP error: { error: { message: 'model_not_supported' } }
+ERROR  Invalid schema for function 'mcp__...'
+ERROR  INVALID_ARGUMENT: tool_config.function_calling_config ...
+```
+
+### Troubleshooting Steps
+
+1. **Verify copilot-api is running**:
+   ```bash
+   nc -z localhost 4141 && echo "✅ Running" || echo "❌ Not running"
+   ```
+
+2. **Check model availability**:
+   ```bash
+   # In copilot-api logs, you should see:
+   # Available models: claude-*, gpt-*, gemini-*
+   ```
+
+3. **Test with working model first**:
+   ```bash
+   # Establish baseline with Claude
+   ccc-sonnet -p "1+1"
+   # If this fails → copilot-api issue, not Gemini-specific
+   ```
+
+4. **Run automated diagnostic**:
+   ```bash
+   ./scripts/test-gemini.sh
+   cat debug-gemini/diagnostic-report.md
+   ```
+
+5. **Analyze logs**:
+   ```bash
+   ./scripts/analyze-copilot-logs.sh debug-gemini/copilot-api-verbose.log
+   ```
+
+### Best Practices
+
+**For Production Code**:
+```bash
+ccc-sonnet   # 100% reliable, best quality
+```
+
+**For Experimentation with Gemini**:
+```bash
+# Use subagent workaround
+COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini ccc
+```
+
+**For Quick Tasks**:
+```bash
+ccc-haiku    # Fast, reliable, no Gemini complexity
+```
+
+### References
+
+- [copilot-api Issue #151](https://github.com/ericc-ch/copilot-api/issues/151) - Gemini model compatibility
+- [Gemini API Tool Calling Docs](https://ai.google.dev/gemini-api/docs/function-calling)
+- `scripts/test-gemini.sh` - Automated diagnostic suite
+- `debug-gemini/README.md` - Testing workspace documentation
+
+---
+
 ## 🔌 Provider Not Running
 
 ### Copilot: Port 4141 Not Responding

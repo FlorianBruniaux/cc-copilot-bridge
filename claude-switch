@@ -205,6 +205,17 @@ _run_copilot() {
   # Allow model override via env var or use default
   local model="${COPILOT_MODEL:-claude-sonnet-4.5}"
 
+  # Gemini workaround: auto-set subagent for preview models (issue #151)
+  # Gemini 3 preview models have unreliable tool calling → route through GPT subagent
+  if [[ "$model" == gemini-3-*-preview ]]; then
+    if [[ -z "${CLAUDE_CODE_SUBAGENT_MODEL:-}" ]]; then
+      export CLAUDE_CODE_SUBAGENT_MODEL="gpt-5-mini"
+      _log "INFO" "Gemini preview detected: auto-enabling subagent workaround (CLAUDE_CODE_SUBAGENT_MODEL=${CLAUDE_CODE_SUBAGENT_MODEL})"
+    else
+      _log "INFO" "Gemini preview detected: using existing CLAUDE_CODE_SUBAGENT_MODEL=${CLAUDE_CODE_SUBAGENT_MODEL}"
+    fi
+  fi
+
   # Set MCP and prompt args arrays (no eval, proper bash arrays)
   _set_mcp_args "${model}" || return 1
   _set_prompt_args "${model}" || return 1

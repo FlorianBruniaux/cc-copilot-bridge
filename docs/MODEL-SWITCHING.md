@@ -211,6 +211,189 @@ COPILOT_MODEL=gpt-5-mini ccc
 
 **Usage**: Refactoring basique, questions rapides
 
+## Modèles Gemini via Copilot
+
+### ⚠️ Compatibilité Agentic Variable
+
+Les modèles Gemini ont une **compatibilité limitée avec le mode agentic** (tool calling, file creation, MCP tools) en raison de différences dans la traduction des formats tool calling Claude → OpenAI → Gemini.
+
+### Gemini 2.5 Pro (Stable - Recommandé avec réserves)
+
+```bash
+COPILOT_MODEL=gemini-2.5-pro ccc
+# Or alias
+ccc-gemini
+```
+
+**Avantages**:
+- ✅ Stable (non-preview)
+- ✅ Prompts simples fonctionnent bien
+- ✅ Bon rapport qualité/prix
+- ⚡ Rapide
+
+**Limitations**:
+- ⚠️ **Mode agentic limité** : File creation, MCP tools peuvent échouer
+- ⚠️ **Déprécié le 17 février 2026** → Migration vers gemini-3-pro-preview nécessaire
+- ⚠️ Complex multi-tool workflows problématiques
+
+**Usage recommandé**:
+- ✅ Prompts simples (questions, explications, suggestions)
+- ⚠️ **Éviter** : File creation, complex tool chains
+- 🚫 **Production** : Préférer Claude ou GPT-4.1
+
+### Gemini 3 Pro Preview (Expérimental)
+
+```bash
+COPILOT_MODEL=gemini-3-pro-preview ccc
+```
+
+**Avantages**:
+- ✅ Modèle le plus récent
+- ✅ Prompts simples fonctionnent
+
+**Limitations**:
+- ❌ **Mode agentic TRÈS instable** : Tool calling échoue fréquemment
+- ❌ File operations silently fail
+- ❌ Subagent spawning unreliable
+- ❌ MCP tools inconsistent
+- ⚠️ Modèle preview (instable par nature)
+
+**Workaround requis pour agentic**:
+```bash
+# Router tool calls through GPT subagent
+COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini ccc
+```
+
+**Usage recommandé**:
+- ✅ Expérimentation, prototypes
+- ✅ Prompts simples uniquement
+- 🚫 **Production** : NE PAS utiliser pour code critique
+- 🚫 **Agentic tasks** : Utiliser Claude ou GPT-4.1
+
+### Gemini 3 Flash Preview (Rapide mais instable)
+
+```bash
+COPILOT_MODEL=gemini-3-flash-preview ccc
+```
+
+**Avantages**:
+- ⚡ Très rapide
+- 💰 Économique
+
+**Limitations**:
+- ❌ Mêmes problèmes agentic que Gemini 3 Pro
+- ❌ Moins précis que Pro
+- ⚠️ Preview (instable)
+
+**Usage recommandé**:
+- ✅ Tests de performance
+- 🚫 **Production** : Éviter complètement
+
+### Tableau de Compatibilité Gemini
+
+| Modèle | Prompts Simples | Mode Agentic | File Creation | MCP Tools | Status | Recommandation |
+|--------|----------------|--------------|---------------|-----------|--------|----------------|
+| `gemini-2.5-pro` | ✅ Excellent | ⚠️ Limité | ⚠️ Instable | ⚠️ Partiel | Deprecating 2/17/26 | ⚠️ **Transition vers Claude** |
+| `gemini-3-pro-preview` | ✅ Bon | ❌ Mauvais | ❌ Échoue | ❌ Échoue | Experimental | ❌ **Requiert workaround** |
+| `gemini-3-flash-preview` | ✅ Bon | ❌ Mauvais | ❌ Échoue | ❌ Échoue | Experimental | 🚫 **Éviter** |
+
+**Comparaison avec alternatives stables** :
+
+| Aspect | Gemini 2.5 Pro | Gemini 3 Preview | Claude Sonnet | GPT-4.1 |
+|--------|----------------|------------------|---------------|---------|
+| **Prompts simples** | ✅ | ✅ | ✅ | ✅ |
+| **Agentic mode** | ⚠️ Limité | ❌ Mauvais | ✅ Excellent | ✅ Bon |
+| **File creation** | ⚠️ Instable | ❌ Échoue | ✅ Fiable | ✅ Fiable |
+| **MCP tools** | ⚠️ Partiel | ❌ Échoue | ✅ 100% | ✅ ~80% |
+| **Stabilité** | ⚠️ Moyenne | ❌ Faible | ✅ Excellente | ✅ Excellente |
+| **Production ready** | ⚠️ Non | 🚫 Non | ✅ **Oui** | ✅ **Oui** |
+
+### Recommandations d'Usage Gemini
+
+**✅ Scénarios adaptés**:
+```bash
+# Questions simples
+COPILOT_MODEL=gemini-2.5-pro ccc -p "Explain this code"
+
+# Suggestions sans modification
+COPILOT_MODEL=gemini-2.5-pro ccc -p "Suggest improvements"
+
+# Analyses statiques
+COPILOT_MODEL=gemini-2.5-pro ccc -p "Find bugs in this file"
+```
+
+**🚫 Scénarios à éviter**:
+```bash
+# ❌ File creation - Préférer Claude
+# COPILOT_MODEL=gemini-3-pro-preview ccc -p "Create hello.txt"
+ccc-sonnet -p "Create hello.txt"  # ✅ Use Claude instead
+
+# ❌ Multi-tool workflows - Préférer Claude
+# COPILOT_MODEL=gemini-3-pro-preview ccc -p "Refactor this module"
+ccc-sonnet -p "Refactor this module"  # ✅ Use Claude instead
+
+# ❌ MCP tool usage - Préférer Claude
+# COPILOT_MODEL=gemini-2.5-pro ccc -p "Use grep to find TODOs"
+ccc-sonnet -p "Use grep to find TODOs"  # ✅ Use Claude instead
+```
+
+### Migration Path pour utilisateurs Gemini
+
+**Si tu utilises actuellement gemini-2.5-pro** :
+
+```
+Aujourd'hui (avant 17 fév 2026):
+├─ Prompts simples → Continue avec gemini-2.5-pro
+├─ Agentic tasks → Migre vers ccc-sonnet (Claude)
+└─ Production code → Migre vers ccc-sonnet
+
+Après 17 février 2026:
+├─ ALL scenarios → ccc-sonnet (Claude Sonnet 4.5)
+├─ Alternative → COPILOT_MODEL=gpt-4.1 ccc
+└─ Expérimental → gemini-3-pro-preview + subagent workaround
+```
+
+**Si tu veux tester gemini-3-pro-preview** :
+
+```bash
+# Avec subagent workaround (requis pour agentic)
+COPILOT_MODEL=gemini-3-pro-preview CLAUDE_CODE_SUBAGENT_MODEL=gpt-5-mini ccc
+
+# Mais préférer directement Claude pour production
+ccc-sonnet  # ✅ Plus stable, meilleure qualité
+```
+
+### Diagnostic Gemini
+
+Si tu rencontres des problèmes avec Gemini en mode agentic :
+
+```bash
+# Dans le projet cc-copilot-bridge
+./scripts/test-gemini.sh
+
+# Voir le rapport de diagnostic
+cat debug-gemini/diagnostic-report.md
+
+# Analyser les logs copilot-api
+./scripts/analyze-copilot-logs.sh debug-gemini/copilot-api-verbose.log
+```
+
+**Voir aussi** :
+- [TROUBLESHOOTING.md - Gemini Agentic Mode Issues](TROUBLESHOOTING.md#-gemini-agentic-mode-issues-copilot-api)
+- [copilot-api Issue #151](https://github.com/ericc-ch/copilot-api/issues/151) - Gemini compatibility
+
+### Conclusion : Quand utiliser Gemini ?
+
+**Gemini est adapté UNIQUEMENT pour** :
+- ✅ Questions et explications simples
+- ✅ Analyses statiques (pas de modification)
+- ✅ Expérimentation et tests
+
+**Pour tout le reste, préférer** :
+- ⭐ **Claude Sonnet 4.5** (`ccc-sonnet`) - Meilleur choix général
+- ✅ **GPT-4.1** (`ccc-gpt`) - Alternative solide
+- ✅ **Claude Opus 4.5** (`ccc-opus`) - Qualité maximale
+
 ## Modèles Ollama (Local - Updated January 2026)
 
 ### Modèles recommandés
