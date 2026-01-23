@@ -454,21 +454,9 @@ alias ccs
 
 ---
 
-## Cheat Sheet
-
-| Command | Provider | Model | Use Case |
-|---------|----------|-------|----------|
-| `ccd` | Anthropic | Sonnet | Production, official API |
-| `ccc` | Copilot | Sonnet 4.5 | Daily development (1x quota) |
-| `ccc-opus` | Copilot | Opus 4.5 | Complex analysis (3x quota) |
-| `ccc-haiku` | Copilot | Haiku 4.5 | Quick questions (0.33x quota) |
-| `ccc-gpt` | Copilot | GPT-4.1 | Routine tasks (0x = free) |
-| `cco` | Ollama | qwen2.5-coder | Privacy, offline |
-| `ccs` | - | - | Check all providers |
-
----
-
 **That's it!** You're ready to use cc-copilot-bridge.
+
+For a printable quick reference, see [Cheatsheet](docs/CHEATSHEET.md).
 
 ---
 

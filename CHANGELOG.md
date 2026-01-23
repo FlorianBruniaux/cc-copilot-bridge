@@ -22,6 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 Sanitized all credential placeholders across docs (CLAUDE.md, ARCHITECTURE.md, FEATURES.md, BEST-PRACTICES.md, TROUBLESHOOTING.md)
 - 🔧 Added explanatory comments for placeholder values (e.g., "copilot-api ignores this value")
 
+**Documentation Cleanup**
+- 📝 CHEATSHEET.md: Complete rewrite (250 → 39 lines) - now a true printable quick reference
+  - Removed emojis (ASCII-only for terminal/printer compatibility)
+  - Removed duplicate content from README/COMMANDS/TROUBLESHOOTING
+  - Updated version v1.2.0 → v1.4.0
+  - Max line width: 65 columns (fits 80-column terminals)
+- 📝 QUICKSTART.md: Removed duplicate cheat sheet table, replaced with link
+- 📝 COMMANDS.md: Updated version header v1.2.0 → v1.4.0
+
 ---
 
 ## [1.4.0] - 2026-01-22

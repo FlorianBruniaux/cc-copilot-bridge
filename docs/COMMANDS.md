@@ -1,6 +1,6 @@
 # Claude Code Multi-Provider - Quick Command Reference
 
-**Reading time**: 10 minutes | **Skill level**: Beginner | **Version**: v1.2.0 | **Last updated**: 2026-01-22
+**Reading time**: 10 minutes | **Skill level**: Beginner | **Version**: v1.4.0 | **Last updated**: 2026-01-23
 
 ---
 
