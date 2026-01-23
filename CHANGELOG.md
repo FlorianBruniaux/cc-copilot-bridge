@@ -5,6 +5,71 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-01-23
+
+### Added
+
+**Unified Fork Launcher (PR #167 + #170) - EXPERIMENTAL**
+- 🚀 New launcher `scripts/launch-unified-fork.sh` combining both PRs from caozhiyuan/copilot-api:
+  - **PR #167**: Gemini 3 thinking support (`thought_signature`, `reasoning_text`, `reasoning_opaque`)
+  - **PR #170**: GPT Codex `/responses` endpoint support
+- ✨ Source: `caozhiyuan/copilot-api` branch `all` (updated 2026-01-22)
+- ✨ Auto-clones fork if not present, auto-updates every 24h
+- ✨ Checks PR merge status (informational) before starting
+- ✨ Supports both `bun` and `npm` runtimes
+- ✨ New aliases: `ccunified`, `ccc-gemini3`, `ccc-gemini3-pro`
+
+**⚠️ IMPORTANT - Experimental Status**:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| GPT Codex (/responses) | ✅ Tested | Works, same as v1.5.0 |
+| Standard models | ✅ Working | Claude, GPT-4.1, Gemini 2.5, etc. |
+| **Gemini 3 agentic mode** | ⚠️ UNTESTED | PR #167 adds thinking, NOT tool calling fix |
+
+**What PR #167 actually adds**:
+- Support for Gemini 3 "thinking" response fields
+- This is NOT the same as fixing tool calling format translation
+- The core issue (Claude → OpenAI → Gemini format) may still exist
+- **Requires testing before claiming it works**
+
+**Supported Models via Unified Fork**:
+| Model | Endpoint | Status |
+|-------|----------|--------|
+| `gpt-5.2-codex` | /responses | ✅ Tested |
+| `gpt-5.1-codex-*` | /responses | ✅ Tested |
+| All Claude, GPT-4.1, etc. | /chat/completions | ✅ Working |
+| `gemini-3-flash-preview` | /chat/completions | ⚠️ Untested agentic |
+| `gemini-3-pro-preview` | /chat/completions | ⚠️ Untested agentic |
+
+### Changed
+
+- 📝 Updated README.md with unified fork section
+- 📝 Updated TROUBLESHOOTING.md with Gemini 3 unified fork solution
+- 📝 Updated CLAUDE.md with unified fork documentation
+
+### Migration from v1.5.0
+
+If you were using `launch-responses-fork.sh` for Codex models:
+```bash
+# Old way (Codex only)
+ccfork && ccc-codex
+
+# New way (Codex + Gemini 3 thinking)
+ccunified && ccc-codex
+# OR
+ccunified && ccc-gemini3
+```
+
+### Links
+
+- Fork source: [caozhiyuan/copilot-api](https://github.com/caozhiyuan/copilot-api/tree/all)
+- PR #167: [Gemini 3 thinking](https://github.com/ericc-ch/copilot-api/pull/167)
+- PR #170: [Codex /responses](https://github.com/ericc-ch/copilot-api/pull/170)
+- Release: [v1.5.1](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.1)
+
+---
+
 ## [1.5.0] - 2026-01-23
 
 ### Added
@@ -453,9 +518,10 @@ See [REPO-STRUCTURE.md](REPO-STRUCTURE.md) for contribution guidelines.
 - **Repository**: https://github.com/FlorianBruniaux/cc-copilot-bridge
 - **Issues**: https://github.com/FlorianBruniaux/cc-copilot-bridge/issues
 
+[1.5.1]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.1
 [1.5.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.0
 [1.4.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.4.0
 [1.3.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.3.0
 [1.2.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.2.0
 [1.0.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.0.0
-[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.5.1...HEAD

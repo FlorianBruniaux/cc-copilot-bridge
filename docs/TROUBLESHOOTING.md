@@ -769,7 +769,47 @@ Test 5 succeeds, Test 2 fails → Gemini 3 preview limitation
 
 ### Solutions
 
-**Option 1: Use Stable Gemini 2.5 Pro** ⭐ Recommended
+**Option 0: Use Unified Fork (EXPERIMENTAL for Gemini 3)** 🧪
+
+The unified fork combines PR #167 (Gemini 3 thinking support) + PR #170 (Codex /responses).
+
+**⚠️ Important caveat**: PR #167 adds support for Gemini 3 "thinking" response fields (`thought_signature`, `reasoning_opaque`). This is **NOT the same as fixing tool calling format translation**. The core issue (Claude → OpenAI → Gemini format) may still exist.
+
+```bash
+# Terminal 1: Launch unified fork
+ccunified
+# OR
+~/Sites/perso/cc-copilot-bridge/scripts/launch-unified-fork.sh
+
+# Terminal 2: Test Gemini 3
+ccc-gemini3       # gemini-3-flash-preview
+ccc-gemini3-pro   # gemini-3-pro-preview
+```
+
+**What to test**:
+```bash
+# 1. Baseline (should work)
+ccc-gemini3 -p "1+1"
+
+# 2. Agentic mode (uncertain - please report results!)
+ccc-gemini3
+❯ Create a file test.txt with "hello"
+# Check: Was the file created?
+```
+
+**Pros**:
+- ✅ Adds Gemini 3 thinking response support
+- ✅ Also supports Codex models (tested, working)
+- ✅ Auto-clones and updates fork
+
+**Cons**:
+- ⚠️ **Agentic mode UNTESTED** - may or may not improve tool calling
+- ⚠️ Requires running fork instead of official copilot-api
+- ⚠️ Fork maintenance depends on community
+
+**Source**: [caozhiyuan/copilot-api branch 'all'](https://github.com/caozhiyuan/copilot-api/tree/all)
+
+**Option 1: Use Stable Gemini 2.5 Pro**
 
 ```bash
 COPILOT_MODEL=gemini-2.5-pro ccc

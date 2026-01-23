@@ -197,30 +197,42 @@ cco-devstral            # Explicit Devstral
 cco-granite             # Granite4 (long context)
 ```
 
-### 3. **GPT Codex Models** (via copilot-api PR #170)
+### 3. **GPT Codex & Gemini 3 Models** (via Unified Fork - EXPERIMENTAL)
 
-GPT Codex models use OpenAI's `/responses` endpoint, which requires a fork of copilot-api.
+GPT Codex models use OpenAI's `/responses` endpoint, and Gemini 3 models have thinking support. Both require a fork of copilot-api that combines PR #167 and #170.
+
+**⚠️ Important**: Codex models are tested and working. Gemini 3 **agentic mode is UNTESTED** - PR #167 adds thinking support, but may not fix tool calling issues.
 
 **Setup**:
 ```bash
-# Terminal 1: Launch fork (auto-clones if needed)
-ccfork
+# Terminal 1: Launch unified fork (auto-clones if needed)
+ccunified
 
-# Terminal 2: Use Codex
-ccc-codex       # gpt-5.2-codex (latest)
-ccc-codex-mini  # gpt-5.1-codex-mini (fast)
-ccc-codex-max   # gpt-5.1-codex-max (quality)
+# Terminal 2: Use models
+ccc-codex         # gpt-5.2-codex ✅ Tested
+ccc-gemini3       # gemini-3-flash-preview ⚠️ Experimental
+ccc-gemini3-pro   # gemini-3-pro-preview ⚠️ Experimental
 ```
 
-**Available Models**:
-| Model | Multiplier | Use Case |
-|-------|-----------|----------|
-| `gpt-5.2-codex` | 1x | Latest, recommended |
-| `gpt-5.1-codex` | 1x | Stable alternative |
-| `gpt-5.1-codex-mini` | 0x | Fast, free tier |
-| `gpt-5.1-codex-max` | 3x | Maximum quality |
+**Model Status**:
+| Model | Endpoint | Status |
+|-------|----------|--------|
+| `gpt-5.2-codex` | /responses | ✅ Tested |
+| `gpt-5.1-codex-mini` | /responses | ✅ Tested |
+| `gemini-3-flash-preview` | /chat/completions | ⚠️ Agentic untested |
+| `gemini-3-pro-preview` | /chat/completions | ⚠️ Agentic untested |
 
-**Status**: [PR #170](https://github.com/ericc-ch/copilot-api/pull/170) - Fork tested, 6/6 tests passed
+**What to test for Gemini 3**:
+```bash
+# 1. Baseline (should work)
+ccc-gemini3 -p "1+1"
+
+# 2. Agentic mode (uncertain - please report results!)
+ccc-gemini3
+❯ Create a file test.txt with "hello"
+```
+
+**Fork source**: [caozhiyuan/copilot-api branch 'all'](https://github.com/caozhiyuan/copilot-api/tree/all) | [PR #167](https://github.com/ericc-ch/copilot-api/pull/167) | [PR #170](https://github.com/ericc-ch/copilot-api/pull/170)
 
 📖 **Full guide**: [docs/ALL-MODEL-COMMANDS.md](docs/ALL-MODEL-COMMANDS.md)
 
@@ -476,7 +488,7 @@ cco
 
 ## 🚀 Version
 
-**Current**: v1.5.0
+**Current**: v1.5.1
 
 **Changelog**: See [CHANGELOG.md](CHANGELOG.md)
 

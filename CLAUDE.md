@@ -105,28 +105,33 @@ Before launching, `claude-switch` verifies:
 | Anthropic | Native | Opus/Sonnet/Haiku | 100% (permissive) |
 | Copilot-Claude | /chat/completions | claude-*-4.5 | 100% (permissive) |
 | Copilot-GPT | /chat/completions | gpt-4.1, gpt-5, gpt-5-mini | ~80% (strict validation) |
-| Copilot-Gemini | /chat/completions | gemini-3-flash-preview, gemini-3-pro-preview, gemini-2.5-pro | ~80% (strict validation) |
-| Copilot-Codex | /responses | gpt-*-codex | ✅ Supported (via PR #170 fork) |
+| Copilot-Gemini | /chat/completions | gemini-2.5-pro | ~80% (strict validation) |
+| Copilot-Gemini3 | /chat/completions | gemini-3-flash-preview, gemini-3-pro-preview | ⚠️ UNTESTED agentic (via unified fork) |
+| Copilot-Codex | /responses | gpt-*-codex | ✅ Tested (via unified fork) |
 | Ollama | Native | devstral, granite4, qwen3-coder | 100% (permissive) |
 
-**GPT Codex Models (via PR #170):**
+**Unified Fork (PR #167 + #170) - EXPERIMENTAL:**
 
-GPT Codex models (`gpt-5.2-codex`, `gpt-5.1-codex`, etc.) require OpenAI's `/responses` endpoint.
-- Official copilot-api v0.7.0: ❌ Not supported (`/chat/completions` only)
-- Fork PR #170: ✅ Supported (adds `/responses` endpoint)
+The unified fork combines two features from caozhiyuan/copilot-api branch 'all':
+- **PR #167**: Gemini 3 thinking support (`thought_signature`, `reasoning_text`, `reasoning_opaque`)
+- **PR #170**: GPT Codex `/responses` endpoint support
+
+**⚠️ Gemini 3 Warning**: PR #167 adds support for "thinking" response fields. This is **NOT** a fix for tool calling format translation. The core issue (Claude → OpenAI → Gemini format) may still exist. **Testing required before relying on it.**
 
 **Usage:**
 ```bash
-# Terminal 1: Launch fork
-ccfork  # Uses scripts/launch-responses-fork.sh
+# Terminal 1: Launch unified fork
+ccunified  # Uses scripts/launch-unified-fork.sh
 
-# Terminal 2: Use Codex models
-ccc-codex       # gpt-5.2-codex (recommended)
-ccc-codex-mini  # gpt-5.1-codex-mini (fast, 0x multiplier)
-ccc-codex-max   # gpt-5.1-codex-max (quality, 3x multiplier)
+# Terminal 2: Use models
+ccc-codex         # gpt-5.2-codex ✅ Tested
+ccc-codex-mini    # gpt-5.1-codex-mini ✅ Tested
+ccc-gemini3       # gemini-3-flash-preview ⚠️ Untested agentic
+ccc-gemini3-pro   # gemini-3-pro-preview ⚠️ Untested agentic
 ```
 
-**PR Tracking:** [ericc-ch/copilot-api#170](https://github.com/ericc-ch/copilot-api/pull/170)
+**Fork Source:** [caozhiyuan/copilot-api branch 'all'](https://github.com/caozhiyuan/copilot-api/tree/all)
+**PR Tracking:** [PR #167](https://github.com/ericc-ch/copilot-api/pull/167), [PR #170](https://github.com/ericc-ch/copilot-api/pull/170)
 
 ### MCP Profiles System (Advanced)
 
@@ -432,21 +437,40 @@ ccc -p "1+1"
 
 **Cause**: Traduction Claude tool calling → OpenAI → Gemini format introduit des incompatibilités. Gemini utilise un format tool calling spécifique à Google qui diffère de Claude et OpenAI.
 
-**Modèles affectés**:
+**Models affected**:
 
-| Modèle | Prompts Simples | Mode Agentic | Status |
+| Model | Simple Prompts | Agentic Mode | Status |
 |--------|----------------|--------------|--------|
-| `gemini-2.5-pro` | ✅ OK | ⚠️ Limité | Deprecating 2/17/26 |
-| `gemini-3-pro-preview` | ✅ OK | ❌ Mauvais | Experimental |
-| `gemini-3-flash-preview` | ✅ OK | ❌ Mauvais | Experimental |
+| `gemini-2.5-pro` | ✅ OK | ⚠️ Limited | Deprecating 2/17/26 |
+| `gemini-3-pro-preview` | ✅ OK | ⚠️ UNTESTED via fork | Experimental |
+| `gemini-3-flash-preview` | ✅ OK | ⚠️ UNTESTED via fork | Experimental |
 
 **Solutions**:
 
-**Option 1: Utiliser Claude (Recommandé - 100% compatible)** ⭐
+**Option 0: Test Unified Fork (EXPERIMENTAL)** 🧪
+
+The unified fork adds PR #167 (Gemini 3 thinking) + PR #170 (Codex).
+
+**⚠️ Important caveat**: PR #167 adds support for Gemini 3 "thinking" response fields (`thought_signature`, `reasoning_opaque`). This is **NOT the same** as fixing tool calling format translation. The core issue (Claude → OpenAI → Gemini) may still exist.
 
 ```bash
-ccc-sonnet  # Claude Sonnet 4.5 (défaut)
-ccc-opus    # Claude Opus 4.5 (meilleure qualité)
+# Terminal 1: Launch unified fork
+ccunified  # Or ~/Sites/perso/cc-copilot-bridge/scripts/launch-unified-fork.sh
+
+# Terminal 2: Test Gemini 3
+ccc-gemini3       # gemini-3-flash-preview
+ccc-gemini3-pro   # gemini-3-pro-preview
+
+# Agentic test (uncertain result):
+❯ Create test.txt with "hello"
+# Check: Was the file created?
+```
+
+**Option 1: Use Claude (Recommended - 100% compatible)** ⭐
+
+```bash
+ccc-sonnet  # Claude Sonnet 4.5 (default)
+ccc-opus    # Claude Opus 4.5 (best quality)
 ccc-haiku   # Claude Haiku 4.5 (ultra rapide)
 
 ❯ Create hello.txt with "test"
@@ -560,10 +584,12 @@ Actuellement Gemini 3 Preview:
 
 ## Version Information
 
-- **claude-switch**: v1.5.0 (2026-01-23) - Added Codex support via copilot-api PR #170 fork
-- **copilot-api**: v0.7.0 (official) + PR #170 fork (for Codex models)
+- **claude-switch**: v1.5.1 (2026-01-23) - Added unified fork (Codex tested, Gemini 3 experimental)
+- **copilot-api**: v0.7.0 (official) + unified fork (PR #167 + #170)
   - Official: `/chat/completions` only - voir issue #174 pour fix billing header
-  - Fork PR #170: Adds `/responses` endpoint for Codex models
+  - Unified fork: Gemini 3 thinking support + Codex `/responses` endpoint
+  - ⚠️ Gemini 3 agentic mode: UNTESTED - PR #167 adds thinking, not tool calling fix
+  - Fork source: [caozhiyuan/copilot-api branch 'all'](https://github.com/caozhiyuan/copilot-api/tree/all)
 - **Claude Code CLI**: v2.1.15 (@anthropic-ai/claude-code npm package)
 - **Ollama**: Homebrew service, default model: devstral-small-2 (backup: ibm/granite4:small-h)
 
