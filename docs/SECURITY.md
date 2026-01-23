@@ -185,6 +185,88 @@ cco                      # Should still work
 ❯ Write a function      # Works offline
 ```
 
+#### ⚠️ Ollama Security Vulnerabilities (January 2026)
+
+**CRITICAL: Ollama has known security vulnerabilities that require operational mitigation.**
+
+| Vulnerability | Severity | Description | Mitigation |
+|---------------|----------|-------------|------------|
+| **CNVD-2025-04094** | 🔴 Critical | No authentication by default - any network access to port 11434 can call API | Never expose port 11434; firewall to 127.0.0.1 only |
+| **Model File OOB Write** | 🔴 High | Malformed .gguf files can trigger out-of-bounds write (RCE potential) | Only load models from trusted sources; verify checksums |
+| **Model Poisoning** | 🟡 High | Unrestricted model upload API allows backdoored models | Disable upload API; whitelist approved models |
+
+**Recommended Hardening**:
+```bash
+# 1. Firewall: Block external access to Ollama
+sudo ufw deny 11434
+# Or allow only localhost
+sudo ufw allow from 127.0.0.1 to any port 11434
+
+# 2. Resource limits (prevent DoS)
+export OLLAMA_MAX_QUEUE=5
+export OLLAMA_NUM_PARALLEL=1
+export OLLAMA_MAX_LOADED_MODELS=1
+
+# 3. Run as non-root user (if containerized)
+# See Dockerfile example in docs
+```
+
+**Source**: [Cisco Shodan Case Study on Ollama (2025)](https://blogs.cisco.com/security/detecting-exposed-llm-servers-shodan-case-study-on-ollama)
+
+---
+
+#### 🔒 Air-Gapped Model Verification Protocol
+
+**Problem**: Ollama cannot verify model integrity in air-gapped environments (GitHub Issue #9756). When models are transferred offline, the system assumes manifest data is authoritative.
+
+**3-Stage Verification Protocol**:
+
+**Stage 1: Download (Internet-connected system)**
+```bash
+# 1. Pull model from ollama.com
+ollama pull devstral-small-2
+
+# 2. Compute SHA-256 for each model file
+sha256sum ~/.ollama/models/blobs/* > model-checksums.sha256
+
+# 3. Document in audit log
+echo "$(date) | devstral-small-2 | $(cat model-checksums.sha256)" >> model-audit.log
+```
+
+**Stage 2: Transfer (Physical media)**
+```bash
+# 1. Create archive
+tar -czf ollama-models.tar.gz ~/.ollama/models/
+
+# 2. Compute archive checksum
+sha256sum ollama-models.tar.gz > archive.sha256
+
+# 3. Transfer via USB (scan for malware before transfer)
+# 4. Keep checksums on separate medium for verification
+```
+
+**Stage 3: Import (Air-gapped system)**
+```bash
+# 1. Verify archive checksum
+sha256sum -c archive.sha256
+
+# 2. Extract models
+tar -xzf ollama-models.tar.gz -C ~/
+
+# 3. Verify individual model checksums
+sha256sum -c model-checksums.sha256
+
+# 4. Create Modelfile and register
+ollama create devstral-airgap -f ~/.ollama/Modelfile.devstral
+```
+
+**Audit Trail Requirements** (for regulated environments):
+- Model name, version, parameter count
+- Source URL (ollama.com vs HuggingFace vs private)
+- SHA-256 hash at each transfer stage
+- Date, time, operator identity
+- Approval chain before loading
+
 ---
 
 ### 1.3 MCP Server Data Sharing
@@ -1424,6 +1506,6 @@ sudo ifconfig en0 up                       # Re-enable network
 
 ---
 
-**Document Version**: 1.0.0
-**Last Updated**: 2026-01-22
+**Document Version**: 1.1.0
+**Last Updated**: 2026-01-23
 **Maintained By**: cc-copilot-bridge project

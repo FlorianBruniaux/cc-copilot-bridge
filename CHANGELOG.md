@@ -9,7 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-**Security**
+**Security Documentation (Ollama)**
+- 🔐 Added Ollama security vulnerabilities section in `docs/SECURITY.md`:
+  - CNVD-2025-04094: No authentication by default (Critical)
+  - Model File OOB Write: RCE potential via malformed .gguf (High)
+  - Model Poisoning: Unrestricted upload API (High)
+- 🔐 Added recommended hardening steps (firewall, resource limits)
+- 🔐 Source: Cisco Shodan Case Study on Ollama (2025)
+
+**Air-Gapped Model Verification Protocol**
+- 🔒 Added 3-stage verification protocol in `docs/SECURITY.md`:
+  - Stage 1: Download with SHA-256 checksums
+  - Stage 2: Transfer with archive verification
+  - Stage 3: Import with individual checksum verification
+- 🔒 Added audit trail requirements for regulated environments
+- 🔒 Reference: GitHub Issue #9756 (Ollama cannot verify integrity in air-gapped)
+
+**KV Cache Quantization Documentation**
+- ✨ Documented `OLLAMA_KV_CACHE_TYPE=q4_0` (Ollama 2025 feature)
+- ✨ Reduces KV cache memory by ~75% (48GB → 12GB for 64K context)
+- ✨ Enables 64K context on 32GB machines
+
+### Changed
+
+**Memory Requirements Updated**
+- 🔧 Corrected RAM specs in `CLAUDE.md`:
+  - Devstral 24B: 30-37GB total (was 23-27GB)
+  - Granite4 32B: 34-41GB total
+  - **Minimum**: 32GB for 24B, **48GB recommended** for 32B + 64K
+- 🔧 Updated `docs/OPTIMISATION-M4-PRO.md` with q4_0 cache type
+
+**Model Recommendations**
+- ⚠️ Added warning for non-agentic models in `CLAUDE.md`:
+  - CodeLlama:13b (~40% SWE-bench) - No tool calling
+  - Llama3.1:8b (**15%** SWE-bench) - "Catastrophic failure" on agentic tasks
+- ⚠️ Note: High HumanEval ≠ agentic capability (Llama3.1:8b = 68% HumanEval but 15% SWE-bench)
+
+### Security
+
 - 🔐 Added `.gitleaks.toml` configuration for secret detection
 - 🔐 Added GitHub Actions workflow `.github/workflows/security-scan.yml` for automated security scanning
 - 🔐 Gitleaks scans on every push/PR to detect accidentally committed credentials

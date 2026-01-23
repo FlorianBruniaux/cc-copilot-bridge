@@ -12,12 +12,14 @@
 
 ```bash
 OLLAMA_FLASH_ATTENTION=1          # Flash Attention pour Gemma 3/Qwen 3
-OLLAMA_KV_CACHE_TYPE=q8_0         # KV Cache optimisé pour M4 Pro
+OLLAMA_KV_CACHE_TYPE=q4_0         # KV Cache quantization - reduces memory by ~75%
 OLLAMA_NUM_PARALLEL=4             # 4 requêtes parallèles
 OLLAMA_MAX_LOADED_MODELS=3        # 3 modèles chargés simultanément
 OLLAMA_CONTEXT_LENGTH=8192        # Contexte optimal pour 32B
 OLLAMA_KEEP_ALIVE=24h             # Garde le modèle en RAM 24h
 ```
+
+> **New in 2025**: `OLLAMA_KV_CACHE_TYPE=q4_0` enables KV cache quantization, reducing cache memory from ~48GB to ~12GB for 64K context. This makes 64K context feasible on 32GB machines.
 
 ### Performances Attendues
 

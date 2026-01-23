@@ -156,8 +156,13 @@ ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
 **Verify effective context:** `ollama ps` (not `ollama show`)
 
 **Memory footprint on M4 Pro 48GB with 64K context:**
-- Devstral Q4_K_M: 15GB model + 8-12GB cache = **23-27GB total** → ~21GB libre
-- Recommendation: 32K for comfort, 64K possible but tight
+- Devstral Q4_K_M (24B): 18-22GB model + 12-15GB KV cache = **30-37GB total**
+- Granite4 (32B): 22-26GB model + 12-15GB KV cache = **34-41GB total**
+- **Minimum RAM**: 32GB for 24B models, **48GB recommended** for 32B + 64K context
+
+**KV Cache Quantization (Ollama 2025 feature):**
+- Enable with `OLLAMA_KV_CACHE_TYPE=q4_0` to reduce cache memory by ~75%
+- Enables 64K context on 32GB machines (previously required 48GB+)
 
 **Recommendations by Project Size:**
 | Project Size | Files | Recommended Solution |
@@ -176,6 +181,14 @@ ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
 | **devstral-small-2** (default) | 24B | 68% | 256K native | Best agentic coding |
 | ibm/granite4:small-h | 32B (9B active) | ~62% | 1M | Long context, 70% less VRAM |
 | qwen3-coder:30b | 30B | 85% | 256K | Highest accuracy, needs template work |
+
+**⚠️ Models NOT recommended for agentic tasks:**
+| Model | SWE-bench | Why Not |
+|-------|-----------|---------|
+| CodeLlama:13b | ~40% | No tool calling, weak on multi-file editing |
+| Llama3.1:8b | **15%** | "Catastrophic failure" on agentic tasks - cannot reliably use tools |
+
+> **Note**: High HumanEval scores (Llama3.1:8b = 68%) do NOT indicate agentic capability. SWE-bench measures real GitHub issue resolution, which requires tool use and multi-step reasoning.
 
 **Sources:**
 - [Taletskiy blog](https://taletskiy.com/blogs/ollama-claude-code/)
