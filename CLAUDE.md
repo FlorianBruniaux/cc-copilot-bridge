@@ -354,35 +354,50 @@ ollama pull ibm/granite4:small-h
 
 ### copilot-api Issue #174: Reserved Billing Header
 
-**Status**: ⚠️ Patch appliqué localement (en attente de fix officiel)
+**Problème**: Claude Code v2.1.15+ injecte `x-anthropic-billing-header` dans le system prompt, causant une erreur `400 invalid_request_body` avec copilot-api.
 
-**Problème**: Claude Code v2.1.15+ injecte `x-anthropic-billing-header` dans le system prompt, causant une erreur `invalid_request_body` avec copilot-api.
+**Solution 1: Variable d'environnement (Recommandée)**
 
-**Patch appliqué**: Filtre automatique du header réservé dans `translateAnthropicMessagesToOpenAI`
+Désactive l'injection du header à la source. Ajouter dans `~/.claude/settings.json`:
 
-**Fichier modifié**:
+```json
+{
+  "env": {
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0"
+  }
+}
 ```
-~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
+
+Ou via variable d'environnement shell:
+```bash
+export CLAUDE_CODE_ATTRIBUTION_HEADER=0
+```
+
+**Solution 2: Patch regex dans copilot-api (Alternative)**
+
+Filtre le header côté proxy. Utile si la Solution 1 ne fonctionne pas ou pour une protection défensive.
+
+Fichier: `~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js`
+
+Modification dans `translateAnthropicMessagesToOpenAI`:
+```javascript
+// FIX #174: Filter x-anthropic-billing-header
+systemMessages = systemMessages.map((it) => {
+    if (typeof it.content === "string" && it.content.startsWith("x-anthropic-billing-header")) {
+        it.content = it.content.replace(/^x-anthropic-billing-header:[^\n]*\n+/, "");
+    }
+    return it;
+});
 ```
 
 **Vérification**:
 ```bash
-# Vérifier que le patch est présent
-grep -n "FIX #174" ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
-
-# Tester le fix
-./scripts/test-billing-header-fix.sh
+# Test rapide
+ccc -p "1+1"
+# Attendu: Réponse sans erreur 400
 ```
 
-**Restauration** (si nécessaire):
-```bash
-cp ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js.backup \
-   ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js
-```
-
-**⚠️ Important**: Le patch sera écrasé lors de `npm update -g copilot-api`. Après mise à jour, vérifier si le fix officiel est intégré ou ré-appliquer le patch.
-
-**Documentation complète**: [docs/TROUBLESHOOTING.md - Patch communautaire](docs/TROUBLESHOOTING.md#patch-communautaire-solution-avancée)
+**Note**: Le patch regex sera écrasé lors de `npm update -g copilot-api`. La Solution 1 est préférable car persistante.
 
 **Suivi**: [ericc-ch/copilot-api#174](https://github.com/ericc-ch/copilot-api/issues/174)
 
@@ -391,7 +406,7 @@ cp ~/.nvm/versions/node/v22.18.0/lib/node_modules/copilot-api/dist/main.js.backu
 ## Version Information
 
 - **claude-switch**: v1.4.0 (2026-01-22) - Updated Ollama: Devstral default, 64K context warning
-- **copilot-api**: v0.7.0 + patch #174 (endpoint limitation: /chat/completions only)
+- **copilot-api**: v0.7.0 (endpoint limitation: /chat/completions only) - voir issue #174 pour fix billing header
 - **Claude Code CLI**: v2.1.15 (@anthropic-ai/claude-code npm package)
 - **Ollama**: Homebrew service, default model: devstral-small-2 (backup: ibm/granite4:small-h)
 

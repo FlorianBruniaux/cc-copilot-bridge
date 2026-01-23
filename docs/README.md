@@ -173,6 +173,7 @@ cco  # Ollama
 ### Research & Analysis
 - [Competitive Analysis](research/COMPETITIVE-ANALYSIS.md) - Comparison with similar tools
 - [Technical Analysis](research/ANALYSIS.md) - Architecture decisions
+- [AgentAPI vs copilot-api](research/AGENTAPI-VS-COPILOT-API.md) - Complementary tools comparison
 
 ### Contributing
 - [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
@@ -230,7 +231,8 @@ cc-copilot-bridge/
     │
     └── Research
         ├── COMPETITIVE-ANALYSIS.md
-        └── ANALYSIS.md
+        ├── ANALYSIS.md
+        └── AGENTAPI-VS-COPILOT-API.md
 ```
 
 ---

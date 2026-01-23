@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+**Research Documentation**
+- 📊 Added AgentAPI vs copilot-api comparative analysis in `docs/research/AGENTAPI-VS-COPILOT-API.md`:
+  - Architectural differences: Terminal emulator vs API translation layer
+  - Complementary tools verdict (not alternatives)
+  - Use case decision matrix
+  - Community metrics (Jan 2026)
+  - Recommendation: Keep copilot-api for cc-copilot-bridge use case
+
 **Security Documentation (Ollama)**
 - 🔐 Added Ollama security vulnerabilities section in `docs/SECURITY.md`:
   - CNVD-2025-04094: No authentication by default (Critical)
