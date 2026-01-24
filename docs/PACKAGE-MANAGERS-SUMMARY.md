@@ -136,7 +136,7 @@ Comme dit Bernard : "La bonne pratique c'est de proposer une install via les pac
 ```
 cc-copilot-bridge/
 ├── Formula/
-│   ├── claude-switch.rb           # Homebrew formula
+│   ├── cc-copilot-bridge.rb           # Homebrew formula
 │   └── README.md                  # Doc pour mainteneurs
 ├── .github/workflows/
 │   └── build-packages.yml         # CI/CD automatisé
@@ -171,7 +171,7 @@ git tag v1.5.2 && git push --tags
 GitHub Release avec :
 - claude-switch_1.5.2.deb
 - claude-switch-1.5.2-1.noarch.rpm
-- claude-switch.rb (Formula)
+- cc-copilot-bridge.rb (Formula)
 - Source code (zip, tar.gz)
 ```
 
@@ -179,7 +179,7 @@ GitHub Release avec :
 
 ```bash
 cd ~/Sites/perso/homebrew-tap
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
 git commit -m "Update to v1.5.2"
 git push
 ```
@@ -189,7 +189,7 @@ git push
 **Homebrew (macOS/Linux)** :
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 eval "$(claude-switch --shell-config)"
 ```
 
@@ -264,7 +264,7 @@ eval "$(claude-switch --shell-config)"
 ```bash
 # 1. Installer via Homebrew (propre, updates faciles)
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 
 # 2. Générer le fichier d'aliases
 claude-switch --shell-config > ~/.claude/aliases.sh
@@ -308,7 +308,7 @@ cco --help
 mkdir homebrew-tap
 cd homebrew-tap
 mkdir Formula
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
 git init
 git add .
 git commit -m "Initial tap with claude-switch"
@@ -337,8 +337,8 @@ git push origin v1.5.2
 cd ~/Sites/perso/homebrew-tap
 git pull  # Si GitHub Actions a commit
 # OU copie manuelle :
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
-git add Formula/claude-switch.rb
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Update claude-switch to v1.5.2"
 git push
 ```
@@ -348,7 +348,7 @@ git push
 brew update
 brew upgrade claude-switch  # Si déjà installé
 # OU
-brew install FlorianBruniaux/tap/claude-switch
+brew install FlorianBruniaux/tap/cc-copilot-bridge
 
 claude-switch --version  # Doit afficher v1.5.2
 eval "$(claude-switch --shell-config)"
@@ -361,7 +361,7 @@ Une fois le projet stable et populaire :
 
 **Homebrew Core** :
 - Plus besoin de tap
-- `brew install claude-switch` directement
+- `brew install cc-copilot-bridge` directement
 - Process : https://docs.brew.sh/Adding-Software-to-Homebrew
 
 **Debian/Ubuntu Official Repos** :
@@ -402,7 +402,7 @@ Pour installer claude-switch, utilisez votre package manager :
 
 Homebrew (macOS/Linux) :
   brew tap FlorianBruniaux/tap
-  brew install claude-switch
+  brew install cc-copilot-bridge
   eval "$(claude-switch --shell-config)"
 
 Debian/Ubuntu :
@@ -430,7 +430,7 @@ Script d'installation (demande avant de modifier config) :
 
 ### Exemples de Code
 
-- **Formula** : `Formula/claude-switch.rb`
+- **Formula** : `Formula/cc-copilot-bridge.rb`
 - **GitHub Actions** : `.github/workflows/build-packages.yml`
 - **Tests** : `scripts/test-install.sh`
 

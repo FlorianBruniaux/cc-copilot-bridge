@@ -9,7 +9,7 @@ Guide étape par étape pour publier une nouvelle version de `claude-switch`.
 ```bash
 # 1. Update version
 vim claude-switch  # Changer Version: 1.5.3
-vim Formula/claude-switch.rb  # Changer version "1.5.3"
+vim Formula/cc-copilot-bridge.rb  # Changer version "1.5.3"
 
 # 2. Commit
 git add -A
@@ -27,8 +27,8 @@ git push origin v1.5.3
 cd ../homebrew-tap
 git pull origin main  # GitHub Actions a commit la formula
 # ou copie manuellement :
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
-git add Formula/claude-switch.rb
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Update claude-switch to v1.5.3"
 git push
 
@@ -75,9 +75,9 @@ vim claude-switch
 # -v|--version) echo "claude-switch v1.5.3" ;;
 ```
 
-**Fichier 2** : `Formula/claude-switch.rb`
+**Fichier 2** : `Formula/cc-copilot-bridge.rb`
 ```bash
-vim Formula/claude-switch.rb
+vim Formula/cc-copilot-bridge.rb
 
 # Ligne 6 :
 # version "1.5.2"
@@ -195,7 +195,7 @@ https://github.com/FlorianBruniaux/cc-copilot-bridge/releases
 ✅ **Assets attendus** :
 - `claude-switch_1.5.3.deb` (~5-10 KB)
 - `claude-switch-1.5.3-1.noarch.rpm` (~10-15 KB)
-- `claude-switch.rb` (Formula Homebrew)
+- `cc-copilot-bridge.rb` (Formula Homebrew)
 - `Source code (zip)`
 - `Source code (tar.gz)`
 
@@ -216,7 +216,7 @@ cd ~/Sites/perso/cc-copilot-bridge
 git pull origin main
 
 # Vérifier la formula
-cat Formula/claude-switch.rb | grep -E "version|sha256"
+cat Formula/cc-copilot-bridge.rb | grep -E "version|sha256"
 # version "1.5.3"
 # sha256 "abc123..." (plus PLACEHOLDER)
 ```
@@ -230,13 +230,13 @@ cd ~/Sites/perso/homebrew-tap
 git pull origin main
 
 # Option 2 : Copie manuelle (plus sûr)
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
 
 # Vérifier les changements
-git diff Formula/claude-switch.rb
+git diff Formula/cc-copilot-bridge.rb
 
 # Commit
-git add Formula/claude-switch.rb
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Update claude-switch to v1.5.3"
 git push
 ```
@@ -251,7 +251,7 @@ brew update
 brew upgrade claude-switch
 
 # Si pas installé
-brew install FlorianBruniaux/tap/claude-switch
+brew install FlorianBruniaux/tap/cc-copilot-bridge
 
 # Vérifier
 claude-switch --version
@@ -265,7 +265,7 @@ claude-switch --version
 ```bash
 # Fresh install sur machine de test
 brew uninstall claude-switch
-brew install FlorianBruniaux/tap/claude-switch
+brew install FlorianBruniaux/tap/cc-copilot-bridge
 
 # Vérifier version
 claude-switch --version
@@ -427,7 +427,7 @@ git commit -m "Fix critical bug in v1.5.3"
 ```bash
 # Nouvelle version (1.5.4)
 vim claude-switch  # Version: 1.5.4
-vim Formula/claude-switch.rb  # version "1.5.4"
+vim Formula/cc-copilot-bridge.rb  # version "1.5.4"
 
 git add -A
 git commit -m "Release v1.5.4: Fix critical bug from v1.5.3"
@@ -535,17 +535,17 @@ wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5
 sha256sum v1.5.3.tar.gz
 
 # Update Formula
-vim Formula/claude-switch.rb
+vim Formula/cc-copilot-bridge.rb
 # Remplacer SHA256
 
 # Commit et update tap
-git add Formula/claude-switch.rb
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Fix SHA256 for v1.5.3"
 git push
 
 cd ../homebrew-tap
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
-git add Formula/claude-switch.rb
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Fix SHA256 for claude-switch v1.5.3"
 git push
 ```
@@ -571,7 +571,7 @@ Avant de pusher le tag final :
 
 - [ ] Code tests pass localement
 - [ ] Version updated dans `claude-switch`
-- [ ] Version updated dans `Formula/claude-switch.rb`
+- [ ] Version updated dans `Formula/cc-copilot-bridge.rb`
 - [ ] CHANGELOG updated (optionnel)
 - [ ] Git status clean
 - [ ] Commit message descriptif

@@ -26,7 +26,7 @@
 
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 eval "$(claude-switch --shell-config)"
 ```
 

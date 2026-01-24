@@ -8,7 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Automated Homebrew Tap Sync**: GitHub Actions now auto-syncs Formula to `FlorianBruniaux/homebrew-tap` on release
+- **Daily Tap Sync Verification**: New workflow `.github/workflows/verify-tap-sync.yml` checks tap is in sync daily
 - Documentation: MLX vs GGUF note in Ollama sections (CLAUDE.md, README.md) - explains performance trade-offs on Apple Silicon
+
+### Changed
+- **Homebrew Package Renamed**: `claude-switch` → `cc-copilot-bridge` (matches repo name)
+- **Deterministic SHA256**: Release tarball created explicitly, SHA256 computed from actual release asset
+- **Formula URL**: Now points to release asset instead of GitHub archive (prevents SHA256 mismatch)
+
+### Fixed
+- **SHA256 Mismatch Bug**: `git archive` produced different tarball than GitHub, causing install failures
 
 ## [1.5.2] - 2026-01-24
 
@@ -17,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **🎉 Package Managers Support** - Major installation overhaul per community feedback
 
 - **Distribution Methods**:
-  - Homebrew Formula (`Formula/claude-switch.rb`) for macOS/Linux
+  - Homebrew Formula (`Formula/cc-copilot-bridge.rb`) for macOS/Linux
   - `.deb` package build for Debian/Ubuntu
   - `.rpm` package build for RHEL/Fedora/CentOS
   - GitHub Actions automated build pipeline (`.github/workflows/build-packages.yml`)
@@ -65,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Details
 
-- **Version**: 1.5.2 (in `claude-switch` and `Formula/claude-switch.rb`)
+- **Version**: 1.5.2 (in `claude-switch` and `Formula/cc-copilot-bridge.rb`)
 - **Homebrew Dependencies**: `netcat` (required), `ollama` (optional), `node` (optional)
 - **GitHub Actions**: Automatically computes SHA256, builds packages, creates releases
 - **SHA256**: Computed automatically for Homebrew Formula security
@@ -75,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 **Homebrew** (recommended):
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 eval "$(claude-switch --shell-config)"
 ```
 
@@ -104,7 +114,7 @@ rm ~/.claude/aliases.sh
 
 # Install via Homebrew
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 echo 'eval "$(claude-switch --shell-config)"' >> ~/.zshrc
 source ~/.zshrc
 ```

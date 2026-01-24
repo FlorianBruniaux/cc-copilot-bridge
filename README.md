@@ -69,7 +69,7 @@ A **multi-provider router** for Claude Code CLI that lets you switch between AI 
 
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 eval "$(claude-switch --shell-config)"
 ```
 

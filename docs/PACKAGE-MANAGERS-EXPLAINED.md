@@ -34,7 +34,7 @@ curl https://example.com/install.sh | bash
 **Solution avec Package Managers** :
 ```bash
 # ✅ Nouveau système
-brew install claude-switch
+brew install cc-copilot-bridge
 # - Installation standard (comme tous les outils)
 # - Dépendances gérées automatiquement
 # - Updates via brew upgrade
@@ -57,7 +57,7 @@ brew install claude-switch
 │  1. Compute SHA256 for Homebrew Formula                     │
 │  2. Build .deb package (Debian/Ubuntu)                      │
 │  3. Build .rpm package (RHEL/Fedora)                        │
-│  4. Update Formula/claude-switch.rb                         │
+│  4. Update Formula/cc-copilot-bridge.rb                         │
 │  5. Create GitHub Release                                    │
 │  6. Attach all packages to release                          │
 └────────┬────────────┬────────────┬─────────────────────────┘
@@ -102,7 +102,7 @@ brew install claude-switch
 ```
 FlorianBruniaux/homebrew-tap/
 ├── Formula/
-│   └── claude-switch.rb    # La formula
+│   └── cc-copilot-bridge.rb    # La formula
 └── README.md
 ```
 
@@ -113,10 +113,10 @@ FlorianBruniaux/homebrew-tap/
 
 ### Anatomie de la Formula
 
-**Fichier** : `Formula/claude-switch.rb`
+**Fichier** : `Formula/cc-copilot-bridge.rb`
 
 ```ruby
-class ClaudeSwitch < Formula
+class CcCopilotBridge < Formula
   desc "Multi-provider switcher for Claude Code CLI"
   homepage "https://github.com/FlorianBruniaux/cc-copilot-bridge"
 
@@ -178,7 +178,7 @@ brew tap FlorianBruniaux/tap
 
 **2. Installer le package**
 ```bash
-brew install claude-switch
+brew install cc-copilot-bridge
 # 1. Download tarball from GitHub
 # 2. Verify SHA256 checksum
 # 3. Extract to /tmp/claude-switch-XXXXX
@@ -225,7 +225,7 @@ cd homebrew-tap
 
 # Créer la structure
 mkdir Formula
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
 
 # README
 cat > README.md << 'EOF'
@@ -237,7 +237,7 @@ Homebrew formulae for FlorianBruniaux projects.
 
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 ```
 
 ## Packages
@@ -257,7 +257,7 @@ git push -u origin main
 ```bash
 # Install depuis le tap local
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 
 # Vérifier
 claude-switch --version
@@ -278,7 +278,7 @@ GitHub Actions calcule automatiquement :
 # .github/workflows/build-packages.yml
 git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.2/ HEAD > release.tar.gz
 SHA256=$(sha256sum release.tar.gz | awk '{print $1}')
-sed -i "s/PLACEHOLDER_SHA256/${SHA256}/g" Formula/claude-switch.rb
+sed -i "s/PLACEHOLDER_SHA256/${SHA256}/g" Formula/cc-copilot-bridge.rb
 ```
 
 **Manuellement** :
@@ -291,7 +291,7 @@ sha256sum v1.5.2.tar.gz
 # abc123def456... v1.5.2.tar.gz
 
 # Mettre à jour la formula
-sed -i 's/sha256 ".*"/sha256 "abc123def456..."/' Formula/claude-switch.rb
+sed -i 's/sha256 ".*"/sha256 "abc123def456..."/' Formula/cc-copilot-bridge.rb
 ```
 
 ---
@@ -686,10 +686,10 @@ on:
 - name: Update Homebrew Formula SHA256
   run: |
     # Remplacer PLACEHOLDER par le vrai SHA256
-    sed -i "s/PLACEHOLDER_SHA256/${{ steps.sha.outputs.SHA256 }}/g" Formula/claude-switch.rb
+    sed -i "s/PLACEHOLDER_SHA256/${{ steps.sha.outputs.SHA256 }}/g" Formula/cc-copilot-bridge.rb
 
     # Mettre à jour la version
-    sed -i "s/version \".*\"/version \"${{ steps.version.outputs.VERSION }}\"/g" Formula/claude-switch.rb
+    sed -i "s/version \".*\"/version \"${{ steps.version.outputs.VERSION }}\"/g" Formula/cc-copilot-bridge.rb
 ```
 
 #### 3. Build .deb Package
@@ -749,14 +749,14 @@ on:
     files: |
       claude-switch_*.deb
       claude-switch-*.rpm
-      Formula/claude-switch.rb
+      Formula/cc-copilot-bridge.rb
     body: |
       ## Installation
 
       ### Homebrew
       ```bash
       brew tap FlorianBruniaux/tap
-      brew install claude-switch
+      brew install cc-copilot-bridge
       ```
 
       ### Debian/Ubuntu
@@ -774,7 +774,7 @@ on:
   run: |
     git config --local user.email "github-actions[bot]@users.noreply.github.com"
     git config --local user.name "github-actions[bot]"
-    git add Formula/claude-switch.rb
+    git add Formula/cc-copilot-bridge.rb
     git commit -m "Update Homebrew formula SHA256 for v1.5.2"
     git push origin HEAD:main
 ```
@@ -806,11 +806,11 @@ git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.2/ HEAD > /tmp/test.t
 sha256sum /tmp/test.tar.gz
 # abc123...
 
-# 2. Mettre à jour Formula/claude-switch.rb
-sed -i 's/sha256 ".*"/sha256 "abc123..."/' Formula/claude-switch.rb
+# 2. Mettre à jour Formula/cc-copilot-bridge.rb
+sed -i 's/sha256 ".*"/sha256 "abc123..."/' Formula/cc-copilot-bridge.rb
 
 # 3. Tester localement
-brew install --build-from-source Formula/claude-switch.rb
+brew install --build-from-source Formula/cc-copilot-bridge.rb
 
 # 4. Vérifier
 claude-switch --version
@@ -924,8 +924,8 @@ git status
 grep "Version:" claude-switch
 # Version: 1.5.2
 
-# Vérifier Formula/claude-switch.rb
-grep "version" Formula/claude-switch.rb
+# Vérifier Formula/cc-copilot-bridge.rb
+grep "version" Formula/cc-copilot-bridge.rb
 # version "1.5.2"
 ```
 
@@ -962,7 +962,7 @@ Sur GitHub → Releases :
 - ✅ Assets:
   - `claude-switch_1.5.2.deb`
   - `claude-switch-1.5.2-1.noarch.rpm`
-  - `claude-switch.rb`
+  - `cc-copilot-bridge.rb`
   - Source code (zip)
   - Source code (tar.gz)
 
@@ -973,15 +973,15 @@ Le workflow commit automatiquement la Formula mise à jour.
 **Vérifier** :
 ```bash
 git pull origin main
-cat Formula/claude-switch.rb | grep sha256
+cat Formula/cc-copilot-bridge.rb | grep sha256
 # sha256 "abc123..."  (plus PLACEHOLDER)
 ```
 
 **Copier vers homebrew-tap** :
 ```bash
 cd ../homebrew-tap
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
-git add Formula/claude-switch.rb
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Update claude-switch to v1.5.2"
 git push
 ```
@@ -993,7 +993,7 @@ git push
 brew update
 brew upgrade claude-switch
 # ou si pas encore installé
-brew install claude-switch
+brew install cc-copilot-bridge
 ```
 
 **Debian** :
@@ -1034,10 +1034,10 @@ wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5
 sha256sum v1.5.2.tar.gz
 
 # Mettre à jour Formula
-sed -i 's/sha256 ".*"/sha256 "NEW_SHA256"/' Formula/claude-switch.rb
+sed -i 's/sha256 ".*"/sha256 "NEW_SHA256"/' Formula/cc-copilot-bridge.rb
 
 # Commit et push
-git add Formula/claude-switch.rb
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Fix SHA256 checksum"
 git push
 ```
@@ -1097,7 +1097,7 @@ Une fois le projet stable, contacter les mainteneurs :
 
 **Homebrew Core** :
 - Plus besoin de `brew tap`
-- `brew install claude-switch` directement
+- `brew install cc-copilot-bridge` directement
 - Processus : https://docs.brew.sh/Adding-Software-to-Homebrew
 
 **Debian Official Repos** :
@@ -1155,7 +1155,7 @@ stdenv.mkDerivation {
 
 ### Outils Utiles
 
-- **Homebrew Formula Linter** : `brew audit --strict Formula/claude-switch.rb`
+- **Homebrew Formula Linter** : `brew audit --strict Formula/cc-copilot-bridge.rb`
 - **Debian Linter** : `lintian claude-switch_1.5.2.deb`
 - **RPM Linter** : `rpmlint claude-switch-1.5.2-1.noarch.rpm`
 - **GitHub Actions Validator** : https://rhysd.github.io/actionlint/

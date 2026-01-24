@@ -393,7 +393,7 @@ ollama pull ibm/granite4:small-h
 **Homebrew (macOS/Linux)** :
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 eval "$(claude-switch --shell-config)"
 ```
 
@@ -451,7 +451,7 @@ antigen bundle ~/.claude/aliases.sh
 1. Compute SHA256 pour Homebrew Formula
 2. Build package `.deb` (Debian/Ubuntu)
 3. Build package `.rpm` (RHEL/Fedora/CentOS)
-4. Update `Formula/claude-switch.rb` avec SHA256
+4. Update `Formula/cc-copilot-bridge.rb` avec SHA256
 5. Create GitHub Release
 6. Attach packages (.deb, .rpm, .rb) aux assets
 7. Commit Formula update dans le repo
@@ -463,13 +463,13 @@ antigen bundle ~/.claude/aliases.sh
 ```
 FlorianBruniaux/homebrew-tap/
 ├── Formula/
-│   └── claude-switch.rb    # Homebrew formula
+│   └── cc-copilot-bridge.rb    # Homebrew formula
 └── README.md
 ```
 
 **Convention** : Le repo `homebrew-tap` devient le tap `FlorianBruniaux/tap`
 
-**Formula** : `Formula/claude-switch.rb` (Ruby)
+**Formula** : `Formula/cc-copilot-bridge.rb` (Ruby)
 - URL du tarball source (GitHub archive)
 - SHA256 checksum (sécurité)
 - Dépendances (`netcat`, optionnel: `ollama`, `node`)
@@ -481,7 +481,7 @@ FlorianBruniaux/homebrew-tap/
 ```bash
 # 1. Update version
 vim claude-switch  # Version: 1.5.3
-vim Formula/claude-switch.rb  # version "1.5.3"
+vim Formula/cc-copilot-bridge.rb  # version "1.5.3"
 
 # 2. Commit & tag
 git add -A
@@ -497,8 +497,8 @@ git push origin v1.5.3
 
 # 5. Update Homebrew tap
 cd ../homebrew-tap
-cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
-git add Formula/claude-switch.rb
+cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Update claude-switch to v1.5.3"
 git push
 
@@ -521,7 +521,7 @@ brew upgrade claude-switch
 **Homebrew Formula** :
 ```bash
 # Build from local formula
-brew install --build-from-source Formula/claude-switch.rb
+brew install --build-from-source Formula/cc-copilot-bridge.rb
 
 # Verify
 claude-switch --version
@@ -558,7 +558,7 @@ wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5
 sha256sum v1.5.2.tar.gz
 
 # Update Formula
-sed -i 's/sha256 ".*"/sha256 "NEW_SHA"/' Formula/claude-switch.rb
+sed -i 's/sha256 ".*"/sha256 "NEW_SHA"/' Formula/cc-copilot-bridge.rb
 ```
 
 **Debian dependency issues** :

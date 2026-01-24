@@ -11,7 +11,7 @@ The cleanest way to install `claude-switch` - no script execution, proper depend
 brew tap FlorianBruniaux/tap
 
 # Install
-brew install claude-switch
+brew install cc-copilot-bridge
 
 # Enable shell aliases
 eval "$(claude-switch --shell-config)"

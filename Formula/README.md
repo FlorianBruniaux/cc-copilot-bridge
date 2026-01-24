@@ -7,7 +7,7 @@ Cette Formula permet l'installation de `claude-switch` via Homebrew.
 **Installation** :
 ```bash
 brew tap FlorianBruniaux/tap
-brew install claude-switch
+brew install cc-copilot-bridge
 eval "$(claude-switch --shell-config)"
 ```
 
@@ -32,7 +32,7 @@ Le Homebrew tap se trouve dans un repo séparé : `FlorianBruniaux/homebrew-tap`
 ```
 homebrew-tap/
 ├── Formula/
-│   └── claude-switch.rb    # Copié depuis cc-copilot-bridge/Formula/
+│   └── cc-copilot-bridge.rb    # Copié depuis cc-copilot-bridge/Formula/
 └── README.md
 ```
 
@@ -44,15 +44,15 @@ homebrew-tap/
 2. GitHub Actions :
    - Compute SHA256 du tarball
    - Build packages (.deb, .rpm)
-   - Update `Formula/claude-switch.rb` avec SHA256
+   - Update `Formula/cc-copilot-bridge.rb` avec SHA256
    - Create GitHub Release
    - **Commit Formula update** dans `cc-copilot-bridge`
 
 3. **Copie manuelle vers tap** :
    ```bash
    cd ~/Sites/perso/homebrew-tap
-   cp ../cc-copilot-bridge/Formula/claude-switch.rb Formula/
-   git add Formula/claude-switch.rb
+   cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
+   git add Formula/cc-copilot-bridge.rb
    git commit -m "Update claude-switch to v1.5.3"
    git push
    ```
@@ -63,7 +63,7 @@ homebrew-tap/
 
 ```bash
 # 1. Build from local formula
-brew install --build-from-source ./Formula/claude-switch.rb
+brew install --build-from-source ./Formula/cc-copilot-bridge.rb
 
 # 2. Vérifier
 claude-switch --version
@@ -81,13 +81,13 @@ brew uninstall claude-switch
 
 ```bash
 # Linter Homebrew
-brew audit --strict ./Formula/claude-switch.rb
+brew audit --strict ./Formula/cc-copilot-bridge.rb
 
 # Style check
-brew style ./Formula/claude-switch.rb
+brew style ./Formula/cc-copilot-bridge.rb
 
 # Test installation
-brew install --build-from-source ./Formula/claude-switch.rb
+brew install --build-from-source ./Formula/cc-copilot-bridge.rb
 brew test claude-switch
 ```
 
@@ -127,10 +127,10 @@ wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5
 NEW_SHA=$(sha256sum v1.5.2.tar.gz | awk '{print $1}')
 
 # Update Formula
-sed -i "s/sha256 \".*\"/sha256 \"${NEW_SHA}\"/" Formula/claude-switch.rb
+sed -i "s/sha256 \".*\"/sha256 \"${NEW_SHA}\"/" Formula/cc-copilot-bridge.rb
 
 # Commit et push
-git add Formula/claude-switch.rb
+git add Formula/cc-copilot-bridge.rb
 git commit -m "Fix SHA256 checksum for v1.5.2"
 git push
 ```
@@ -159,7 +159,7 @@ brew install netcat
 **Solution** :
 ```bash
 brew uninstall claude-switch
-brew install claude-switch
+brew install cc-copilot-bridge
 ```
 
 ### Ressources
