@@ -38,3 +38,8 @@ claudedocs/
 debug-*/
 copilot-api-responses/
 debug-responses-api/
+
+# Deploy keys (sensitive)
+tap_deploy_key
+tap_deploy_key.pub
+*_deploy_key*
