@@ -56,8 +56,8 @@ jobs:
 
       - name: Update Homebrew Formula
         run: |
-          # Update URL to point to release asset
-          sed -i 's|url "https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v.*\.tar\.gz"|url "https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/${{ github.ref_name }}/${{ steps.tarball.outputs.TARBALL }}"|g' Formula/cc-copilot-bridge.rb
+          # Update URL to point to release asset (handles both old and new URL formats)
+          sed -i 's|url "https://github.com/FlorianBruniaux/cc-copilot-bridge/[^"]*"|url "https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/${{ github.ref_name }}/${{ steps.tarball.outputs.TARBALL }}"|g' Formula/cc-copilot-bridge.rb
           # Update SHA256
           sed -i "s/sha256 \".*\"/sha256 \"${{ steps.tarball.outputs.SHA256 }}\"/g" Formula/cc-copilot-bridge.rb
           # Update version
