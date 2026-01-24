@@ -2,7 +2,7 @@
 # Claude Code Multi-Provider Switcher
 # Usage: claude-switch <mode> [claude args...]
 # Modes: direct (d), copilot (c), ollama (o), status (s)
-# Version: 1.5.2 - Package manager friendly: --shell-config option
+# Version: 1.6.0 - Added Antigravity provider (Google Cloud Code)
 
 set -euo pipefail
 
@@ -71,6 +71,16 @@ _check_ollama() {
     return 1
   fi
   _log "INFO" "Ollama health: OK (model: ${model})"
+}
+
+_check_antigravity() {
+  if ! _check_port "localhost" "8080"; then
+    _log "ERROR" "antigravity-claude-proxy not running on :8080"
+    echo "  Start it with: antigravity-claude-proxy start"
+    echo "  Or: npx antigravity-claude-proxy@latest start"
+    return 1
+  fi
+  _log "INFO" "antigravity-claude-proxy health: OK"
 }
 
 # === Session Tracking ===
@@ -266,6 +276,28 @@ _run_ollama() {
   return $rc
 }
 
+_run_antigravity() {
+  _check_antigravity || return 1
+
+  # Allow model override via env var or use default
+  local model="${ANTIGRAVITY_MODEL:-claude-sonnet-4.5}"
+
+  _log "INFO" "Provider: Antigravity (via Google Cloud Code) - Model: ${model}"
+  echo -e "${BLUE}━━━ Claude Code [Antigravity: ${model}] ━━━${NC}"
+
+  export ANTHROPIC_BASE_URL="http://localhost:8080"
+  export ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Managed by antigravity-claude-proxy
+  export ANTHROPIC_MODEL="${model}"
+  export DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
+  export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
+
+  _session_start "antigravity:${model}"
+  claude "$@"
+  local rc=$?
+  _session_end $rc
+  return $rc
+}
+
 _show_status() {
   echo "=== Claude Code Provider Status ==="
   echo ""
@@ -292,6 +324,13 @@ _show_status() {
     echo -e "${RED}✗ Not running${NC}"
   fi
 
+  echo -n "Antigravity:    "
+  if _check_port "localhost" "8080"; then
+    echo -e "${GREEN}✓ Running (:8080)${NC}"
+  else
+    echo -e "${RED}✗ Not running${NC}"
+  fi
+
   echo ""
   echo "=== Recent Sessions ==="
   tail -5 "${LOG_FILE}" 2>/dev/null || echo "(no logs yet)"
@@ -299,21 +338,23 @@ _show_status() {
 
 _show_usage() {
   cat << 'EOF'
-Claude Code Multi-Provider Switcher v1.4.0
+Claude Code Multi-Provider Switcher v1.6.0
 
 Usage: claude-switch <mode> [claude args...]
 
 Modes:
-  d, direct   Anthropic API direct (best quality, paid)
-  c, copilot  GitHub Copilot via copilot-api (free with subscription)
-  o, ollama   Local models via Ollama (private, offline)
-  s, status   Check all providers status
-  -h, --help  Show this help message
+  d, direct       Anthropic API direct (best quality, paid)
+  c, copilot      GitHub Copilot via copilot-api (free with subscription)
+  o, ollama       Local models via Ollama (private, offline)
+  a, antigravity  Google Cloud Code via antigravity-claude-proxy (Google OAuth)
+  s, status       Check all providers status
+  -h, --help      Show this help message
 
 Basic Examples:
   claude-switch direct              # Use Anthropic API
   claude-switch copilot             # Use GitHub Copilot
   claude-switch ollama              # Use local Ollama
+  claude-switch antigravity         # Use Google Cloud Code
   claude-switch copilot -c          # Copilot + resume session
   claude-switch status              # Check what's running
 
@@ -321,6 +362,7 @@ Provider Aliases (recommended):
   alias ccd='claude-switch direct'
   alias ccc='claude-switch copilot'
   alias cco='claude-switch ollama'
+  alias cca='claude-switch antigravity'
   alias ccs='claude-switch status'
 
 Dynamic Model Selection:
@@ -332,6 +374,10 @@ Dynamic Model Selection:
   # Switch Ollama models via environment variable
   OLLAMA_MODEL=devstral-64k claude-switch ollama
   OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama
+
+  # Switch Antigravity models via environment variable
+  ANTIGRAVITY_MODEL=claude-opus-4.5 claude-switch antigravity
+  ANTIGRAVITY_MODEL=gemini-3-pro-high claude-switch antigravity
 
 Model Aliases (for Copilot):
   alias ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
@@ -346,11 +392,22 @@ Model Aliases (for Ollama):
   alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
   alias cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
 
+Model Aliases (for Antigravity):
+  alias cca-sonnet='ANTIGRAVITY_MODEL=claude-sonnet-4.5 claude-switch antigravity'
+  alias cca-opus='ANTIGRAVITY_MODEL=claude-opus-4.5 claude-switch antigravity'
+  alias cca-gemini='ANTIGRAVITY_MODEL=gemini-2.5-pro claude-switch antigravity'
+  alias cca-gemini3='ANTIGRAVITY_MODEL=gemini-3-flash claude-switch antigravity'
+  alias cca-gemini3-pro='ANTIGRAVITY_MODEL=gemini-3-pro-high claude-switch antigravity'
+
 Available Models (via Copilot):
   Claude:  opus-4.5, sonnet-4.5, sonnet-4, haiku-4.5
   GPT:     4.1 (0x), 5 (1x), 5-mini (0x)
            Codex variants NOT compatible (require /responses endpoint)
   Gemini:  3-flash-preview, 3-pro-preview, 2.5-pro
+
+Available Models (via Antigravity):
+  Claude:  sonnet-4.5, opus-4.5 (with extended thinking)
+  Gemini:  3-flash, 3-flash-lite, 3-pro-low, 3-pro-high, 2.5-pro
 
 Available Models (via Ollama - recommended):
   devstral-small-2      Best agentic coding (68% SWE-bench, 24B)
@@ -360,6 +417,12 @@ Available Models (via Ollama - recommended):
 Ollama Context Setup:
   IMPORTANT: Create a 64K Modelfile for best results with Claude Code
   See: https://docs.ollama.com/context-length
+
+Antigravity Setup:
+  1. Install: npm install -g antigravity-claude-proxy
+  2. Add account: antigravity-claude-proxy accounts add
+  3. Start proxy: antigravity-claude-proxy start
+  4. Use: cca or claude-switch antigravity
 
 MCP Profiles & System Prompts:
   Auto-detection of problematic MCP servers for strict models (GPT-4.1, Gemini)
@@ -406,6 +469,14 @@ alias ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
 alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
 alias cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
 
+# Antigravity Commands (Google Cloud Code via antigravity-claude-proxy)
+alias cca='claude-switch antigravity'
+alias cca-sonnet='ANTIGRAVITY_MODEL=claude-sonnet-4.5 claude-switch antigravity'
+alias cca-opus='ANTIGRAVITY_MODEL=claude-opus-4.5 claude-switch antigravity'
+alias cca-gemini='ANTIGRAVITY_MODEL=gemini-2.5-pro claude-switch antigravity'
+alias cca-gemini3='ANTIGRAVITY_MODEL=gemini-3-flash claude-switch antigravity'
+alias cca-gemini3-pro='ANTIGRAVITY_MODEL=gemini-3-pro-high claude-switch antigravity'
+
 # Unified Fork Experimental (Codex + Gemini 3)
 alias ccunified='~/Sites/perso/cc-copilot-bridge/scripts/launch-unified-fork.sh 2>/dev/null || echo "Unified fork not found"'
 alias ccc-codex='COPILOT_MODEL=gpt-5.2-codex claude-switch copilot'
@@ -419,13 +490,14 @@ main() {
   shift 2>/dev/null || true
 
   case "${mode}" in
-    d|direct)  _run_direct "$@" ;;
-    c|copilot) _run_copilot "$@" ;;
-    o|ollama)  _run_ollama "$@" ;;
-    s|status)  _show_status ;;
+    d|direct)       _run_direct "$@" ;;
+    c|copilot)      _run_copilot "$@" ;;
+    o|ollama)       _run_ollama "$@" ;;
+    a|antigravity)  _run_antigravity "$@" ;;
+    s|status)       _show_status ;;
     --shell-config) _print_shell_config ;;
-    -v|--version) echo "claude-switch v1.5.2" ;;
-    -h|--help|"") _show_usage ;;
+    -v|--version)   echo "claude-switch v1.6.0" ;;
+    -h|--help|"")   _show_usage ;;
     *)
       _log "ERROR" "Unknown mode: ${mode}"
       _show_usage

@@ -138,6 +138,7 @@ export PATH="$HOME/bin:$PATH"
 alias ccd='claude-switch direct'
 alias ccc='claude-switch copilot'
 alias cco='claude-switch ollama'
+alias cca='claude-switch antigravity'
 alias ccs='claude-switch status'
 
 # Copilot Model Shortcuts
@@ -152,6 +153,13 @@ alias ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
 # Ollama Model Shortcuts
 alias cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
 alias cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
+
+# Antigravity Model Shortcuts (Google Cloud Code)
+alias cca-sonnet='ANTIGRAVITY_MODEL=claude-sonnet-4.5 claude-switch antigravity'
+alias cca-opus='ANTIGRAVITY_MODEL=claude-opus-4.5 claude-switch antigravity'
+alias cca-gemini='ANTIGRAVITY_MODEL=gemini-2.5-pro claude-switch antigravity'
+alias cca-gemini3='ANTIGRAVITY_MODEL=gemini-3-flash claude-switch antigravity'
+alias cca-gemini3-pro='ANTIGRAVITY_MODEL=gemini-3-pro-high claude-switch antigravity'
 ALIASES_EOF
 
 echo "✓ Created $ALIASES_FILE"
@@ -281,10 +289,16 @@ echo ""
 echo "   📦 Alternative: Pull backup model for long-context tasks:"
 echo -e "      ${BLUE}ollama pull ibm/granite4:small-h${NC}"
 echo ""
+echo "   🌐 Antigravity (Google Cloud Code via antigravity-claude-proxy):"
+echo -e "      ${BLUE}# See: https://github.com/badrisnarayanan/antigravity-claude-proxy${NC}"
+echo -e "      ${BLUE}antigravity-claude-proxy accounts add${NC}  # First time: add Google account"
+echo -e "      ${BLUE}antigravity-claude-proxy start${NC}"
+echo ""
 echo "4. Start using:"
 echo -e "   ${BLUE}ccd${NC}        # Anthropic Direct"
 echo -e "   ${BLUE}ccc${NC}        # GitHub Copilot"
 echo -e "   ${BLUE}cco${NC}        # Ollama Local"
+echo -e "   ${BLUE}cca${NC}        # Antigravity (Google Cloud Code)"
 echo -e "   ${BLUE}ccc-opus${NC}   # Copilot with Opus model"
 echo ""
 echo "Documentation:"

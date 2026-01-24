@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Anthropic Direct**: Official API, best quality
 - **GitHub Copilot**: Free with Copilot Pro+ via copilot-api proxy
 - **Ollama Local**: 100% private, offline capable
+- **Antigravity**: Google Cloud Code via antigravity-claude-proxy (Google OAuth)
 
 The project consists of 3 main bash scripts and extensive documentation for optimal usage.
 
@@ -20,6 +21,7 @@ Location: `~/bin/claude-switch` (installed via `install.sh`)
 - `_run_direct()`: Anthropic API direct connection
 - `_run_copilot()`: GitHub Copilot via copilot-api proxy (localhost:4141)
 - `_run_ollama()`: Local Ollama models via localhost:11434
+- `_run_antigravity()`: Google Cloud Code via antigravity-claude-proxy (localhost:8080)
 - `_check_port()`: Health checks before launching providers
 - `_get_mcp_flags()`: Dynamic MCP profile selection based on model
 - `_session_start()`/`_session_end()`: Session logging with durations
@@ -35,6 +37,11 @@ DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
 # Ollama mode
 ANTHROPIC_BASE_URL="http://localhost:11434"
 ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this value
+
+# Antigravity mode
+ANTHROPIC_BASE_URL="http://localhost:8080"
+ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Managed by antigravity-claude-proxy
+ANTHROPIC_MODEL="${ANTIGRAVITY_MODEL:-claude-sonnet-4.5}"
 ```
 
 **Model Switching:**
@@ -42,6 +49,7 @@ ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this value
 - Override via `COPILOT_MODEL` env var (25+ models supported)
 - Default Ollama model: `devstral-small-2` (configurable via `OLLAMA_MODEL`)
 - Backup Ollama model: `ibm/granite4:small-h` (long context, 70% less VRAM)
+- Default Antigravity model: `claude-sonnet-4.5` (configurable via `ANTIGRAVITY_MODEL`)
 
 ### 2. install.sh (Installation)
 Auto-installer that:
@@ -55,6 +63,7 @@ Auto-installer that:
 ccd='claude-switch direct'
 ccc='claude-switch copilot'
 cco='claude-switch ollama'
+cca='claude-switch antigravity'
 ccs='claude-switch status'
 ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
 ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
@@ -65,6 +74,11 @@ ccc-gemini3='COPILOT_MODEL=gemini-3-flash-preview claude-switch copilot'
 ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
 cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
 cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
+cca-sonnet='ANTIGRAVITY_MODEL=claude-sonnet-4.5 claude-switch antigravity'
+cca-opus='ANTIGRAVITY_MODEL=claude-opus-4.5 claude-switch antigravity'
+cca-gemini='ANTIGRAVITY_MODEL=gemini-2.5-pro claude-switch antigravity'
+cca-gemini3='ANTIGRAVITY_MODEL=gemini-3-flash claude-switch antigravity'
+cca-gemini3-pro='ANTIGRAVITY_MODEL=gemini-3-pro-high claude-switch antigravity'
 ```
 
 ### 3. mcp-check.sh (MCP Diagnostics)
@@ -96,6 +110,7 @@ All sessions logged to `~/.claude/claude-switch.log`:
 Before launching, `claude-switch` verifies:
 - **Copilot**: Port 4141 responds (via `nc -z`)
 - **Ollama**: Port 11434 responds + model exists (`ollama list`)
+- **Antigravity**: Port 8080 responds (via `nc -z`)
 - **Anthropic**: Uses existing `ANTHROPIC_API_KEY` from environment
 
 ### Model Compatibility Matrix
@@ -109,6 +124,7 @@ Before launching, `claude-switch` verifies:
 | Copilot-Gemini3 | /chat/completions | gemini-3-flash-preview, gemini-3-pro-preview | ⚠️ UNTESTED agentic (via unified fork) |
 | Copilot-Codex | /responses | gpt-*-codex | ✅ Tested (via unified fork) |
 | Ollama | Native | devstral, granite4, qwen3-coder | 100% (permissive) |
+| Antigravity | :8080 | claude-*, gemini-3-* | 100% (permissive) |
 
 **Unified Fork (PR #167 + #170) - EXPERIMENTAL:**
 
@@ -239,6 +255,10 @@ brew services restart ollama
 ollama pull devstral-small-2
 # Create 64K Modelfile (see Performance Considerations section)
 OLLAMA_MODEL=devstral-64k cco
+
+# Test Antigravity (requires antigravity-claude-proxy running)
+antigravity-claude-proxy start  # In separate terminal (or use web dashboard)
+cca
 ```
 
 ### Debugging Session Issues
@@ -249,6 +269,7 @@ tail -20 ~/.claude/claude-switch.log
 # Check provider health
 nc -z localhost 4141  # Copilot
 nc -z localhost 11434 # Ollama
+nc -z localhost 8080  # Antigravity
 curl -s https://api.anthropic.com/v1/messages # Anthropic
 
 # View session durations
@@ -373,6 +394,8 @@ ollama pull ibm/granite4:small-h
 | Offline work | `cco` | No internet required |
 | Best agentic local | `cco-devstral` | Devstral-small-2 (68% SWE-bench) |
 | Long context local | `cco-granite` | Granite4 (70% less VRAM) |
+| Google Cloud alternative | `cca` | Claude via Google Cloud Code (Google OAuth) |
+| Antigravity Gemini 3 | `cca-gemini3-pro` | Gemini 3 Pro High via Antigravity |
 
 ## Package Managers Distribution
 
@@ -784,19 +807,20 @@ Actuellement Gemini 3 Preview:
 
 ## Version Information
 
-- **claude-switch**: v1.5.1 (2026-01-23) - Added unified fork (Codex tested, Gemini 3 experimental)
+- **claude-switch**: v1.6.0 (2026-01-25) - Added Antigravity provider (Google Cloud Code)
 - **copilot-api**: v0.7.0 (official) + unified fork (PR #167 + #170)
   - Official: `/chat/completions` only - voir issue #174 pour fix billing header
   - Unified fork: Gemini 3 thinking support + Codex `/responses` endpoint
   - ⚠️ Gemini 3 agentic mode: UNTESTED - PR #167 adds thinking, not tool calling fix
   - Fork source: [caozhiyuan/copilot-api branch 'all'](https://github.com/caozhiyuan/copilot-api/tree/all)
+- **antigravity-claude-proxy**: v2.4.1 - Google Cloud Code bridge for Claude/Gemini
 - **Claude Code CLI**: v2.1.15 (@anthropic-ai/claude-code npm package)
 - **Ollama**: Homebrew service, default model: devstral-small-2 (backup: ibm/granite4:small-h)
 
 ## Testing Changes
 
 When modifying `claude-switch`:
-1. Test with all 3 providers (`ccd`, `ccc`, `cco`)
+1. Test with all 4 providers (`ccd`, `ccc`, `cco`, `cca`)
 2. Check session logs: `tail ~/.claude/claude-switch.log`
 3. Verify health checks: `ccs`
 4. Test model switching: `COPILOT_MODEL=<model> ccc`

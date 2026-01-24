@@ -1,6 +1,6 @@
 # cc-copilot-bridge
 
-> **TL;DR**: Bash script that routes Claude Code CLI through multiple AI providers. Switch between Anthropic Direct API, GitHub Copilot (via copilot-api proxy), or Ollama local with simple aliases (`ccd`, `ccc`, `cco`).
+> **TL;DR**: Bash script that routes Claude Code CLI through multiple AI providers. Switch between Anthropic Direct API, GitHub Copilot (via copilot-api proxy), Ollama local, or Antigravity (Google Cloud Code) with simple aliases (`ccd`, `ccc`, `cco`, `cca`).
 
 > 📖 **New to Claude Code?** Check out the [Claude Code Ultimate Guide](https://florianbruniaux.github.io/claude-code-ultimate-guide-landing/) for comprehensive documentation, tips, and best practices.
 
@@ -25,13 +25,14 @@ Use your existing GitHub Copilot subscription with Claude Code, or run 100% offl
 
 A **multi-provider router** for Claude Code CLI that lets you switch between AI backends with simple aliases.
 
-### Three Providers, One Interface
+### Four Providers, One Interface
 
 | Provider | Command | Use Case | Cost Model |
 |----------|---------|----------|------------|
 | **Anthropic Direct** | `ccd` | Production, maximum quality | Pay-per-token |
 | **GitHub Copilot** | `ccc` | Daily development | Premium requests quota |
 | **Ollama Local** | `cco` | Offline, proprietary code | Free (local compute) |
+| **Antigravity** | `cca` | Google Cloud Code (Google OAuth) | Google Cloud billing |
 
 ### Architecture Overview
 
@@ -45,15 +46,16 @@ A **multi-provider router** for Claude Code CLI that lets you switch between AI 
         │  cc-copilot-bridge │  ◄─── This Tool
         └─────────┬──────────┘
                   │
-        ┌─────────┴────────────┌─────────────────┐
-        │                      |                 │
-    ┌───▼────┐         ┌───────▼────────┐   ┌───▼────┐
-    │ Direct │         │ Copilot Bridge │   │ Ollama │
-    │  API   │         │  (copilot-api) │   │ Local  │
-    └────────┘         └────────────────┘   └────────┘
-    Anthropic           GitHub Copilot       Self-hosted
-    Pay-per-token       Premium requests     Free (offline)
-                        quota system
+    ┌─────────────┼─────────────┬─────────────────┐
+    │             │             │                 │
+┌───▼────┐  ┌─────▼──────┐  ┌───▼────┐  ┌─────────▼─────────┐
+│ Direct │  │  Copilot   │  │ Ollama │  │   Antigravity     │
+│  API   │  │ (copilot-  │  │ Local  │  │ (antigravity-     │
+│        │  │   api)     │  │        │  │  claude-proxy)    │
+└────────┘  └────────────┘  └────────┘  └───────────────────┘
+Anthropic    GitHub          Self-       Google Cloud Code
+Pay-per-     Copilot         hosted      Google OAuth
+token        quota           Free        billing
 ```
 
 ---
@@ -125,6 +127,7 @@ The installer creates `~/.claude/aliases.sh` with these commands:
 ccd        # Anthropic API (paid)
 ccc        # GitHub Copilot (default: Claude Sonnet 4.5)
 cco        # Ollama Local (offline)
+cca        # Antigravity (Google Cloud Code)
 ccs        # Check all providers
 
 # Model shortcuts (25+ models)
@@ -213,6 +216,7 @@ Different models consume different amounts of premium requests per interaction:
 ccd     # Anthropic Direct API (production)
 ccc     # GitHub Copilot Bridge (prototyping)
 cco     # Ollama Local (offline/private)
+cca     # Antigravity (Google Cloud Code)
 ```
 
 No config changes, no restarts, no environment variable juggling.
@@ -231,6 +235,7 @@ No config changes, no restarts, no environment variable juggling.
 | **Anthropic** | opus-4.5, sonnet-4.5, haiku-4.5 | Per token |
 | **Copilot** | claude-*, gpt-4.1, gpt-5, gemini-*, **gpt-codex*** | Premium requests quota |
 | **Ollama** | devstral, granite4, qwen3-coder | Free (local) |
+| **Antigravity** | claude-*, gemini-3-* | Google Cloud billing |
 
 ```bash
 # Switch models mid-session
@@ -243,6 +248,11 @@ COPILOT_MODEL=gemini-2.5-pro ccc  # Gemini
 cco                     # Default: devstral-small-2
 cco-devstral            # Explicit Devstral
 cco-granite             # Granite4 (long context)
+
+# Antigravity models (Google Cloud Code)
+cca                     # Default: claude-sonnet-4.5
+cca-opus                # Claude Opus 4.5
+cca-gemini3-pro         # Gemini 3 Pro High
 ```
 
 ### 3. **GPT Codex & Gemini 3 Models** (via Unified Fork - EXPERIMENTAL)
@@ -413,6 +423,47 @@ OLLAMA_MODEL=devstral-64k cco
 
 ---
 
+### 🌐 Antigravity (Google Cloud Code)
+
+**Use Case**: Access Claude and Gemini via Google Cloud with Google OAuth
+
+```bash
+cca                                          # Default: claude-sonnet-4.5
+cca-opus                                     # Claude Opus 4.5
+cca-gemini3-pro                              # Gemini 3 Pro High
+ANTIGRAVITY_MODEL=gemini-3-flash cca         # Gemini 3 Flash
+```
+
+**How It Works**:
+- Routes through [antigravity-claude-proxy](https://github.com/badrisnarayanan/antigravity-claude-proxy) on port 8080
+- Uses Google OAuth for authentication
+- Access to Claude and Gemini models via Google Cloud Code
+- Best for: Users with Google Cloud accounts, alternative billing
+
+**Available Models**:
+| Model | Alias |
+|-------|-------|
+| `claude-sonnet-4.5` | `cca-sonnet` (default) |
+| `claude-opus-4.5` | `cca-opus` |
+| `gemini-2.5-pro` | `cca-gemini` |
+| `gemini-3-flash` | `cca-gemini3` |
+| `gemini-3-pro-high` | `cca-gemini3-pro` |
+
+**Setup**:
+```bash
+# 1. Add your Google account (required first time)
+antigravity-claude-proxy accounts add
+
+# 2. Start the proxy
+antigravity-claude-proxy start
+```
+
+**Requirements**:
+1. antigravity-claude-proxy installed
+2. Google account with Cloud Code access
+
+---
+
 ### 🔄 FALLBACK: Anthropic Direct API
 
 **Use Case**: Production, maximum quality, critical analysis
@@ -538,7 +589,7 @@ cco
 
 ## 🚀 Version
 
-**Current**: v1.5.1
+**Current**: v1.6.0
 
 **Changelog**: See [CHANGELOG.md](CHANGELOG.md)
 
