@@ -57,7 +57,7 @@ brew untap FlorianBruniaux/tap
 
 ```bash
 # Download latest release
-VERSION="1.5.2"  # Check releases page for latest
+VERSION="1.5.3"  # Check releases page for latest
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch_${VERSION}.deb
 
 # Install
@@ -102,7 +102,7 @@ sudo dpkg -r claude-switch
 
 ```bash
 # Download latest release
-VERSION="1.5.2"  # Check releases page for latest
+VERSION="1.5.3"  # Check releases page for latest
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch-${VERSION}-1.noarch.rpm
 
 # Install

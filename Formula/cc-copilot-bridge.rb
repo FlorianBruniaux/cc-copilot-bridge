@@ -1,10 +1,10 @@
 class CcCopilotBridge < Formula
   desc "Multi-provider switcher for Claude Code CLI"
   homepage "https://github.com/FlorianBruniaux/cc-copilot-bridge"
-  url "https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.3-test3/cc-copilot-bridge-1.5.3-test3.tar.gz"
-  sha256 "d591b8f0780bad18beab417f3036ae71c0c87919f93006d6bb3d79ac5b07e0e2"  # Will be computed by GitHub Actions
+  url "https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.3/cc-copilot-bridge-1.5.3.tar.gz"
+  sha256 "PLACEHOLDER"  # Will be computed by GitHub Actions on release
   license "MIT"
-  version "1.5.3-test3"
+  version "1.5.3"
 
   depends_on "netcat"
 

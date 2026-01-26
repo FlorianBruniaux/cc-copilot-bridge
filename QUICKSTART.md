@@ -44,7 +44,7 @@ eval "$(claude-switch --shell-config)"
 <summary><b>Debian/Ubuntu (.deb)</b></summary>
 
 ```bash
-VERSION="1.5.2"  # Check releases for latest
+VERSION="1.5.3"  # Check releases for latest
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch_${VERSION}.deb
 sudo dpkg -i claude-switch_${VERSION}.deb
 eval "$(claude-switch --shell-config)"
@@ -63,7 +63,7 @@ eval "$(claude-switch --shell-config)"
 <summary><b>RHEL/Fedora (.rpm)</b></summary>
 
 ```bash
-VERSION="1.5.2"  # Check releases for latest
+VERSION="1.5.3"  # Check releases for latest
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch-${VERSION}-1.noarch.rpm
 sudo rpm -i claude-switch-${VERSION}-1.noarch.rpm
 eval "$(claude-switch --shell-config)"

@@ -205,7 +205,7 @@ ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
 | **devstral-small-2** (default) | **68.0%** | 24B | ✅ Best agentic | Daily coding, proven reliable |
 | **qwen3-coder:30b** | **69.6%** | 30B | ⚠️ Needs template work | Highest bench, config issues |
 | **ibm/granite4:small-h** | ~62% | 32B (9B active) | ✅ Long context | 70% less VRAM, 1M context |
-| **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ❌ Untested with Claude Code | Speed-optimized variant |
+| **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ⚠️ Ollama 0.15.1+ required | Tool calling fix (v0.15.1) |
 
 **Benchmark Sources & Analysis:**
 
@@ -409,7 +409,7 @@ ollama pull ibm/granite4:small-h
 
 ### Overview
 
-**Version 1.5.2+** supports distribution via package managers (Homebrew, .deb, .rpm) pour une installation propre et standardisée.
+**Version 1.5.3+** supports distribution via package managers (Homebrew, .deb, .rpm) pour une installation propre et standardisée.
 
 **Avantages** :
 - ✅ Installation standard (`brew install`, `apt install`, `dnf install`)
@@ -430,7 +430,7 @@ eval "$(claude-switch --shell-config)"
 
 **Debian/Ubuntu (.deb)** :
 ```bash
-VERSION="1.5.2"
+VERSION="1.5.3"
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch_${VERSION}.deb
 sudo dpkg -i claude-switch_${VERSION}.deb
 eval "$(claude-switch --shell-config)"
@@ -438,7 +438,7 @@ eval "$(claude-switch --shell-config)"
 
 **RHEL/Fedora (.rpm)** :
 ```bash
-VERSION="1.5.2"
+VERSION="1.5.3"
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch-${VERSION}-1.noarch.rpm
 sudo rpm -i claude-switch-${VERSION}-1.noarch.rpm
 eval "$(claude-switch --shell-config)"
@@ -562,10 +562,10 @@ eval "$(claude-switch --shell-config)"
 **Debian Package** :
 ```bash
 # Build .deb
-dpkg-deb --build deb-build/claude-switch_1.5.2
+dpkg-deb --build deb-build/claude-switch_1.5.3
 
 # Install
-sudo dpkg -i claude-switch_1.5.2.deb
+sudo dpkg -i claude-switch_1.5.3.deb
 
 # Verify
 which claude-switch

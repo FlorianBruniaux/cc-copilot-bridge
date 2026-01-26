@@ -1,6 +1,6 @@
 # Frequently Asked Questions (FAQ)
 
-**Reading time**: 15 minutes | **Skill level**: All levels | **Last updated**: 2026-01-22
+**Reading time**: 15 minutes | **Skill level**: All levels | **Last updated**: 2026-01-26
 
 ---
 
@@ -233,6 +233,48 @@ OLLAMA_MODEL=ibm/granite4:small-h cco   # Long context, less VRAM
 Or use pre-configured aliases: `ccc-opus`, `ccc-haiku`, `ccc-gpt`.
 
 See [MODEL-SWITCHING.md](MODEL-SWITCHING.md) for complete guide.
+
+---
+
+### Q: Can I use `ollama launch` instead of `claude-switch ollama`?
+
+**A**: Yes for **quick tests**, but `claude-switch` offers much more for production workflows.
+
+**Feature Comparison**:
+
+| Feature | `ollama launch claude` | `claude-switch ollama` |
+|---------|----------------------|----------------------|
+| **Initial setup** | ✅ Zero-config, interactive | ⚠️ Requires env vars |
+| **Multi-provider switching** | ❌ Ollama only | ✅ Anthropic/Copilot/Ollama |
+| **Model selection** | ⚠️ Interactive prompt | ✅ Dynamic (OLLAMA_MODEL) |
+| **Session logging** | ❌ None | ✅ Full audit trail |
+| **Health checks** | ❌ None | ✅ Port + model verification |
+| **Context optimization** | ❌ Manual (Modelfile) | ✅ Documented + warnings |
+| **MCP profiles** | ❌ None | ✅ Auto-generated for GPT-4.1 |
+
+**Use `ollama launch claude` for**:
+- Quick tests and demos
+- Onboarding beginners
+- Single-provider workflows
+
+**Use `claude-switch ollama` for**:
+- Production development
+- Multi-provider flexibility (switch to Anthropic Direct for critical code)
+- Session audit trails (compliance, debugging)
+- Dynamic model selection (30+ models via Copilot)
+
+**Setup `ollama launch`**:
+```bash
+# Requires Ollama 0.15.0+
+brew upgrade ollama
+
+# Launch Claude Code with Ollama
+ollama launch claude
+```
+
+**Important**: `ollama launch` does NOT solve the context size issue. You still need a 64K Modelfile for Claude Code's ~60K context. See [OPTIMISATION-M4-PRO.md](OPTIMISATION-M4-PRO.md).
+
+**Release info**: `ollama launch` was introduced in [Ollama v0.15.0](https://github.com/ollama/ollama/releases/tag/v0.15.0) (2026-01-21).
 
 ---
 

@@ -2,7 +2,7 @@
 # Claude Code Multi-Provider Switcher
 # Usage: claude-switch <mode> [claude args...]
 # Modes: direct (d), copilot (c), ollama (o), status (s)
-# Version: 1.5.2 - Package manager friendly: --shell-config option
+# Version: 1.5.3 - Documentation updates: Ollama 0.15.0+ requirement and GLM-4.7-Flash improvements
 
 set -euo pipefail
 

@@ -81,7 +81,7 @@ Add to `~/.zshrc`: `eval "$(claude-switch --shell-config)"`
 <summary><b>Debian/Ubuntu (.deb)</b></summary>
 
 ```bash
-VERSION="1.5.2"  # Check releases for latest
+VERSION="1.5.3"  # Check releases for latest
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch_${VERSION}.deb
 sudo dpkg -i claude-switch_${VERSION}.deb
 eval "$(claude-switch --shell-config)"
@@ -95,7 +95,7 @@ Add to `~/.bashrc`: `eval "$(claude-switch --shell-config)"`
 <summary><b>RHEL/Fedora (.rpm)</b></summary>
 
 ```bash
-VERSION="1.5.2"  # Check releases for latest
+VERSION="1.5.3"  # Check releases for latest
 wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v${VERSION}/claude-switch-${VERSION}-1.noarch.rpm
 sudo rpm -i claude-switch-${VERSION}-1.noarch.rpm
 eval "$(claude-switch --shell-config)"
@@ -407,7 +407,7 @@ SWE-bench measures real-world agentic coding ability (GitHub issue resolution wi
 | **devstral-small-2** | **68.0%** | 24B | ✅ Best agentic (default) | Daily coding, proven reliable |
 | **qwen3-coder:30b** | **69.6%** | 30B | ⚠️ Needs template work | Highest bench, config issues |
 | **ibm/granite4:small-h** | ~62% | 32B (9B active) | ✅ Long context | 70% less VRAM, 1M context |
-| **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ❌ Untested with Claude Code | Speed-optimized variant |
+| **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ⚠️ Ollama 0.15.1+ required | Tool calling fix (v0.15.1) |
 
 **Benchmark Sources:**
 - Devstral-small-2: [Mistral AI](https://mistral.ai/news/devstral-2-vibe-cli) - 68.0% SWE-bench Verified

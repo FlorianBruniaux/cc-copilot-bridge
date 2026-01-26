@@ -110,28 +110,28 @@ brew test claude-switch
 
 GitHub Actions calcule automatiquement :
 ```bash
-git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.2/ HEAD > release.tar.gz
+git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.3/ HEAD > release.tar.gz
 sha256sum release.tar.gz | awk '{print $1}'
 ```
 
 **Manuellement** :
 ```bash
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.2.tar.gz
-sha256sum v1.5.2.tar.gz
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.3.tar.gz
+sha256sum v1.5.3.tar.gz
 ```
 
 **Si mismatch** :
 ```bash
 # Recalculer
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.2.tar.gz
-NEW_SHA=$(sha256sum v1.5.2.tar.gz | awk '{print $1}')
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.3.tar.gz
+NEW_SHA=$(sha256sum v1.5.3.tar.gz | awk '{print $1}')
 
 # Update Formula
 sed -i "s/sha256 \".*\"/sha256 \"${NEW_SHA}\"/" Formula/cc-copilot-bridge.rb
 
 # Commit et push
 git add Formula/cc-copilot-bridge.rb
-git commit -m "Fix SHA256 checksum for v1.5.2"
+git commit -m "Fix SHA256 checksum for v1.5.3"
 git push
 ```
 

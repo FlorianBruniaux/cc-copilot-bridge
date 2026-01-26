@@ -65,12 +65,12 @@ git pull origin main
 vim claude-switch
 
 # Ligne 5 :
-# Version: 1.5.2 - Package manager friendly: --shell-config option
+# Version: 1.5.3 - Package manager friendly: --shell-config option
 # → Changer en :
 # Version: 1.5.3 - Description du changement
 
 # Ligne 427 :
-# -v|--version) echo "claude-switch v1.5.2" ;;
+# -v|--version) echo "claude-switch v1.5.3" ;;
 # → Changer en :
 # -v|--version) echo "claude-switch v1.5.3" ;;
 ```
@@ -80,7 +80,7 @@ vim claude-switch
 vim Formula/cc-copilot-bridge.rb
 
 # Ligne 6 :
-# version "1.5.2"
+# version "1.5.3"
 # → Changer en :
 # version "1.5.3"
 
@@ -356,7 +356,7 @@ git push
 
 ## Release Types
 
-### Patch Release (1.5.2 → 1.5.3)
+### Patch Release (1.5.3 → 1.5.3)
 
 **Quand** : Bug fixes, small improvements
 

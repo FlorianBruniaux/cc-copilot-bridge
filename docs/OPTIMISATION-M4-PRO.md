@@ -1,6 +1,6 @@
 # Apple Silicon Optimization Guide (M1/M2/M3/M4)
 
-**Reading time**: 15 minutes | **Skill level**: Advanced | **Ollama version**: 0.14.2+ | **Last updated**: 2026-01-22
+**Reading time**: 15 minutes | **Skill level**: Advanced | **Ollama version**: 0.15.0+ | **Last updated**: 2026-01-26
 
 **Target**: Qwen2.5-Coder-32B Q4_K_M on M4 Pro 48GB
 
@@ -336,7 +336,7 @@ Test effectué avec le prompt : "Refactor this function to be more maintainable"
 
 ### Checklist Complète
 
-- [x] Ollama 0.14.2 installé
+- [x] Ollama 0.15.0+ installé
 - [x] Modèle Qwen2.5-Coder-32B téléchargé (19GB)
 - [x] Variables d'optimisation configurées
 - [x] Service Ollama redémarré
@@ -400,7 +400,7 @@ ollama run qwen2.5-coder:32b-instruct "Write a hello world"
 ### Problème : Performance inférieure à 26 tok/s
 
 **Vérifications** :
-1. Confirmer version 0.14.2 : `ollama --version`
+1. Confirmer version 0.15.0+ : `ollama --version`
 2. Vérifier RAM disponible : `top -o MEM` (devrait avoir >30GB libre)
 3. Réappliquer optimisations : `ollama-optimize.sh`
 4. Redémarrer : `brew services restart ollama`
@@ -424,6 +424,7 @@ lsof -i :11434
 ## Sources
 
 - **Perplexity Research** : Optimisation Ollama 0.14.2 pour Apple Silicon (2026-01-21)
+- **Ollama Releases** : v0.15.0 (2026-01-21) et v0.15.1 (2026-01-24) - GLM-4.7-Flash improvements
 - **Benchmark officiel** : Qwen2.5-Coder-32B sur M4 Pro (26.85 tok/s @ Q4_K_M)
 - **Documentation Ollama** : Variables d'environnement et optimisations
 

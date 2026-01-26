@@ -46,7 +46,7 @@ brew install cc-copilot-bridge
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Git Tag Push (v1.5.2)                    │
+│                    Git Tag Push (v1.5.3)                    │
 └────────────────────┬────────────────────────────────────────┘
                      │
                      ▼
@@ -121,13 +121,13 @@ class CcCopilotBridge < Formula
   homepage "https://github.com/FlorianBruniaux/cc-copilot-bridge"
 
   # URL du tarball source
-  url "https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.2.tar.gz"
+  url "https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.3.tar.gz"
 
   # SHA256 checksum (sécurité)
   sha256 "abc123..."  # Calculé par GitHub Actions
 
   license "MIT"
-  version "1.5.2"
+  version "1.5.3"
 
   # Dépendances (installées automatiquement)
   depends_on "netcat"
@@ -161,7 +161,7 @@ class CcCopilotBridge < Formula
   end
 
   test do
-    assert_match "claude-switch v1.5.2", shell_output("#{bin}/claude-switch --version")
+    assert_match "claude-switch v1.5.3", shell_output("#{bin}/claude-switch --version")
     assert_match "alias ccd=", shell_output("#{bin}/claude-switch --shell-config")
   end
 end
@@ -183,7 +183,7 @@ brew install cc-copilot-bridge
 # 2. Verify SHA256 checksum
 # 3. Extract to /tmp/claude-switch-XXXXX
 # 4. Run install() method
-# 5. Copy to /usr/local/Cellar/claude-switch/1.5.2
+# 5. Copy to /usr/local/Cellar/claude-switch/1.5.3
 # 6. Symlink to /usr/local/bin/claude-switch
 # 7. Install dependencies (netcat)
 ```
@@ -261,7 +261,7 @@ brew install cc-copilot-bridge
 
 # Vérifier
 claude-switch --version
-# claude-switch v1.5.2
+# claude-switch v1.5.3
 ```
 
 ### SHA256 et Sécurité
@@ -276,7 +276,7 @@ claude-switch --version
 GitHub Actions calcule automatiquement :
 ```bash
 # .github/workflows/build-packages.yml
-git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.2/ HEAD > release.tar.gz
+git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.3/ HEAD > release.tar.gz
 SHA256=$(sha256sum release.tar.gz | awk '{print $1}')
 sed -i "s/PLACEHOLDER_SHA256/${SHA256}/g" Formula/cc-copilot-bridge.rb
 ```
@@ -284,11 +284,11 @@ sed -i "s/PLACEHOLDER_SHA256/${SHA256}/g" Formula/cc-copilot-bridge.rb
 **Manuellement** :
 ```bash
 # Télécharger le tarball
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.2.tar.gz
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.3.tar.gz
 
 # Calculer SHA256
-sha256sum v1.5.2.tar.gz
-# abc123def456... v1.5.2.tar.gz
+sha256sum v1.5.3.tar.gz
+# abc123def456... v1.5.3.tar.gz
 
 # Mettre à jour la formula
 sed -i 's/sha256 ".*"/sha256 "abc123def456..."/' Formula/cc-copilot-bridge.rb
@@ -301,7 +301,7 @@ sed -i 's/sha256 ".*"/sha256 "abc123def456..."/' Formula/cc-copilot-bridge.rb
 ### Structure d'un Package .deb
 
 ```
-claude-switch_1.5.2.deb
+claude-switch_1.5.3.deb
 └── Contient :
     ├── DEBIAN/
     │   ├── control         # Métadonnées du package
@@ -328,7 +328,7 @@ claude-switch_1.5.2.deb
 
 ```
 Package: claude-switch
-Version: 1.5.2
+Version: 1.5.3
 Section: utils
 Priority: optional
 Architecture: all
@@ -342,7 +342,7 @@ Homepage: https://github.com/FlorianBruniaux/cc-copilot-bridge
 
 **Champs importants** :
 - `Package` : Nom du package (doit être unique)
-- `Version` : Version sémantique (1.5.2)
+- `Version` : Version sémantique (1.5.3)
 - `Architecture` : `all` (bash script, pas de binaire compilé)
 - `Depends` : Dépendances (installées automatiquement)
 - `Description` : Description courte + longue (indentée avec espace)
@@ -352,42 +352,42 @@ Homepage: https://github.com/FlorianBruniaux/cc-copilot-bridge
 **Via GitHub Actions** :
 ```bash
 # .github/workflows/build-packages.yml
-mkdir -p deb-build/claude-switch_1.5.2/DEBIAN
-mkdir -p deb-build/claude-switch_1.5.2/usr/local/bin
-mkdir -p deb-build/claude-switch_1.5.2/usr/share/doc/claude-switch
+mkdir -p deb-build/claude-switch_1.5.3/DEBIAN
+mkdir -p deb-build/claude-switch_1.5.3/usr/local/bin
+mkdir -p deb-build/claude-switch_1.5.3/usr/share/doc/claude-switch
 
 # Copy binary
-cp claude-switch deb-build/claude-switch_1.5.2/usr/local/bin/
-chmod +x deb-build/claude-switch_1.5.2/usr/local/bin/claude-switch
+cp claude-switch deb-build/claude-switch_1.5.3/usr/local/bin/
+chmod +x deb-build/claude-switch_1.5.3/usr/local/bin/claude-switch
 
 # Copy docs
-cp README.md QUICKSTART.md deb-build/claude-switch_1.5.2/usr/share/doc/claude-switch/
+cp README.md QUICKSTART.md deb-build/claude-switch_1.5.3/usr/share/doc/claude-switch/
 
 # Create control file
-cat > deb-build/claude-switch_1.5.2/DEBIAN/control << EOF
+cat > deb-build/claude-switch_1.5.3/DEBIAN/control << EOF
 Package: claude-switch
-Version: 1.5.2
+Version: 1.5.3
 ...
 EOF
 
 # Build package
-dpkg-deb --build deb-build/claude-switch_1.5.2
-# Crée : claude-switch_1.5.2.deb
+dpkg-deb --build deb-build/claude-switch_1.5.3
+# Crée : claude-switch_1.5.3.deb
 ```
 
 **Manuellement** :
 ```bash
 # Structure
-mkdir -p deb-build/claude-switch_1.5.2/{DEBIAN,usr/local/bin,usr/share/doc/claude-switch}
+mkdir -p deb-build/claude-switch_1.5.3/{DEBIAN,usr/local/bin,usr/share/doc/claude-switch}
 
 # Copier le script
-cp claude-switch deb-build/claude-switch_1.5.2/usr/local/bin/
-chmod 755 deb-build/claude-switch_1.5.2/usr/local/bin/claude-switch
+cp claude-switch deb-build/claude-switch_1.5.3/usr/local/bin/
+chmod 755 deb-build/claude-switch_1.5.3/usr/local/bin/claude-switch
 
 # Créer control
-cat > deb-build/claude-switch_1.5.2/DEBIAN/control << 'EOF'
+cat > deb-build/claude-switch_1.5.3/DEBIAN/control << 'EOF'
 Package: claude-switch
-Version: 1.5.2
+Version: 1.5.3
 Section: utils
 Priority: optional
 Architecture: all
@@ -399,23 +399,23 @@ Description: Multi-provider switcher for Claude Code CLI
 EOF
 
 # Build
-dpkg-deb --build deb-build/claude-switch_1.5.2
+dpkg-deb --build deb-build/claude-switch_1.5.3
 
 # Vérifier
-dpkg-deb -I claude-switch_1.5.2.deb
-dpkg-deb -c claude-switch_1.5.2.deb  # List contents
+dpkg-deb -I claude-switch_1.5.3.deb
+dpkg-deb -c claude-switch_1.5.3.deb  # List contents
 ```
 
 ### Installation Utilisateur
 
 **1. Télécharger le .deb**
 ```bash
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.2/claude-switch_1.5.2.deb
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.3/claude-switch_1.5.3.deb
 ```
 
 **2. Installer**
 ```bash
-sudo dpkg -i claude-switch_1.5.2.deb
+sudo dpkg -i claude-switch_1.5.3.deb
 # 1. Extrait les fichiers
 # 2. Copie vers /usr/local/bin/claude-switch
 # 3. Enregistre le package dans dpkg database
@@ -431,13 +431,13 @@ sudo apt-get install -f
 **4. Vérifier**
 ```bash
 dpkg -l | grep claude-switch
-# ii  claude-switch  1.5.2  all  Multi-provider switcher...
+# ii  claude-switch  1.5.3  all  Multi-provider switcher...
 
 which claude-switch
 # /usr/local/bin/claude-switch
 
 claude-switch --version
-# claude-switch v1.5.2
+# claude-switch v1.5.3
 ```
 
 **5. Configurer shell**
@@ -480,7 +480,7 @@ rpm-build/
 
 ```spec
 Name:           claude-switch
-Version:        1.5.2
+Version:        1.5.3
 Release:        1%{?dist}
 Summary:        Multi-provider switcher for Claude Code CLI
 
@@ -520,7 +520,7 @@ cp -r docs %{buildroot}%{_docdir}/%{name}/
 %doc %{_docdir}/%{name}
 
 %changelog
-* Thu Jan 23 2026 Florian Bruniaux <florian@example.com> - 1.5.2-1
+* Thu Jan 23 2026 Florian Bruniaux <florian@example.com> - 1.5.3-1
 - Initial release
 - Multi-provider support (Anthropic, Copilot, Ollama)
 - Shell config generator (--shell-config)
@@ -528,7 +528,7 @@ cp -r docs %{buildroot}%{_docdir}/%{name}/
 
 **Macros RPM** :
 - `%{name}` : claude-switch
-- `%{version}` : 1.5.2
+- `%{version}` : 1.5.3
 - `%{release}` : 1
 - `%{_bindir}` : /usr/bin
 - `%{_docdir}` : /usr/share/doc
@@ -547,13 +547,13 @@ cat > rpm-build/SPECS/claude-switch.spec << EOF
 EOF
 
 # Create source tarball
-tar czf rpm-build/SOURCES/claude-switch-1.5.2.tar.gz \
-  --transform "s,^,claude-switch-1.5.2/," \
+tar czf rpm-build/SOURCES/claude-switch-1.5.3.tar.gz \
+  --transform "s,^,claude-switch-1.5.3/," \
   claude-switch README.md QUICKSTART.md docs
 
 # Build RPM
 rpmbuild --define "_topdir $(pwd)/rpm-build" -ba rpm-build/SPECS/claude-switch.spec
-# Crée : rpm-build/RPMS/noarch/claude-switch-1.5.2-1.noarch.rpm
+# Crée : rpm-build/RPMS/noarch/claude-switch-1.5.3-1.noarch.rpm
 ```
 
 **Manuellement** :
@@ -570,29 +570,29 @@ mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 cp claude-switch.spec ~/rpmbuild/SPECS/
 
 # Create source tarball
-tar czf ~/rpmbuild/SOURCES/claude-switch-1.5.2.tar.gz \
-  --transform "s,^,claude-switch-1.5.2/," \
+tar czf ~/rpmbuild/SOURCES/claude-switch-1.5.3.tar.gz \
+  --transform "s,^,claude-switch-1.5.3/," \
   claude-switch README.md docs
 
 # Build
 rpmbuild -ba ~/rpmbuild/SPECS/claude-switch.spec
 
 # Package créé dans :
-# ~/rpmbuild/RPMS/noarch/claude-switch-1.5.2-1.fc39.noarch.rpm
+# ~/rpmbuild/RPMS/noarch/claude-switch-1.5.3-1.fc39.noarch.rpm
 ```
 
 ### Installation Utilisateur
 
 **1. Télécharger le .rpm**
 ```bash
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.2/claude-switch-1.5.2-1.noarch.rpm
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.3/claude-switch-1.5.3-1.noarch.rpm
 ```
 
 **2. Installer**
 
 **Fedora** :
 ```bash
-sudo dnf install claude-switch-1.5.2-1.noarch.rpm
+sudo dnf install claude-switch-1.5.3-1.noarch.rpm
 # 1. Vérifie les dépendances (nmap-ncat)
 # 2. Installe les dépendances manquantes
 # 3. Installe le package
@@ -601,16 +601,16 @@ sudo dnf install claude-switch-1.5.2-1.noarch.rpm
 
 **RHEL/CentOS** :
 ```bash
-sudo yum install claude-switch-1.5.2-1.noarch.rpm
+sudo yum install claude-switch-1.5.3-1.noarch.rpm
 # ou
-sudo rpm -i claude-switch-1.5.2-1.noarch.rpm
+sudo rpm -i claude-switch-1.5.3-1.noarch.rpm
 # (rpm -i ne gère PAS les dépendances automatiquement)
 ```
 
 **3. Vérifier**
 ```bash
 rpm -qa | grep claude-switch
-# claude-switch-1.5.2-1.noarch
+# claude-switch-1.5.3-1.noarch
 
 rpm -ql claude-switch
 # /usr/bin/claude-switch
@@ -658,7 +658,7 @@ sudo rpm -e claude-switch
 on:
   push:
     tags:
-      - 'v*'      # Tout tag commençant par 'v' (v1.5.2, v2.0.0, etc.)
+      - 'v*'      # Tout tag commençant par 'v' (v1.5.3, v2.0.0, etc.)
   workflow_dispatch:  # Déclenchement manuel
 ```
 
@@ -671,7 +671,7 @@ on:
   id: sha
   run: |
     # Créer un tarball identique à celui de GitHub Releases
-    git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.2/ HEAD > release.tar.gz
+    git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.3/ HEAD > release.tar.gz
 
     # Calculer SHA256
     SHA256=$(sha256sum release.tar.gz | awk '{print $1}')
@@ -698,22 +698,22 @@ on:
 - name: Build DEB Package
   run: |
     # Créer structure
-    mkdir -p deb-build/claude-switch_1.5.2/DEBIAN
-    mkdir -p deb-build/claude-switch_1.5.2/usr/local/bin
+    mkdir -p deb-build/claude-switch_1.5.3/DEBIAN
+    mkdir -p deb-build/claude-switch_1.5.3/usr/local/bin
 
     # Copier fichiers
-    cp claude-switch deb-build/claude-switch_1.5.2/usr/local/bin/
-    chmod +x deb-build/claude-switch_1.5.2/usr/local/bin/claude-switch
+    cp claude-switch deb-build/claude-switch_1.5.3/usr/local/bin/
+    chmod +x deb-build/claude-switch_1.5.3/usr/local/bin/claude-switch
 
     # Créer control file
-    cat > deb-build/claude-switch_1.5.2/DEBIAN/control << EOF
+    cat > deb-build/claude-switch_1.5.3/DEBIAN/control << EOF
     Package: claude-switch
     Version: ${{ steps.version.outputs.VERSION }}
     ...
     EOF
 
     # Build
-    dpkg-deb --build deb-build/claude-switch_1.5.2
+    dpkg-deb --build deb-build/claude-switch_1.5.3
 ```
 
 #### 4. Build .rpm Package
@@ -733,7 +733,7 @@ on:
     EOF
 
     # Créer source tarball
-    tar czf rpm-build/SOURCES/claude-switch-1.5.2.tar.gz ...
+    tar czf rpm-build/SOURCES/claude-switch-1.5.3.tar.gz ...
 
     # Build
     rpmbuild --define "_topdir $(pwd)/rpm-build" -ba rpm-build/SPECS/claude-switch.spec
@@ -761,8 +761,8 @@ on:
 
       ### Debian/Ubuntu
       ```bash
-      wget .../claude-switch_1.5.2.deb
-      sudo dpkg -i claude-switch_1.5.2.deb
+      wget .../claude-switch_1.5.3.deb
+      sudo dpkg -i claude-switch_1.5.3.deb
       ```
       ...
 ```
@@ -775,7 +775,7 @@ on:
     git config --local user.email "github-actions[bot]@users.noreply.github.com"
     git config --local user.name "github-actions[bot]"
     git add Formula/cc-copilot-bridge.rb
-    git commit -m "Update Homebrew formula SHA256 for v1.5.2"
+    git commit -m "Update Homebrew formula SHA256 for v1.5.3"
     git push origin HEAD:main
 ```
 
@@ -802,7 +802,7 @@ permissions:
 
 ```bash
 # 1. Calculer SHA256 du tarball
-git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.2/ HEAD > /tmp/test.tar.gz
+git archive --format=tar.gz --prefix=cc-copilot-bridge-1.5.3/ HEAD > /tmp/test.tar.gz
 sha256sum /tmp/test.tar.gz
 # abc123...
 
@@ -825,13 +825,13 @@ brew uninstall claude-switch
 
 ```bash
 # 1. Build local
-mkdir -p deb-build/claude-switch_1.5.2/{DEBIAN,usr/local/bin}
-cp claude-switch deb-build/claude-switch_1.5.2/usr/local/bin/
-chmod 755 deb-build/claude-switch_1.5.2/usr/local/bin/claude-switch
+mkdir -p deb-build/claude-switch_1.5.3/{DEBIAN,usr/local/bin}
+cp claude-switch deb-build/claude-switch_1.5.3/usr/local/bin/
+chmod 755 deb-build/claude-switch_1.5.3/usr/local/bin/claude-switch
 
-cat > deb-build/claude-switch_1.5.2/DEBIAN/control << 'EOF'
+cat > deb-build/claude-switch_1.5.3/DEBIAN/control << 'EOF'
 Package: claude-switch
-Version: 1.5.2
+Version: 1.5.3
 Section: utils
 Priority: optional
 Architecture: all
@@ -841,14 +841,14 @@ Description: Test package
  Multi-provider switcher for Claude Code CLI
 EOF
 
-dpkg-deb --build deb-build/claude-switch_1.5.2
+dpkg-deb --build deb-build/claude-switch_1.5.3
 
 # 2. Vérifier le package
-dpkg-deb -I claude-switch_1.5.2.deb
-dpkg-deb -c claude-switch_1.5.2.deb
+dpkg-deb -I claude-switch_1.5.3.deb
+dpkg-deb -c claude-switch_1.5.3.deb
 
 # 3. Tester installation
-sudo dpkg -i claude-switch_1.5.2.deb
+sudo dpkg -i claude-switch_1.5.3.deb
 
 # 4. Vérifier
 which claude-switch
@@ -871,7 +871,7 @@ mkdir -p rpm-build/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 cat > rpm-build/SPECS/claude-switch.spec << 'EOF'
 Name:           claude-switch
-Version:        1.5.2
+Version:        1.5.3
 Release:        1
 Summary:        Multi-provider switcher
 License:        MIT
@@ -895,8 +895,8 @@ install -m 755 claude-switch %{buildroot}%{_bindir}/
 EOF
 
 # Create tarball
-tar czf rpm-build/SOURCES/claude-switch-1.5.2.tar.gz \
-  --transform "s,^,claude-switch-1.5.2/," \
+tar czf rpm-build/SOURCES/claude-switch-1.5.3.tar.gz \
+  --transform "s,^,claude-switch-1.5.3/," \
   claude-switch
 
 # Build
@@ -922,23 +922,23 @@ git status
 
 # Vérifier la version dans claude-switch
 grep "Version:" claude-switch
-# Version: 1.5.2
+# Version: 1.5.3
 
 # Vérifier Formula/cc-copilot-bridge.rb
 grep "version" Formula/cc-copilot-bridge.rb
-# version "1.5.2"
+# version "1.5.3"
 ```
 
 **2. Créer le tag**
 ```bash
 # Créer tag annoté
-git tag -a v1.5.2 -m "Release v1.5.2: Package managers support"
+git tag -a v1.5.3 -m "Release v1.5.3: Package managers support"
 
 # Vérifier
-git tag -l -n9 v1.5.2
+git tag -l -n9 v1.5.3
 
 # Push le tag (déclenche GitHub Actions)
-git push origin v1.5.2
+git push origin v1.5.3
 ```
 
 **3. GitHub Actions Build**
@@ -958,10 +958,10 @@ Le workflow démarre automatiquement :
 **4. Vérifier la Release**
 
 Sur GitHub → Releases :
-- ✅ Tag: v1.5.2
+- ✅ Tag: v1.5.3
 - ✅ Assets:
-  - `claude-switch_1.5.2.deb`
-  - `claude-switch-1.5.2-1.noarch.rpm`
+  - `claude-switch_1.5.3.deb`
+  - `claude-switch-1.5.3-1.noarch.rpm`
   - `cc-copilot-bridge.rb`
   - Source code (zip)
   - Source code (tar.gz)
@@ -982,7 +982,7 @@ cat Formula/cc-copilot-bridge.rb | grep sha256
 cd ../homebrew-tap
 cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
 git add Formula/cc-copilot-bridge.rb
-git commit -m "Update claude-switch to v1.5.2"
+git commit -m "Update claude-switch to v1.5.3"
 git push
 ```
 
@@ -998,14 +998,14 @@ brew install cc-copilot-bridge
 
 **Debian** :
 ```bash
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.2/claude-switch_1.5.2.deb
-sudo dpkg -i claude-switch_1.5.2.deb
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.3/claude-switch_1.5.3.deb
+sudo dpkg -i claude-switch_1.5.3.deb
 ```
 
 **Fedora** :
 ```bash
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.2/claude-switch-1.5.2-1.noarch.rpm
-sudo dnf install claude-switch-1.5.2-1.noarch.rpm
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/download/v1.5.3/claude-switch-1.5.3-1.noarch.rpm
+sudo dnf install claude-switch-1.5.3-1.noarch.rpm
 ```
 
 **7. Annoncer la Release**
@@ -1030,8 +1030,8 @@ Actual:   def456...
 **Solution** :
 ```bash
 # Recalculer le SHA256
-wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.2.tar.gz
-sha256sum v1.5.2.tar.gz
+wget https://github.com/FlorianBruniaux/cc-copilot-bridge/archive/refs/tags/v1.5.3.tar.gz
+sha256sum v1.5.3.tar.gz
 
 # Mettre à jour Formula
 sed -i 's/sha256 ".*"/sha256 "NEW_SHA256"/' Formula/cc-copilot-bridge.rb
@@ -1061,7 +1061,7 @@ sudo apt-get install -f
 
 **Symptôme** :
 ```
-error: File /root/rpmbuild/SOURCES/claude-switch-1.5.2.tar.gz: No such file or directory
+error: File /root/rpmbuild/SOURCES/claude-switch-1.5.3.tar.gz: No such file or directory
 ```
 
 **Solution** :
@@ -1070,8 +1070,8 @@ error: File /root/rpmbuild/SOURCES/claude-switch-1.5.2.tar.gz: No such file or d
 ls rpm-build/SOURCES/
 
 # Recréer si nécessaire
-tar czf rpm-build/SOURCES/claude-switch-1.5.2.tar.gz \
-  --transform "s,^,claude-switch-1.5.2/," \
+tar czf rpm-build/SOURCES/claude-switch-1.5.3.tar.gz \
+  --transform "s,^,claude-switch-1.5.3/," \
   claude-switch README.md docs
 ```
 
@@ -1114,7 +1114,7 @@ Une fois le projet stable, contacter les mainteneurs :
 ```bash
 # PKGBUILD
 pkgname=claude-switch
-pkgver=1.5.2
+pkgver=1.5.3
 ...
 ```
 
@@ -1124,7 +1124,7 @@ pkgver=1.5.2
 { stdenv, fetchFromGitHub, netcat }:
 stdenv.mkDerivation {
   pname = "claude-switch";
-  version = "1.5.2";
+  version = "1.5.3";
   ...
 }
 ```
@@ -1136,7 +1136,7 @@ stdenv.mkDerivation {
 <package>
   <metadata>
     <id>claude-switch</id>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
     ...
   </metadata>
 </package>
@@ -1156,8 +1156,8 @@ stdenv.mkDerivation {
 ### Outils Utiles
 
 - **Homebrew Formula Linter** : `brew audit --strict Formula/cc-copilot-bridge.rb`
-- **Debian Linter** : `lintian claude-switch_1.5.2.deb`
-- **RPM Linter** : `rpmlint claude-switch-1.5.2-1.noarch.rpm`
+- **Debian Linter** : `lintian claude-switch_1.5.3.deb`
+- **RPM Linter** : `rpmlint claude-switch-1.5.3-1.noarch.rpm`
 - **GitHub Actions Validator** : https://rhysd.github.io/actionlint/
 
 ### Exemples de Projets

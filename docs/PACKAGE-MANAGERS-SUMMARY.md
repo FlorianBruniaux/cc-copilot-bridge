@@ -1,6 +1,6 @@
 # Package Managers - Synthèse Complète
 
-## Ce qui a été implémenté (v1.5.2)
+## Ce qui a été implémenté (v1.5.3)
 
 Suite aux suggestions de Bernard sur l'installation invasive du `curl | bash`, le système a été complètement refactoré pour respecter les best practices de distribution de logiciels.
 
@@ -151,7 +151,7 @@ cc-copilot-bridge/
 **1. Tag Git → GitHub Actions Build**
 
 ```bash
-git tag v1.5.2 && git push --tags
+git tag v1.5.3 && git push --tags
 ```
 
 **2. GitHub Actions exécute automatiquement** :
@@ -169,8 +169,8 @@ git tag v1.5.2 && git push --tags
          │
          ▼
 GitHub Release avec :
-- claude-switch_1.5.2.deb
-- claude-switch-1.5.2-1.noarch.rpm
+- claude-switch_1.5.3.deb
+- claude-switch-1.5.3-1.noarch.rpm
 - cc-copilot-bridge.rb (Formula)
 - Source code (zip, tar.gz)
 ```
@@ -180,7 +180,7 @@ GitHub Release avec :
 ```bash
 cd ~/Sites/perso/homebrew-tap
 cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
-git commit -m "Update to v1.5.2"
+git commit -m "Update to v1.5.3"
 git push
 ```
 
@@ -195,15 +195,15 @@ eval "$(claude-switch --shell-config)"
 
 **Debian/Ubuntu** :
 ```bash
-wget https://github.com/.../claude-switch_1.5.2.deb
-sudo dpkg -i claude-switch_1.5.2.deb
+wget https://github.com/.../claude-switch_1.5.3.deb
+sudo dpkg -i claude-switch_1.5.3.deb
 eval "$(claude-switch --shell-config)"
 ```
 
 **Fedora/RHEL** :
 ```bash
-wget https://github.com/.../claude-switch-1.5.2-1.noarch.rpm
-sudo dnf install claude-switch-1.5.2-1.noarch.rpm
+wget https://github.com/.../claude-switch-1.5.3-1.noarch.rpm
+sudo dnf install claude-switch-1.5.3-1.noarch.rpm
 eval "$(claude-switch --shell-config)"
 ```
 
@@ -300,7 +300,7 @@ cco --help
 
 ## 6. Prochaines Étapes
 
-### Pour Publier v1.5.2
+### Pour Publier v1.5.3
 
 **1. Créer le Homebrew Tap** :
 ```bash
@@ -320,10 +320,10 @@ git push -u origin main
 ```bash
 cd ~/Sites/perso/cc-copilot-bridge
 git add -A
-git commit -m "Release v1.5.2: Package managers support"
-git tag -a v1.5.2 -m "Release v1.5.2: Homebrew/deb/rpm distribution"
+git commit -m "Release v1.5.3: Package managers support"
+git tag -a v1.5.3 -m "Release v1.5.3: Homebrew/deb/rpm distribution"
 git push origin main
-git push origin v1.5.2
+git push origin v1.5.3
 ```
 
 **3. Vérifier GitHub Actions** :
@@ -339,7 +339,7 @@ git pull  # Si GitHub Actions a commit
 # OU copie manuelle :
 cp ../cc-copilot-bridge/Formula/cc-copilot-bridge.rb Formula/
 git add Formula/cc-copilot-bridge.rb
-git commit -m "Update claude-switch to v1.5.2"
+git commit -m "Update claude-switch to v1.5.3"
 git push
 ```
 
@@ -350,7 +350,7 @@ brew upgrade claude-switch  # Si déjà installé
 # OU
 brew install FlorianBruniaux/tap/cc-copilot-bridge
 
-claude-switch --version  # Doit afficher v1.5.2
+claude-switch --version  # Doit afficher v1.5.3
 eval "$(claude-switch --shell-config)"
 ccd --help
 ```
@@ -406,8 +406,8 @@ Homebrew (macOS/Linux) :
   eval "$(claude-switch --shell-config)"
 
 Debian/Ubuntu :
-  wget https://github.com/.../claude-switch_1.5.2.deb
-  sudo dpkg -i claude-switch_1.5.2.deb
+  wget https://github.com/.../claude-switch_1.5.3.deb
+  sudo dpkg -i claude-switch_1.5.3.deb
   eval "$(claude-switch --shell-config)"
 ```
 
@@ -457,7 +457,7 @@ R : Possible via Chocolatey ou Scoop. À implémenter si demande utilisateur.
 R : Non, gratuit pour repos publics. Le build prend ~5 minutes par release.
 
 **Q : Comment tester avant de pusher un tag ?**
-R : Utiliser des pre-release tags (`v1.5.2-rc1`) ou tester localement avec les scripts de build.
+R : Utiliser des pre-release tags (`v1.5.3-rc1`) ou tester localement avec les scripts de build.
 
 **Q : SHA256 mismatch, que faire ?**
 R : Recalculer manuellement le SHA256 et update la Formula. Voir PACKAGE-MANAGERS-EXPLAINED.md → Troubleshooting.

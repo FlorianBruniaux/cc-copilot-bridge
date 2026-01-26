@@ -20,6 +20,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - **SHA256 Mismatch Bug**: `git archive` produced different tarball than GitHub, causing install failures
 
+## [1.5.3] - 2026-01-26
+
+### Added
+
+**📚 Documentation Updates** - Ollama 0.15.0+ integration
+
+- **FAQ Entry**: "Can I use `ollama launch` instead of `claude-switch ollama`?"
+  - Comparative table showing 7 feature differences
+  - Clear use cases: `ollama launch` for quick tests, `claude-switch` for production
+  - Setup instructions and context size warnings
+  - Link to Ollama v0.15.0 release notes
+
+### Changed
+
+**Ollama Version Requirements Updated**:
+- `docs/OPTIMISATION-M4-PRO.md`: Updated from 0.14.2+ to **0.15.0+** (4 locations)
+  - Header metadata (version + last updated date)
+  - Post-installation checklist
+  - Troubleshooting verification instructions
+  - Added Ollama v0.15.0 and v0.15.1 to sources section
+
+**GLM-4.7-Flash Model Status** (3 files):
+- `README.md`, `CLAUDE.md`, `docs/MODEL-SWITCHING.md`
+- Status changed: ❌ "Untested with Claude Code" → ⚠️ "Ollama 0.15.1+ required"
+- Reason: v0.15.1 fixes repetitive answers and improves tool calling quality
+- Updated "Use Case" column: "Speed-optimized variant" → "Tool calling fix (v0.15.1)"
+
+### Technical Details
+
+**Ollama Release Notes Integration**:
+- **v0.15.0** (2026-01-21):
+  - New `ollama launch` command for zero-config Claude Code integration
+  - Multi-line string support (`"""`) in `ollama run` (CLI only, not API)
+  - Memory reduction for GLM-4.7-Flash models
+- **v0.15.1** (2026-01-24):
+  - GLM-4.7-Flash: Fixed repetitive answers + improved tool calling
+  - Performance improvements for macOS and ARM64 Linux
+  - Fixed bug where `ollama launch` didn't detect `claude` command
+
+**Impact Assessment**:
+- `ollama launch` is a **convenience CLI feature** for beginners
+- Does NOT replace `claude-switch` (lacks multi-provider, logging, MCP profiles)
+- Context size issue (18K tokens) still requires 64K Modelfile configuration
+- **Recommendation**: `ollama launch` for quick tests, `claude-switch` for production workflows
+
+### Files Modified
+- `claude-switch` (version bump to 1.5.3)
+- `docs/OPTIMISATION-M4-PRO.md` (4 changes)
+- `README.md` (1 change)
+- `CLAUDE.md` (1 change)
+- `docs/MODEL-SWITCHING.md` (1 change)
+- `docs/FAQ.md` (new entry + date update)
+
 ## [1.5.2] - 2026-01-24
 
 ### Added
