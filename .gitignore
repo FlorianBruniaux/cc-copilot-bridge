@@ -34,6 +34,9 @@ temp*.sh
 
 claudedocs/
 
+# Personal files
+REPONSE-FLORIAN.md
+
 # Debug output (temporary analysis)
 debug-*/
 copilot-api-responses/
