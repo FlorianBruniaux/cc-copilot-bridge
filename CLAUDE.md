@@ -51,21 +51,34 @@ Auto-installer that:
 4. Creates `~/.claude/` directory for logs
 
 **Aliases Created:**
+
+30+ aliases for all providers and models (Claude, GPT, Codex, Gemini, Ollama).
+
+**Quick Reference:**
 ```bash
-ccd='claude-switch direct'
-ccc='claude-switch copilot'
-cco='claude-switch ollama'
-ccs='claude-switch status'
-ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
-ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
-ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
-ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
-ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
-ccc-gemini3='COPILOT_MODEL=gemini-3-flash-preview claude-switch copilot'
-ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
-cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
-cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
+# Core providers
+ccd, ccc, cco, ccs
+
+# Claude models
+ccc-opus, ccc-sonnet, ccc-haiku
+
+# GPT models
+ccc-gpt41, ccc-gpt5, ccc-gpt5-mini
+
+# Codex models (requires ccunified)
+ccc-codex, ccc-codex-std, ccc-codex-mini, ccc-codex-max
+
+# Gemini models
+ccc-gemini, ccc-gemini3, ccc-gemini3-pro
+
+# Ollama models
+cco-devstral, cco-granite
+
+# Semantic shortcuts
+ccc-prod, ccc-dev, ccc-quick, ccc-code, ccc-alt, ccc-private
 ```
+
+**📖 Complete documentation:** See `docs/ALIASES.md` for full reference with use cases, examples, and compatibility matrix.
 
 ### 3. mcp-check.sh (MCP Diagnostics)
 Identifies MCP servers with schema validation issues that fail with GPT-4.1 strict validation.

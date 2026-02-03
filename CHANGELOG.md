@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Automated Homebrew Tap Sync**: GitHub Actions now auto-syncs Formula to `FlorianBruniaux/homebrew-tap` on release
 - **Daily Tap Sync Verification**: New workflow `.github/workflows/verify-tap-sync.yml` checks tap is in sync daily
 - Documentation: MLX vs GGUF note in Ollama sections (CLAUDE.md, README.md) - explains performance trade-offs on Apple Silicon
+- **Complete Aliases Documentation**: New `docs/ALIASES.md` - comprehensive reference for all 30+ aliases
+  - Organized by category: Core providers, Claude, GPT, Codex, Gemini, Ollama, Semantic
+  - Tables with models, billing tiers, use cases, and status (✅ Tested / ⚠️ UNTESTED)
+  - Examples for each alias family
+  - Compatibility matrix (MCP support, tool calling, file creation)
+  - Decision tree for choosing the right alias
+  - Advanced usage patterns (dynamic override, chaining with tools)
+  - Troubleshooting section specific to aliases
 
 ### Changed
 - **Homebrew Package Renamed**: `claude-switch` → `cc-copilot-bridge` (matches repo name)

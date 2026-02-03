@@ -318,7 +318,7 @@ ccc-gemini3
 ```bash
 ccc
 # → ERROR: copilot-api not running on :4141
-#    Start it with: copilot-api start
+#    Start it with: copilot-api start (or scripts/launch-unified-fork.sh)
 ```
 
 ### 8. **Session Logging**
@@ -360,7 +360,7 @@ COPILOT_MODEL=gemini-2.5-pro ccc # Gemini
 
 **Requirements**:
 1. GitHub Copilot Pro ($10/mo) or Pro+ ($39/mo) subscription
-2. copilot-api running locally (`copilot-api start`)
+2. copilot-api running locally (`copilot-api start` or `scripts/launch-unified-fork.sh`)
 
 ---
 
@@ -529,6 +529,7 @@ cco
 
 ### This Project
 - **QUICKSTART.md** - 2-minute setup
+- **[ALIASES.md](docs/ALIASES.md)** - Complete command reference (30+ aliases)
 - **MODEL-SWITCHING.md** - Dynamic model selection guide
 - **MCP-PROFILES.md** - MCP Profiles & System Prompts
 - **SECURITY.md** - Security, privacy, and compliance guide
