@@ -2,7 +2,7 @@
 
 > **TL;DR**: Bash script that routes Claude Code CLI through multiple AI providers. Switch between Anthropic Direct API, GitHub Copilot (via copilot-api proxy), or Ollama local with simple aliases (`ccd`, `ccc`, `cco`).
 
-> 📖 **New to Claude Code?** Check out the [Claude Code Ultimate Guide](https://florianbruniaux.github.io/claude-code-ultimate-guide-landing/) for comprehensive documentation, tips, and best practices.
+> 📖 **New to Claude Code?** Check out the [Claude Code Ultimate Guide](https://cc.bruniaux.com/) for comprehensive documentation, tips, and best practices.
 
 <div align="center">
 
@@ -10,6 +10,7 @@
 [![Version](https://img.shields.io/github/v/tag/FlorianBruniaux/cc-copilot-bridge?label=version)](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue.svg)]()
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-florian.bruniaux.com-blue?style=flat-square)](https://florian.bruniaux.com/)
 
 **Multi-provider routing for Claude Code CLI**
 
@@ -595,6 +596,19 @@ Community reports indicate that:
 | **Risk-averse users** | Avoid copilot-api entirely |
 
 **Source**: [GitHub Terms of Service - API Terms](https://docs.github.com/site-policy/github-terms/github-terms-of-service#h-api-terms)
+
+---
+
+## Related Projects
+
+Enhance your Claude Code workflow:
+
+- **[Claude Code Ultimate Guide](https://cc.bruniaux.com/)** - Documentation and best practices
+- **[ccboard](https://ccboard.bruniaux.com/)** - Dashboard for monitoring and analytics
+- **[RTK](https://github.com/FlorianBruniaux/rtk)** - Token reduction proxy
+- **[Claude Cowork Guide](https://cowork.bruniaux.com/)** - Desktop automation guide
+
+**More**: [florian.bruniaux.com](https://florian.bruniaux.com/)
 
 ---
 
