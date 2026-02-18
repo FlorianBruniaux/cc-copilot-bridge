@@ -10,6 +10,9 @@
 [![Version](https://img.shields.io/github/v/tag/FlorianBruniaux/cc-copilot-bridge?label=version)](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-blue.svg)]()
 [![Shell](https://img.shields.io/badge/Shell-Bash-green.svg)](https://www.gnu.org/software/bash/)
+[![GitHub Stars](https://img.shields.io/github/stars/FlorianBruniaux/cc-copilot-bridge?style=social)](https://github.com/FlorianBruniaux/cc-copilot-bridge/stargazers)
+[![GitHub Issues](https://img.shields.io/github/issues/FlorianBruniaux/cc-copilot-bridge)](https://github.com/FlorianBruniaux/cc-copilot-bridge/issues)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Portfolio](https://img.shields.io/badge/Portfolio-florian.bruniaux.com-blue?style=flat-square)](https://florian.bruniaux.com/)
 
 **Multi-provider routing for Claude Code CLI**
@@ -128,10 +131,12 @@ ccc        # GitHub Copilot (default: Claude Sonnet 4.5)
 cco        # Ollama Local (offline)
 ccs        # Check all providers
 
-# Model shortcuts (25+ models)
+# Model shortcuts (40+ models)
+ccc-opus='COPILOT_MODEL=claude-opus-4-6 claude-switch copilot'
+ccc-sonnet='COPILOT_MODEL=claude-sonnet-4-6 claude-switch copilot'
 ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
-ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
-ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
+ccc-grok='COPILOT_MODEL=grok-code-fast-1 claude-switch copilot'
+ccc-prod, ccc-dev, ccc-quick, ccc-alt, ccc-private  # semantic shortcuts
 ```
 
 See [INSTALL-OPTIONS.md](docs/INSTALL-OPTIONS.md) for integration with antigen, oh-my-zsh, zinit, etc.
@@ -186,12 +191,15 @@ Different models consume different amounts of premium requests per interaction:
 
 | Model | Multiplier | Effective Quota (Pro, 300 req) | Effective Quota (Pro+, 1500 req) |
 |-------|-----------|-------------------------------|----------------------------------|
-| **GPT-4.1, GPT-4o, GPT-5-mini** | 0x | **Unlimited** | **Unlimited** |
+| **GPT-4.1, GPT-4o** | 0x | **Unlimited** | **Unlimited** |
+| **Grok Code Fast 1** | 0.25x | ~1,200 interactions | ~6,000 interactions |
 | Claude Haiku 4.5 | 0.33x | ~900 interactions | ~4,500 interactions |
-| Claude Sonnet 4.5 | 1x | 300 interactions | 1,500 interactions |
+| Claude Sonnet 4.6 | 1x | 300 interactions | 1,500 interactions |
 | Gemini 2.5 Pro | 1x | 300 interactions | 1,500 interactions |
-| GPT-5.1/5.2 | 1x | 300 interactions | 1,500 interactions |
-| **Claude Opus 4.5** | 3x | ~100 interactions | ~500 interactions |
+| GPT-5.3-Codex | 1x | 300 interactions | 1,500 interactions |
+| ~~gpt-5~~ *(deprecated 17 Feb 2026)* | ~~1x~~ | — | — |
+| ~~gpt-5-codex~~ *(deprecated)* | ~~1x~~ | — | — |
+| **Claude Opus 4.6** | 3x | ~100 interactions | ~500 interactions |
 
 **Key insight**: GPT-4.1 and GPT-4o are **free** (0x multiplier) on paid plans. Use them for routine tasks to preserve premium requests for Claude/Opus.
 
@@ -518,7 +526,9 @@ cco
 ## 🔧 Requirements
 
 - **Claude Code CLI** (Anthropic)
-- **copilot-api** ([ericc-ch/copilot-api](https://github.com/ericc-ch/copilot-api)) for Copilot provider
+- **copilot-api** for Copilot provider
+  - **Recommended**: [caozhiyuan/copilot-api v1.1.6](https://github.com/caozhiyuan/copilot-api/tree/all) (fork — actively maintained, includes Codex `/responses` endpoint + Gemini 3 thinking support)
+  - **Official**: [ericc-ch/copilot-api](https://github.com/ericc-ch/copilot-api) (stalled since Oct 2025, last release v0.7.0)
   - ⚠️ **Note**: Community patch applied to fix [issue #174](https://github.com/ericc-ch/copilot-api/issues/174) (reserved billing header). See [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md#patch-communautaire-solution-avancée) for details.
 - **Ollama** (optional, for local provider)
 - **jq** (JSON processing)
@@ -559,7 +569,7 @@ cco
 
 ## 🚀 Version
 
-**Current**: v1.5.1
+**Current**: v1.6.0
 
 **Changelog**: See [CHANGELOG.md](CHANGELOG.md)
 

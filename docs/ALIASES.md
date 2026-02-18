@@ -23,9 +23,11 @@ eval "$(claude-switch --shell-config)"
 
 | Alias | Model | Billing | Use Case |
 |-------|-------|---------|----------|
-| `ccc-opus` | `claude-opus-4.5` | 0x (free) | Best quality, production code, critical decisions |
-| `ccc-sonnet` | `claude-sonnet-4.5` | 0x (free) | Daily development, balanced quality/speed |
+| `ccc-opus` | `claude-opus-4-6` | 0x (free) | Best quality, production code, critical decisions |
+| `ccc-sonnet` | `claude-sonnet-4-6` | 0x (free) | Daily development, balanced quality/speed |
 | `ccc-haiku` | `claude-haiku-4.5` | 0x (free) | Fastest responses, quick questions |
+| `ccc-opus46` | `claude-opus-4-6` | 0x (free) | Explicit 4.6 alias |
+| `ccc-sonnet46` | `claude-sonnet-4-6` | 0x (free) | Explicit 4.6 alias |
 
 **Example:**
 ```bash
@@ -41,6 +43,9 @@ ccc-haiku -p "Explain what this function does"
 | `ccc-gpt41` / `ccc-gpt` | `gpt-4.1` | 0x (free) | Alternative perspective, second opinion |
 | `ccc-gpt5` | `gpt-5` | 1x (premium) | Latest GPT, enhanced reasoning |
 | `ccc-gpt5-mini` | `gpt-5-mini` | 0x (free) | Fast GPT alternative |
+| `ccc-gpt52` | `gpt-5.2` | 1x (premium) | Latest GPT general |
+| `ccc-gpt53-codex` | `gpt-5.3-codex` | 0x (free) | Latest Codex (via ccunified) |
+| `ccc-grok` | `grok-code-fast-1` | 0.25x | Speed-optimized, economical |
 
 **Note:** GPT models have ~80% MCP compatibility due to strict JSON Schema validation. Some MCP servers (e.g., grepai) may fail. Use Claude models for 100% compatibility.
 
@@ -56,8 +61,8 @@ ccc-gpt5-mini -p "Quick code explanation"
 
 | Alias | Model | Billing | Use Case | Status |
 |-------|-------|---------|----------|--------|
-| `ccc-codex` | `gpt-5.2-codex` | 0x (free) | Best code generation | ✅ Tested |
-| `ccc-codex-std` | `gpt-5.1-codex` | 0x (free) | Standard code generation | ✅ Tested |
+| `ccc-codex` | `gpt-5.3-codex` | 0x (free) | Best code generation | ✅ Tested |
+| `ccc-codex-std` | `gpt-5.2-codex` | 0x | Previous codex | ✅ Tested |
 | `ccc-codex-mini` | `gpt-5.1-codex-mini` | 0x (free) | Fast code generation | ✅ Tested |
 | `ccc-codex-max` | `gpt-5.1-codex-max` | 1x (premium) | Max quality code generation | ✅ Tested |
 
@@ -86,7 +91,7 @@ ccc-codex-mini -p "Write a binary search function in TypeScript"
 
 | Alias | Model | Billing | Use Case | Status |
 |-------|-------|---------|----------|--------|
-| `ccc-gemini` | `gemini-2.5-pro` | 0x (free) | Fast iteration, simple prompts | Deprecating 2/17/26 |
+| `ccc-gemini` | `gemini-2.5-pro` | 0x (free) | Fast iteration, simple prompts | ⚠️ DEPRECATED (since 17 fév 2026) |
 | `ccc-gemini3` | `gemini-3-flash-preview` | 0x (free) | Latest Gemini, experimental | ⚠️ Agentic UNTESTED |
 | `ccc-gemini3-pro` | `gemini-3-pro-preview` | 1x (premium) | Latest Gemini Pro, experimental | ⚠️ Agentic UNTESTED |
 
@@ -129,10 +134,10 @@ User-friendly aliases that map to specific use cases:
 
 | Alias | Resolves To | Use Case |
 |-------|-------------|----------|
-| `ccc-prod` | `ccc-opus` | Production code, critical decisions |
-| `ccc-dev` | `ccc-sonnet` | Daily development |
+| `ccc-prod` | `claude-opus-4-6` | Production code, critical decisions |
+| `ccc-dev` | `claude-sonnet-4-6` | Daily development |
 | `ccc-quick` | `ccc-haiku` | Quick questions, explanations |
-| `ccc-code` | `ccc-codex` | Code generation (requires ccunified) |
+| `ccc-code` | `ccc-gpt53-codex` | Pure code generation (requires ccunified) |
 | `ccc-alt` | `ccc-gpt41` | Alternative perspective |
 | `ccc-private` | `cco-devstral` | Private/offline work |
 
@@ -155,7 +160,8 @@ ccc-private    # Work on proprietary code
 | Tier | Models | Cost |
 |------|--------|------|
 | **0x (Free)** | Claude Opus/Sonnet/Haiku, GPT-4.1, GPT-5-mini, All Codex, Gemini 2.5/3-flash | Included in Copilot Pro+ subscription |
-| **1x (Premium)** | GPT-5, Codex-Max, Gemini-3-Pro | Consumes completions quota faster |
+| **0.25x** | Grok Code Fast 1 | Economical, consumes minimal quota |
+| **1x (Premium)** | GPT-5, GPT-5.2, Codex-Max, Gemini-3-Pro | Consumes completions quota faster |
 
 **Note:** All models are effectively "free" with Copilot Pro+ subscription, but 1x models consume your quota faster.
 
@@ -263,6 +269,6 @@ ccc-sonnet -p "..." # ✅ Always works
 ## Version
 
 Aliases documented for:
-- **claude-switch**: v1.5.3
-- **copilot-api**: v0.7.0 (official) + unified fork
+- **claude-switch**: v1.6.0
+- **copilot-api**: v0.7.0 (official, stalled) + unified fork v1.1.6 (recommended)
 - **Claude Code CLI**: v2.1.15

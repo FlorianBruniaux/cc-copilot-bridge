@@ -232,6 +232,11 @@ ERROR  HTTP error: { error:
 
 **TOUS les modèles de la famille GPT Codex** nécessitent l'endpoint OpenAI `/responses` (lancé en octobre 2025) au lieu du standard `/chat/completions`. copilot-api (v0.7.0) ne supporte que `/chat/completions`, rendant **TOUS les modèles Codex incompatibles** :
 
+> **Statut (Feb 2026)**: La version officielle v0.7.0 est stalled depuis octobre 2025.
+> Le fork caozhiyuan (v1.1.6) est maintenant la version maintenue.
+> ⚠️ **Issue #191**: Risque de casse API GitHub (nouveau format API). Surveiller.
+> Recommandation: utiliser le fork via `ccunified` pour tous les cas d'usage.
+
 - ❌ `gpt-5.2-codex` (GA depuis 14 jan 2026)
 - ❌ `gpt-5.1-codex` (Preview)
 - ❌ `gpt-5.1-codex-mini` (Preview)
@@ -280,10 +285,10 @@ Le PR communautaire [ericc-ch/copilot-api#117](https://github.com/ericc-ch/copil
 | `gpt-5.1-codex-mini` | ❌ Incompatible | Endpoint `/responses` requis |
 | `gpt-5-codex` | ❌ Incompatible | Endpoint `/responses` requis |
 
-### Modèles dépréciés (17 février 2026)
+### Modèles dépréciés (17 février 2026 passé)
 
 ```bash
-# À remplacer avant le 17 février 2026:
+# À remplacer (dépréciés depuis le 17 février 2026):
 claude-opus-4.1 → claude-opus-4.5
 gemini-2.5-pro → gemini-3-pro-preview
 ```
@@ -530,6 +535,9 @@ copilot-api start
 - ❌ Non testé sur toutes les versions de copilot-api
 - ❌ Peut ne pas couvrir tous les cas edge
 
+> **Note v1.6.0**: La Solution 1 (variable d'environnement) reste la plus fiable.
+> Le patch regex (Solution 2) sera écrasé lors des mises à jour npm.
+
 **Après update de copilot-api** :
 ```bash
 # Vérifier si le patch existe toujours
@@ -547,6 +555,31 @@ Une fois le fix intégré officiellement :
 npm update -g copilot-api  # Mettre à jour
 # Plus besoin du patch manuel
 ```
+
+---
+
+## ⚠️ copilot-api Issue #191: API GitHub Breaking Change
+
+### Problème
+
+GitHub modifie son API interne. copilot-api officiel (v0.7.0, stalled) pourrait casser.
+
+**Status**: En cours de monitoring (février 2026)
+
+### Solution
+
+- Utiliser le fork caozhiyuan v1.1.6 via `ccunified`
+- Fork plus activement maintenu, réponse plus rapide aux breaking changes
+
+```bash
+# Terminal 1: Launch fork maintenu
+ccunified
+
+# Terminal 2: Utilisation normale
+ccc-sonnet  # ou tout autre modèle
+```
+
+**Suivi**: [ericc-ch/copilot-api#191](https://github.com/ericc-ch/copilot-api/issues/191)
 
 ---
 
@@ -827,7 +860,7 @@ ccc-gemini  # Alias for gemini-2.5-pro
 
 **Cons**:
 - ⚠️ May still have occasional issues with complex multi-tool workflows
-- ⚠️ Deprecation scheduled: 17 Feb 2026 → migrate to gemini-3-pro-preview once stable
+- ⚠️ Deprecated: 17 fév 2026 (passé) → migrer vers gemini-3-pro-preview
 
 **Option 2: Use Subagent Workaround (Gemini 3 Preview)**
 
@@ -922,7 +955,7 @@ fi
 | `claude-opus-4.5` | ✅ Excellent | ✅ Excellent | Stable | ⭐ Best quality |
 | `gpt-4.1` | ✅ Excellent | ✅ Good | Stable | ✅ Reliable |
 | `gpt-5` | ✅ Excellent | ✅ Good | Stable | ✅ Advanced reasoning |
-| `gemini-2.5-pro` | ✅ Good | ⚠️ Fair | Deprecating 2/17/26 | ⚠️ Use with caution |
+| `gemini-2.5-pro` | ✅ Good | ⚠️ Fair | Deprecated 2/17/26 (passé) | ⚠️ Use with caution |
 | `gemini-3-pro-preview` | ✅ Good | ❌ Poor | Experimental | ❌ Use subagent workaround |
 | `gemini-3-flash-preview` | ✅ Good | ❌ Poor | Experimental | ❌ Use subagent workaround |
 
@@ -934,10 +967,10 @@ fi
 - ❌ MCP tool execution inconsistent
 - ⚠️ File operations may silently fail
 
-**Gemini 2.5 Pro** (Stable but deprecating):
+**Gemini 2.5 Pro** (Deprecated - 17 fév 2026 passé):
 - ⚠️ Occasional tool calling failures
 - ⚠️ Complex multi-tool workflows problematic
-- ⚠️ Deprecation: 17 Feb 2026
+- ⚠️ Deprecation: 17 fév 2026 (passé)
 
 **Recommended Migration Path**:
 ```
