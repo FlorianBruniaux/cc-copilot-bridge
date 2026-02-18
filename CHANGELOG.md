@@ -7,18 +7,127 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-02-18
+
 ### Added
-- **Automated Homebrew Tap Sync**: GitHub Actions now auto-syncs Formula to `FlorianBruniaux/homebrew-tap` on release
-- **Daily Tap Sync Verification**: New workflow `.github/workflows/verify-tap-sync.yml` checks tap is in sync daily
-- Documentation: MLX vs GGUF note in Ollama sections (CLAUDE.md, README.md) - explains performance trade-offs on Apple Silicon
+
+**🚀 Nouveaux Modèles (Copilot)**
+
+- **Claude Sonnet 4.6** (`claude-sonnet-4-6`) - Nouveau daily driver (79.6% SWE-bench Verified)
+  - Nouvelles aliases: `ccc-sonnet`, `ccc-sonnet46`, `ccc-dev`, `ccc-prod-secondary`
+  - Remplace claude-sonnet-4.5 comme modèle par défaut
+- **Claude Opus 4.6** (`claude-opus-4-6`) - Best quality 2026
+  - Alias: `ccc-opus`, `ccc-opus46`, `ccc-prod`
+  - Remplace claude-opus-4.5 dans tous les aliases
+- **GPT-5.3-Codex** (`gpt-5.3-codex`) - Latest Codex (via unified fork)
+  - Alias: `ccc-codex`, `ccc-gpt53-codex`, `ccc-code`
+  - Remplace gpt-5.2-codex comme default codex
+- **GPT-5.2** (`gpt-5.2`) - Latest GPT general purpose
+  - Alias: `ccc-gpt52`
+- **Grok Code Fast 1** (`grok-code-fast-1`) - 0.25x premium, speed-optimized
+  - Alias: `ccc-grok`
+
+**📦 Nouveaux Aliases (Shell Config)**
+
+- `ccc-sonnet46` - Claude Sonnet 4.6 (explicit version)
+- `ccc-opus46` - Claude Opus 4.6 (explicit version)
+- `ccc-gpt52` - GPT-5.2 (latest general GPT)
+- `ccc-gpt53-codex` - GPT-5.3-Codex (alias pour `ccc-codex`)
+- `ccc-grok` - Grok Code Fast 1 (speed + economical)
+- `ccc-gpt5-mini` - GPT-5-mini (alias explicite)
+- `ccc-codex-std` - gpt-5.2-codex (previous codex standard)
+- `ccc-codex-max` - gpt-5.1-codex-max (max quality codex)
+
+**🎯 Semantic Aliases** (déjà documentés, maintenant dans --shell-config)
+
+- `ccc-prod` → claude-opus-4-6 (Production code)
+- `ccc-dev` → claude-sonnet-4-6 (Daily development)
+- `ccc-quick` → claude-haiku-4.5 (Quick questions)
+- `ccc-code` → gpt-5.3-codex (Code generation, via ccunified)
+- `ccc-alt` → gpt-4.1 (Alternative perspective, free)
+- `ccc-private` → devstral-small-2 via Ollama (Offline/private)
+
+**🔧 Automatisations CI/CD** (depuis [Unreleased])
+
+- **Automated Homebrew Tap Sync**: GitHub Actions auto-sync Formula to `FlorianBruniaux/homebrew-tap`
+- **Daily Tap Sync Verification**: New workflow `.github/workflows/verify-tap-sync.yml`
+
+**📚 Documentation** (depuis [Unreleased])
+
+- MLX vs GGUF note in Ollama sections - performance trade-offs on Apple Silicon
+- `docs/ALIASES.md` - Complete reference for 40+ aliases
+  - Tables with models, billing tiers, use cases, status
+  - Compatibility matrix (MCP, tool calling, file creation)
+  - Decision tree for alias selection
+  - Advanced usage patterns
 
 ### Changed
-- **Homebrew Package Renamed**: `claude-switch` → `cc-copilot-bridge` (matches repo name)
-- **Deterministic SHA256**: Release tarball created explicitly, SHA256 computed from actual release asset
-- **Formula URL**: Now points to release asset instead of GitHub archive (prevents SHA256 mismatch)
+
+**🔄 Default Model**
+- Default Copilot model: `claude-sonnet-4.5` → `claude-sonnet-4-6`
+- Model ID format: dot notation retained for 4.5 models, dash notation for 4.6 (`claude-sonnet-4-6`)
+
+**⚠️ Dépréciations Effectives (17 février 2026)**
+
+| Modèle | Statut | Remplacé par |
+|--------|--------|-------------|
+| `gpt-5` | ⚠️ DEPRECATED | `gpt-5.2` |
+| `gpt-5-codex` | ⚠️ DEPRECATED | `gpt-5.3-codex` (via unified fork) |
+| `claude-opus-41` | ⚠️ DEPRECATED | `claude-opus-4-6` |
+| `gpt-4o` | Vérifié GA mais vieillissant | `gpt-4.1` (recommandé) |
+| `gemini-2.5-pro` | ⚠️ Potentially deprecated | `gemini-3-flash-preview` (agentic non garanti) |
+
+**🚀 copilot-api Status Update**
+- Fork caozhiyuan v1.1.6 : promue **option recommandée par défaut** (plus "experimental")
+- Official v0.7.0 : stalled depuis oct 2025, risque de casse (issue #191)
+- `ccunified` : référence maintenant fork v1.1.6
+
+**🤖 Ollama**
+- Version requise mise à jour : 0.15.1+ → **0.15.3+** (stable)
+- Adaptive context windows documentées (auto-détection RAM)
+- GLM-4.7-Flash : statut mis à jour (Unsloth recommande llama.cpp pour meilleures perf)
+
+**📋 Homebrew Package** (depuis [Unreleased])
+- Renamed: `claude-switch` → `cc-copilot-bridge` (matches repo name)
+- Deterministic SHA256 from release asset (not git archive)
 
 ### Fixed
-- **SHA256 Mismatch Bug**: `git archive` produced different tarball than GitHub, causing install failures
+
+- **Version inconsistency**: 3 versions différentes dans le script (1.5.3/1.5.2/1.4.0) → toutes à 1.6.0
+- **SHA256 Mismatch Bug** (depuis [Unreleased]): `git archive` vs GitHub tarball mismatch
+
+### Technical Details
+
+**Model ID Format (v1.6.0)**
+- Anthropic API standard: dashes (`claude-sonnet-4-6`, `claude-opus-4-6`)
+- Legacy 4.5 models: dot notation still works (`claude-sonnet-4.5`, `claude-opus-4.5`)
+- Note: Si copilot-api rejette le format dash, utiliser `COPILOT_MODEL=claude-sonnet-4.6` (dot)
+
+**Aliases Architecture**
+- Semantic aliases (`ccc-prod`, `ccc-dev`) maintenant dans `--shell-config` (plus dans docs seulement)
+- `ccc-codex` maintenant pointe sur gpt-5.3-codex (précédemment gpt-5.2-codex)
+- `ccc-codex-std` ajouté pour backwards compat sur gpt-5.2-codex
+
+### Files Modified
+
+- `claude-switch` (version 1.6.0, default model, 15+ new aliases)
+- `VERSION` (1.5.3 → 1.6.0)
+- `README.md` (version, models, copilot-api status)
+- `CLAUDE.md` (default model, Model Compat Matrix, Version Info, Ollama)
+- `docs/MODEL-SWITCHING.md` (new models, gemini deprecation, v1.6.0)
+- `docs/ALIASES.md` (new aliases, version sync)
+- `docs/ALL-MODEL-COMMANDS.md` (new models, deprecation markers)
+- `docs/TROUBLESHOOTING.md` (issue #191, copilot-api status)
+- `docs/OPTIMISATION-M4-PRO.md` (Ollama 0.15.3, adaptive context)
+- `scripts/launch-unified-fork.sh` (v1.1.6 ref, gpt-5.3-codex)
+
+### Links
+
+- Release: [v1.6.0](https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.6.0)
+- copilot-api fork: [caozhiyuan/copilot-api v1.1.6](https://github.com/caozhiyuan/copilot-api/tree/all)
+- Issue #191: [API breaking change risk](https://github.com/ericc-ch/copilot-api/issues/191)
+
+---
 
 ## [1.5.3] - 2026-01-26
 
@@ -693,10 +802,13 @@ See [REPO-STRUCTURE.md](REPO-STRUCTURE.md) for contribution guidelines.
 - **Repository**: https://github.com/FlorianBruniaux/cc-copilot-bridge
 - **Issues**: https://github.com/FlorianBruniaux/cc-copilot-bridge/issues
 
+[1.6.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.6.0
+[1.5.3]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.3
+[1.5.2]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.2
 [1.5.1]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.1
 [1.5.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.5.0
 [1.4.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.4.0
 [1.3.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.3.0
 [1.2.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.2.0
 [1.0.0]: https://github.com/FlorianBruniaux/cc-copilot-bridge/releases/tag/v1.0.0
-[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/FlorianBruniaux/cc-copilot-bridge/compare/v1.6.0...HEAD

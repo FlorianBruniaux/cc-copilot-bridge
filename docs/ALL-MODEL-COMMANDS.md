@@ -7,6 +7,9 @@
 ## 🔥 GPT Codex Models (Nécessite PR #170 Fork)
 
 ```bash
+# GPT-5.3 Codex (Latest, Recommended) ★
+COPILOT_MODEL=gpt-5.3-codex ccc -p "Write a Python function"
+
 # GPT-5.2 Codex (Premium, Extended Thinking)
 COPILOT_MODEL=gpt-5.2-codex ccc -p "Write a Python function"
 
@@ -19,7 +22,7 @@ COPILOT_MODEL=gpt-5.1-codex-mini ccc -p "Write a Python function"
 # GPT-5.1 Codex Max (Qualité maximale)
 COPILOT_MODEL=gpt-5.1-codex-max ccc -p "Write a Python function"
 
-# GPT-5 Codex (Legacy)
+# GPT-5 Codex (Legacy) # ⚠️ DEPRECATED
 COPILOT_MODEL=gpt-5-codex ccc -p "Write a Python function"
 ```
 
@@ -28,13 +31,13 @@ COPILOT_MODEL=gpt-5-codex ccc -p "Write a Python function"
 ## ⚡ GPT-5 Series
 
 ```bash
-# GPT-5.2
+# GPT-5.2 (Latest GPT-5 general)
 COPILOT_MODEL=gpt-5.2 ccc -p "Write a Python function"
 
 # GPT-5.1
 COPILOT_MODEL=gpt-5.1 ccc -p "Write a Python function"
 
-# GPT-5
+# GPT-5 # ⚠️ DEPRECATED (17 fév 2026)
 COPILOT_MODEL=gpt-5 ccc -p "Write a Python function"
 
 # GPT-5 Mini
@@ -103,10 +106,16 @@ COPILOT_MODEL=gpt-3.5-turbo-0613 ccc -p "Write a Python function"
 ## 🧠 Claude Models
 
 ```bash
+# Claude Sonnet 4.6 ★ NEW DEFAULT (Best quality/speed 2026)
+COPILOT_MODEL=claude-sonnet-4-6 ccc -p "Write a Python function"
+
+# Claude Opus 4.6 ★ NEW (Best quality 2026)
+COPILOT_MODEL=claude-opus-4-6 ccc -p "Write a Python function"
+
 # Claude Opus 4.5 (Meilleure qualité)
 COPILOT_MODEL=claude-opus-4.5 ccc -p "Write a Python function"
 
-# Claude Opus 4.1
+# Claude Opus 4.1 # ⚠️ DEPRECATED (17 fév 2026)
 COPILOT_MODEL=claude-opus-41 ccc -p "Write a Python function"
 
 # Claude Sonnet 4.5 (Équilibre qualité/vitesse)
@@ -136,12 +145,18 @@ COPILOT_MODEL=gemini-2.5-pro ccc -p "Write a Python function"
 
 ---
 
+## ⚡ Grok Models
+
+```bash
+# Grok Code Fast 1 (Speed-optimized, 0.25x premium)
+COPILOT_MODEL=grok-code-fast-1 ccc -p "Write a Python function"
+```
+
+---
+
 ## 🌟 Other Models
 
 ```bash
-# Grok Code Fast
-COPILOT_MODEL=grok-code-fast-1 ccc -p "Write a Python function"
-
 # OSWE VSCode Prime
 COPILOT_MODEL=oswe-vscode-prime ccc -p "Write a Python function"
 ```
@@ -184,8 +199,9 @@ Ce script :
 
 ## 📋 Copier-Coller Rapide
 
-### Tous les Codex (5 commandes)
+### Tous les Codex (6 commandes)
 ```bash
+COPILOT_MODEL=gpt-5.3-codex ccc -p "Test"
 COPILOT_MODEL=gpt-5.2-codex ccc -p "Test"
 COPILOT_MODEL=gpt-5.1-codex ccc -p "Test"
 COPILOT_MODEL=gpt-5.1-codex-mini ccc -p "Test"
@@ -201,8 +217,10 @@ COPILOT_MODEL=gpt-5 ccc -p "Test"
 COPILOT_MODEL=gpt-5-mini ccc -p "Test"
 ```
 
-### Tous les Claude (5 commandes)
+### Tous les Claude (7 commandes)
 ```bash
+COPILOT_MODEL=claude-sonnet-4-6 ccc -p "Test"
+COPILOT_MODEL=claude-opus-4-6 ccc -p "Test"
 COPILOT_MODEL=claude-opus-4.5 ccc -p "Test"
 COPILOT_MODEL=claude-opus-41 ccc -p "Test"
 COPILOT_MODEL=claude-sonnet-4.5 ccc -p "Test"
@@ -223,14 +241,22 @@ COPILOT_MODEL=gemini-2.5-pro ccc -p "Test"
 
 | Scénario | Commande |
 |----------|----------|
-| **Production critical** | `COPILOT_MODEL=claude-opus-4.5 ccc` |
-| **Daily development** | `COPILOT_MODEL=claude-sonnet-4.5 ccc` |
+| **Production critical** | `COPILOT_MODEL=claude-opus-4-6 ccc` |
+| **Daily development** | `COPILOT_MODEL=claude-sonnet-4-6 ccc` |
 | **Quick questions** | `COPILOT_MODEL=claude-haiku-4.5 ccc` |
-| **Code generation (premium)** | `COPILOT_MODEL=gpt-5.2-codex ccc` |
+| **Code generation (premium)** | `COPILOT_MODEL=gpt-5.3-codex ccc` |
 | **Code generation (fast)** | `COPILOT_MODEL=gpt-5.1-codex-mini ccc` |
 | **Alternative perspective** | `COPILOT_MODEL=gpt-4.1 ccc` |
 | **Experimental features** | `COPILOT_MODEL=gemini-3-pro-preview ccc` |
+| **Speed-optimized** | `COPILOT_MODEL=grok-code-fast-1 ccc` |
 
 ---
 
-**Total: 42 modèles** (39 chat + 3 embedding)
+**Total: 45 modèles** (42 chat + 3 embedding)
+
+---
+
+## Notes de Version
+
+- **v1.6.0** (2026-02-18): Claude 4.6 (sonnet/opus), gpt-5.3-codex, grok-code-fast-1
+- Dépréciés (17 fév 2026): gpt-5, gpt-5-codex, claude-opus-41

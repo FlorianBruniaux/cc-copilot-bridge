@@ -1,6 +1,6 @@
 # Apple Silicon Optimization Guide (M1/M2/M3/M4)
 
-**Reading time**: 15 minutes | **Skill level**: Advanced | **Ollama version**: 0.15.0+ | **Last updated**: 2026-01-26
+**Reading time**: 15 minutes | **Skill level**: Advanced | **Ollama version**: 0.15.3+ | **Last updated**: 2026-02-18
 
 **Target**: Qwen2.5-Coder-32B Q4_K_M on M4 Pro 48GB
 
@@ -181,6 +181,17 @@ ccc
 
 Si **"Free space" est négatif** ou très faible → votre projet dépasse la capacité configurée.
 
+### Ollama 0.15.3 Adaptive Context Windows (auto-detection)
+
+Depuis Ollama 0.15.3, les fenêtres de contexte sont auto-détectées selon la RAM disponible :
+
+**Adaptive Context Windows** :
+- <24 GiB RAM → 4K context
+- 24-48 GiB RAM → 32K context
+- 48+ GiB RAM → 256K context
+
+> Note: Le Modelfile 64K reste recommandé pour Claude Code (système ~18K tokens). L'auto-détection peut allouer trop ou trop peu selon la configuration du projet.
+
 ### Stratégie Recommandée
 
 Pour optimiser votre workflow :
@@ -318,8 +329,10 @@ Test effectué avec le prompt : "Refactor this function to be more maintainable"
 | Provider | Modèle | Vitesse | Qualité | Coût | Privacy |
 |----------|--------|---------|---------|------|---------|
 | **Ollama** | Qwen2.5-32B | 26-39 tok/s | ⭐⭐⭐⭐⭐ | Gratuit | 100% local |
-| **Copilot** | Claude Opus 4.5 | ~60 tok/s | ⭐⭐⭐⭐⭐ | Inclus (abo) | Cloud |
-| **Anthropic** | Claude Sonnet 4.5 | ~80 tok/s | ⭐⭐⭐⭐⭐ | $15-20/mois | Cloud |
+| **Copilot** | Claude Opus 4.6 | ~60 tok/s | ⭐⭐⭐⭐⭐ | Inclus (abo) | Cloud |
+| **Anthropic** | Claude Sonnet 4.6 | ~80 tok/s | ⭐⭐⭐⭐⭐ | $15-20/mois | Cloud |
+
+> **Benchmark reference (cloud models)**: Claude Sonnet 4.6 atteint **79.6% SWE-bench Verified** — référence cloud pour comparer les modèles locaux. Les modèles Ollama (Devstral 68%, Qwen3-coder 69.6%) offrent une excellente performance locale mais restent en deçà des meilleurs modèles cloud.
 
 **Recommandations d'usage** :
 
@@ -336,7 +349,7 @@ Test effectué avec le prompt : "Refactor this function to be more maintainable"
 
 ### Checklist Complète
 
-- [x] Ollama 0.15.0+ installé
+- [x] Ollama 0.15.3+ installé
 - [x] Modèle Qwen2.5-Coder-32B téléchargé (19GB)
 - [x] Variables d'optimisation configurées
 - [x] Service Ollama redémarré
@@ -400,7 +413,7 @@ ollama run qwen2.5-coder:32b-instruct "Write a hello world"
 ### Problème : Performance inférieure à 26 tok/s
 
 **Vérifications** :
-1. Confirmer version 0.15.0+ : `ollama --version`
+1. Confirmer version 0.15.3+ : `ollama --version`
 2. Vérifier RAM disponible : `top -o MEM` (devrait avoir >30GB libre)
 3. Réappliquer optimisations : `ollama-optimize.sh`
 4. Redémarrer : `brew services restart ollama`
@@ -424,7 +437,7 @@ lsof -i :11434
 ## Sources
 
 - **Perplexity Research** : Optimisation Ollama 0.14.2 pour Apple Silicon (2026-01-21)
-- **Ollama Releases** : v0.15.0 (2026-01-21) et v0.15.1 (2026-01-24) - GLM-4.7-Flash improvements
+- **Ollama Releases** : v0.15.0 (2026-01-21) et v0.15.1 (2026-01-24) - GLM-4.7-Flash improvements; v0.15.3 (2026-02-XX): stable release, see notes
 - **Benchmark officiel** : Qwen2.5-Coder-32B sur M4 Pro (26.85 tok/s @ Q4_K_M)
 - **Documentation Ollama** : Variables d'environnement et optimisations
 

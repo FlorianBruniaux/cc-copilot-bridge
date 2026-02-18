@@ -1,6 +1,6 @@
 # Dynamic Model Switching Guide
 
-**Reading time**: 15 minutes | **Skill level**: Intermediate | **Version**: v1.4.0 | **Last updated**: 2026-01-22
+**Reading time**: 15 minutes | **Skill level**: Intermediate | **Version**: v1.6.0 | **Last updated**: 2026-02-18
 
 ---
 
@@ -11,21 +11,27 @@ Le script `claude-switch` supporte maintenant le changement dynamique de modèle
 ⚠️ **Important**: Tous les modèles ne sont pas compatibles avec l'endpoint `/chat/completions` utilisé par copilot-api. Voir section Compatibilité ci-dessous.
 
 ### ✅ Claude Models (Testés et fonctionnels)
-- `claude-sonnet-4.5` ⭐ (défaut, meilleur rapport qualité/vitesse)
+- `claude-sonnet-4.5` (ancien défaut, meilleur rapport qualité/vitesse)
+- `claude-sonnet-4-6` ⭐ **NOUVEAU** (nouveau daily driver, performances améliorées - défaut depuis v1.6.0)
+- `claude-opus-4-6` **NOUVEAU** (meilleure qualité 2026)
 - `claude-opus-4.5` (meilleure qualité, plus lent)
 - `claude-haiku-4.5` (le plus rapide)
 - `claude-sonnet-4`
 
 ### ✅ GPT Models (Compatibles avec `/chat/completions`)
 - ✅ `gpt-4.1` (défaut, 0x premium, équilibré) ⭐
-- ✅ `gpt-5` (raisonnement avancé, 1x premium)
+- ✅ `gpt-5.2` (latest GPT general, 1x premium)
+- ⚠️ `gpt-5` ⚠️ DEPRECATED (17 fév 2026) → utiliser `gpt-5.2`
 - ✅ `gpt-5-mini` (ultra rapide, 0x premium)
-- ⚠️ `gpt-4o` (stable mais **déprécié le 17 février 2026**)
+- ⚠️ `gpt-4o` ⚠️ DEPRECATED (toujours GA, mais déprécié)
 
-### ❌ GPT Codex Models (INCOMPATIBLES - requièrent endpoint `/responses`)
-- ❌ `gpt-5.2-codex` (GA depuis 14 jan 2026, mais `/responses` uniquement)
+### ✅ GPT Codex Models (via unified fork - endpoint `/responses`)
+- ✅ `gpt-5.3-codex` (via unified fork)
+- ✅ `gpt-5.2-codex` (GA depuis 14 jan 2026, via unified fork)
+- ✅ `gpt-5.1-codex-mini` (Preview, via unified fork)
+
+### ❌ GPT Codex Models (INCOMPATIBLES avec copilot-api officiel - requièrent endpoint `/responses`)
 - ❌ `gpt-5.1-codex` (Preview, `/responses` uniquement)
-- ❌ `gpt-5.1-codex-mini` (Preview, `/responses` uniquement)
 - ❌ `gpt-5-codex` (Preview, `/responses` uniquement)
 
 ### ✅ Gemini Models
@@ -217,7 +223,7 @@ COPILOT_MODEL=gpt-5-mini ccc
 
 Les modèles Gemini ont une **compatibilité limitée avec le mode agentic** (tool calling, file creation, MCP tools) en raison de différences dans la traduction des formats tool calling Claude → OpenAI → Gemini.
 
-### Gemini 2.5 Pro (Stable - Recommandé avec réserves)
+### Gemini 2.5 Pro (⚠️ DEPRECATED - 17 fév 2026)
 
 ```bash
 COPILOT_MODEL=gemini-2.5-pro ccc
@@ -233,7 +239,7 @@ ccc-gemini
 
 **Limitations**:
 - ⚠️ **Mode agentic limité** : File creation, MCP tools peuvent échouer
-- ⚠️ **Déprécié le 17 février 2026** → Migration vers gemini-3-pro-preview nécessaire
+- ⚠️ **DÉPRÉCIÉ le 17 février 2026 (passé)** → Migration vers Claude Sonnet 4.6 recommandée
 - ⚠️ Complex multi-tool workflows problématiques
 
 **Usage recommandé**:
@@ -293,7 +299,7 @@ COPILOT_MODEL=gemini-3-flash-preview ccc
 
 | Modèle | Prompts Simples | Mode Agentic | File Creation | MCP Tools | Status | Recommandation |
 |--------|----------------|--------------|---------------|-----------|--------|----------------|
-| `gemini-2.5-pro` | ✅ Excellent | ⚠️ Limité | ⚠️ Instable | ⚠️ Partiel | Deprecating 2/17/26 | ⚠️ **Transition vers Claude** |
+| `gemini-2.5-pro` | ✅ Excellent | ⚠️ Limité | ⚠️ Instable | ⚠️ Partiel | ⚠️ DEPRECATED (17 fév 2026 - hier) | ⚠️ **Migrer vers Claude** |
 | `gemini-3-pro-preview` | ✅ Bon | ❌ Mauvais | ❌ Échoue | ❌ Échoue | Experimental | ❌ **Requiert workaround** |
 | `gemini-3-flash-preview` | ✅ Bon | ❌ Mauvais | ❌ Échoue | ❌ Échoue | Experimental | 🚫 **Éviter** |
 
@@ -342,15 +348,9 @@ ccc-sonnet -p "Use grep to find TODOs"  # ✅ Use Claude instead
 **Si tu utilises actuellement gemini-2.5-pro** :
 
 ```
-Aujourd'hui (avant 17 fév 2026):
-├─ Prompts simples → Continue avec gemini-2.5-pro
-├─ Agentic tasks → Migre vers ccc-sonnet (Claude)
-└─ Production code → Migre vers ccc-sonnet
-
-Après 17 février 2026:
-├─ ALL scenarios → ccc-sonnet (Claude Sonnet 4.5)
-├─ Alternative → COPILOT_MODEL=gpt-4.1 ccc
-└─ Expérimental → gemini-3-pro-preview + subagent workaround
+Depuis le 17 février 2026 (passé):
+├─ gemini-2.5-pro déprécié → utiliser ccc-sonnet (Claude Sonnet 4.6)
+└─ Expérimental → gemini-3-pro-preview + subagent workaround (non recommandé)
 ```
 
 **Si tu veux tester gemini-3-pro-preview** :
@@ -390,11 +390,26 @@ cat debug-gemini/diagnostic-report.md
 - ✅ Expérimentation et tests
 
 **Pour tout le reste, préférer** :
-- ⭐ **Claude Sonnet 4.5** (`ccc-sonnet`) - Meilleur choix général
+- ⭐ **Claude Sonnet 4.6** (`ccc-sonnet` - Claude Sonnet 4.6 depuis v1.6.0) - Meilleur choix général
 - ✅ **GPT-4.1** (`ccc-gpt`) - Alternative solide
-- ✅ **Claude Opus 4.5** (`ccc-opus`) - Qualité maximale
+- ✅ **Claude Opus 4.6** (`ccc-opus`) - Qualité maximale
 
-## Modèles Ollama (Local - Updated January 2026)
+## Grok Code Fast 1 (Vitesse - Economique)
+
+```bash
+COPILOT_MODEL=grok-code-fast-1 ccc
+# Or alias
+ccc-grok
+```
+
+**Avantages**:
+- ⚡ Ultra rapide (spécialisé code)
+- 💰 0.25x premium (économique)
+- ✅ Compatible tool calling
+
+**Usage**: Refactoring rapide, questions simples, budget limité
+
+## Modèles Ollama (Local - Updated February 2026)
 
 ### Modèles recommandés
 
@@ -406,6 +421,8 @@ cat debug-gemini/diagnostic-report.md
 | **qwen3-coder:30b** | **69.6%** | 30B | ⚠️ Needs template work | Highest bench, config issues |
 | **ibm/granite4:small-h** | ~62% | 32B (9B active) | ✅ Long context | 70% less VRAM, 1M context |
 | **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ⚠️ Ollama 0.15.1+ required | Tool calling fix (v0.15.1) |
+| **Devstral 2** (123B) | **72.2%** | 123B | API-only | Référence (non local - trop grand) |
+| **qwen3-coder-next** (80B MoE) | ~74% (estimé) | 80B (3B actif) | ⚠️ ~85GB RAM | Expérimental, très limité sur 48GB |
 
 **Sources des benchmarks** :
 - Devstral-small-2 : [Mistral AI](https://mistral.ai/news/devstral-2-vibe-cli) - 68.0% SWE-bench Verified

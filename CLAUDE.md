@@ -29,7 +29,7 @@ Location: `~/bin/claude-switch` (installed via `install.sh`)
 # Copilot mode
 ANTHROPIC_BASE_URL="http://localhost:4141"
 ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # copilot-api ignores this value
-ANTHROPIC_MODEL="${COPILOT_MODEL:-claude-sonnet-4.5}"
+ANTHROPIC_MODEL="${COPILOT_MODEL:-claude-sonnet-4-6}"
 DISABLE_NON_ESSENTIAL_MODEL_CALLS="1"
 
 # Ollama mode
@@ -38,8 +38,8 @@ ANTHROPIC_AUTH_TOKEN="<PLACEHOLDER>"  # Ollama ignores this value
 ```
 
 **Model Switching:**
-- Default Copilot model: `claude-sonnet-4.5`
-- Override via `COPILOT_MODEL` env var (25+ models supported)
+- Default Copilot model: `claude-sonnet-4-6` (depuis v1.6.0)
+- Override via `COPILOT_MODEL` env var (40+ models supported)
 - Default Ollama model: `devstral-small-2` (configurable via `OLLAMA_MODEL`)
 - Backup Ollama model: `ibm/granite4:small-h` (long context, 70% less VRAM)
 
@@ -51,21 +51,34 @@ Auto-installer that:
 4. Creates `~/.claude/` directory for logs
 
 **Aliases Created:**
+
+30+ aliases for all providers and models (Claude, GPT, Codex, Gemini, Ollama).
+
+**Quick Reference:**
 ```bash
-ccd='claude-switch direct'
-ccc='claude-switch copilot'
-cco='claude-switch ollama'
-ccs='claude-switch status'
-ccc-opus='COPILOT_MODEL=claude-opus-4.5 claude-switch copilot'
-ccc-sonnet='COPILOT_MODEL=claude-sonnet-4.5 claude-switch copilot'
-ccc-haiku='COPILOT_MODEL=claude-haiku-4.5 claude-switch copilot'
-ccc-gpt='COPILOT_MODEL=gpt-4.1 claude-switch copilot'
-ccc-gemini='COPILOT_MODEL=gemini-2.5-pro claude-switch copilot'
-ccc-gemini3='COPILOT_MODEL=gemini-3-flash-preview claude-switch copilot'
-ccc-gemini3-pro='COPILOT_MODEL=gemini-3-pro-preview claude-switch copilot'
-cco-devstral='OLLAMA_MODEL=devstral-small-2 claude-switch ollama'
-cco-granite='OLLAMA_MODEL=ibm/granite4:small-h claude-switch ollama'
+# Core providers
+ccd, ccc, cco, ccs
+
+# Claude models
+ccc-opus, ccc-sonnet, ccc-haiku
+
+# GPT models
+ccc-gpt41, ccc-gpt5, ccc-gpt5-mini
+
+# Codex models (requires ccunified)
+ccc-codex, ccc-codex-std, ccc-codex-mini, ccc-codex-max
+
+# Gemini models
+ccc-gemini, ccc-gemini3, ccc-gemini3-pro
+
+# Ollama models
+cco-devstral, cco-granite
+
+# Semantic shortcuts
+ccc-prod, ccc-dev, ccc-quick, ccc-code, ccc-alt, ccc-private
 ```
+
+**📖 Complete documentation:** See `docs/ALIASES.md` for full reference with use cases, examples, and compatibility matrix.
 
 ### 3. mcp-check.sh (MCP Diagnostics)
 Identifies MCP servers with schema validation issues that fail with GPT-4.1 strict validation.
@@ -102,11 +115,13 @@ Before launching, `claude-switch` verifies:
 
 | Provider | Endpoint | Models | MCP Compatibility |
 |----------|----------|--------|-------------------|
-| Anthropic | Native | Opus/Sonnet/Haiku | 100% (permissive) |
-| Copilot-Claude | /chat/completions | claude-*-4.5 | 100% (permissive) |
-| Copilot-GPT | /chat/completions | gpt-4.1, gpt-5, gpt-5-mini | ~80% (strict validation) |
-| Copilot-Gemini | /chat/completions | gemini-2.5-pro | ~80% (strict validation) |
+| Anthropic | Native | Opus/Sonnet/Haiku (4.5/4.6) | 100% (permissive) |
+| Copilot-Claude | /chat/completions | claude-sonnet-4-6, claude-opus-4-6, claude-haiku-4.5 | 100% (permissive) |
+| Copilot-GPT | /chat/completions | gpt-4.1, gpt-5.2, gpt-5-mini | ~80% (strict validation) |
+| Copilot-Gemini | /chat/completions | gemini-2.5-pro ⚠️ deprecated | ~80% (strict validation) |
 | Copilot-Gemini3 | /chat/completions | gemini-3-flash-preview, gemini-3-pro-preview | ⚠️ UNTESTED agentic (via unified fork) |
+| Copilot-Codex | /responses | gpt-5.3-codex, gpt-5.2-codex, gpt-5.1-codex-* | ✅ Tested (via unified fork v1.1.6) |
+| Copilot-Grok | /chat/completions | grok-code-fast-1 | ✅ Compatible |
 | Copilot-Codex | /responses | gpt-*-codex | ✅ Tested (via unified fork) |
 | Ollama | Native | devstral, granite4, qwen3-coder | 100% (permissive) |
 
@@ -205,7 +220,7 @@ ollama create devstral-64k -f ~/.ollama/Modelfile.devstral-64k
 | **devstral-small-2** (default) | **68.0%** | 24B | ✅ Best agentic | Daily coding, proven reliable |
 | **qwen3-coder:30b** | **69.6%** | 30B | ⚠️ Needs template work | Highest bench, config issues |
 | **ibm/granite4:small-h** | ~62% | 32B (9B active) | ✅ Long context | 70% less VRAM, 1M context |
-| **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ⚠️ Ollama 0.15.1+ required | Tool calling fix (v0.15.1) |
+| **glm-4.7-flash** | ~65-68% (estimated) | 30B MoE (3B active) | ⚠️ Ollama 0.15.3+ / llama.cpp | Unsloth recommends llama.cpp for best perf |
 
 **Benchmark Sources & Analysis:**
 
@@ -293,7 +308,8 @@ grep "mode=ollama" ~/.claude/claude-switch.log
 ### Model Switching Commands
 ```bash
 # Copilot with different models
-COPILOT_MODEL=claude-opus-4.5 ccc      # Best quality
+COPILOT_MODEL=claude-opus-4-6 ccc      # Best quality (v4.6)
+COPILOT_MODEL=claude-sonnet-4-6 ccc    # Daily driver (v4.6, default)
 COPILOT_MODEL=claude-haiku-4.5 ccc     # Fastest
 COPILOT_MODEL=gpt-4.1 ccc              # GPT alternative
 
@@ -815,14 +831,14 @@ Actuellement Gemini 3 Preview:
 
 ## Version Information
 
-- **claude-switch**: v1.5.1 (2026-01-23) - Added unified fork (Codex tested, Gemini 3 experimental)
-- **copilot-api**: v0.7.0 (official) + unified fork (PR #167 + #170)
-  - Official: `/chat/completions` only - voir issue #174 pour fix billing header
-  - Unified fork: Gemini 3 thinking support + Codex `/responses` endpoint
-  - ⚠️ Gemini 3 agentic mode: UNTESTED - PR #167 adds thinking, not tool calling fix
+- **claude-switch**: v1.6.0 (2026-02-18) - Models update: Claude 4.6, GPT-5.3-Codex, Grok Code Fast 1, Ollama 0.15.3
+- **copilot-api**: v0.7.0 (official, stalled since Oct 2025) + unified fork v1.1.6 (recommended)
+  - Official: `/chat/completions` only, stalled - voir issue #174 pour fix billing header
+  - ⚠️ **Issue #191**: Risque de breaking change API GitHub - surveiller
+  - Fork v1.1.6 (caozhiyuan): Gemini 3 thinking + Codex `/responses` - **recommandé par défaut**
   - Fork source: [caozhiyuan/copilot-api branch 'all'](https://github.com/caozhiyuan/copilot-api/tree/all)
 - **Claude Code CLI**: v2.1.15 (@anthropic-ai/claude-code npm package)
-- **Ollama**: Homebrew service, default model: devstral-small-2 (backup: ibm/granite4:small-h)
+- **Ollama**: v0.15.3 stable, default model: devstral-small-2 (backup: ibm/granite4:small-h)
 
 ## Testing Changes
 

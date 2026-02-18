@@ -13,7 +13,8 @@
 # - The core issue (Claude → OpenAI → Gemini format) may still exist
 #
 # Models that SHOULD work:
-# - Codex: gpt-5.2-codex, gpt-5.1-codex, gpt-5.1-codex-mini, gpt-5.1-codex-max
+# - Codex: gpt-5.3-codex (latest), gpt-5.2-codex, gpt-5.1-codex, gpt-5.1-codex-mini, gpt-5.1-codex-max
+# Fork version: caozhiyuan/copilot-api v1.1.6 (recommended over official v0.7.0)
 # - Standard: All Claude, GPT-4.1, GPT-5, Gemini 2.5, etc.
 #
 # Models to TEST (uncertain):
@@ -42,11 +43,13 @@ FORCE_UPDATE="${1:-}"
 echo -e "${CYAN}╔═══════════════════════════════════════════════════════════════╗${NC}"
 echo -e "${CYAN}║  ${GREEN}Unified copilot-api Fork${CYAN}  ${YELLOW}[EXPERIMENTAL]${CYAN}                    ║${NC}"
 echo -e "${CYAN}║  PR #167 (Gemini 3 thinking) + PR #170 (Codex /responses)    ║${NC}"
-echo -e "${CYAN}║  Source: caozhiyuan/copilot-api branch 'all'                 ║${NC}"
+echo -e "${CYAN}║  Source: caozhiyuan/copilot-api v1.1.6 branch 'all'          ║${NC}"
 echo -e "${CYAN}╚═══════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 echo -e "${YELLOW}⚠️  Gemini 3 agentic mode: UNTESTED - PR #167 adds thinking support,${NC}"
 echo -e "${YELLOW}   but may not fix tool calling issues. Test before relying on it.${NC}"
+echo ""
+echo -e "${CYAN}Fork version: v1.1.6 (caozhiyuan/copilot-api) - recommended over official v0.7.0${NC}"
 echo ""
 
 # Step 0: Check PRs merge status (informational)
@@ -178,8 +181,8 @@ echo -e "${GREEN}═════════════════════
 echo ""
 echo -e "${CYAN}Supported models:${NC}"
 echo -e "  ${GREEN}GPT Codex (/responses endpoint):${NC} ✅ Tested"
-echo "    - gpt-5.2-codex (latest)"
-echo "    - gpt-5.1-codex, gpt-5.1-codex-mini, gpt-5.1-codex-max"
+echo "    - gpt-5.3-codex (latest, recommended)"
+echo "    - gpt-5.2-codex, gpt-5.1-codex, gpt-5.1-codex-mini, gpt-5.1-codex-max"
 echo ""
 echo -e "  ${YELLOW}Gemini 3 (with thinking):${NC} ⚠️  EXPERIMENTAL - Test required"
 echo "    - gemini-3-flash-preview"
@@ -187,7 +190,7 @@ echo "    - gemini-3-pro-preview"
 echo "    Note: PR #167 adds thinking support, but tool calling may still fail"
 echo ""
 echo -e "  ${GREEN}Standard models:${NC} ✅ Working"
-echo "    - All Claude models (claude-sonnet-4.5, claude-opus-4.5, etc.)"
+echo "    - All Claude models (claude-sonnet-4-6, claude-opus-4-6, claude-haiku-4.5, etc.)"
 echo "    - All GPT models (gpt-4.1, gpt-5, gpt-5-mini, etc.)"
 echo "    - gemini-2.5-pro"
 echo ""
