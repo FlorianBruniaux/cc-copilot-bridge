@@ -1,0 +1,136 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          echo "Generating changelog for version $VERSION"
+
+          # Extract changelog from CHANGELOG.md or use git log
+          if grep -q "## \[${VERSION}\]" CHANGELOG.md 2>/dev/null; then
+            sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | sed '$ d' > changelog.txt
+          else
+            echo "## Changes in v$VERSION" > changelog.txt
+            echo "" >> changelog.txt
+            git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 HEAD^)..HEAD >> changelog.txt
+          fi
+
+      - name: Build release artifacts
+        run: |
+          VERSION="${{ steps.get_version.outputs.version }}"
+          mkdir -p release-assets
+
+          # Create tarball
+          tar czf release-assets/cc-copilot-bridge-${VERSION}.tar.gz \
+            --exclude='.git*' \
+            --exclude='release-assets' \
+            --exclude='.github' \
+            claude-switch \
+            install.sh \
+            scripts/ \
+            mcp-profiles/ \
+            aliases.sh \
+            README.md \
+            CHANGELOG.md \
+            LICENSE \
+            VERSION
+
+          # Create .deb package metadata
+          mkdir -p cc-copilot-bridge_${VERSION}/DEBIAN
+          cat > cc-copilot-bridge_${VERSION}/DEBIAN/control << EOF
+          Package: cc-copilot-bridge
+          Version: ${VERSION}
+          Section: utils
+          Priority: optional
+          Architecture: all
+          Depends: bash (>= 4.0), jq, netcat-openbsd | netcat
+          Maintainer: Florian Bruniaux <florian@bruniaux.com>
+          Description: Multi-provider routing for Claude Code CLI
+           Route Claude Code through Anthropic Direct, GitHub Copilot, or Ollama.
+           Switch between providers with simple aliases (ccd, ccc, cco).
+          Homepage: https://github.com/FlorianBruniaux/cc-copilot-bridge
+          EOF
+
+          # Copy files for .deb
+          mkdir -p cc-copilot-bridge_${VERSION}/usr/local/bin
+          mkdir -p cc-copilot-bridge_${VERSION}/usr/local/share/cc-copilot-bridge
+          cp claude-switch cc-copilot-bridge_${VERSION}/usr/local/bin/
+          chmod +x cc-copilot-bridge_${VERSION}/usr/local/bin/claude-switch
+          cp -r scripts mcp-profiles aliases.sh cc-copilot-bridge_${VERSION}/usr/local/share/cc-copilot-bridge/
+
+          # Build .deb
+          dpkg-deb --build cc-copilot-bridge_${VERSION}
+          mv cc-copilot-bridge_${VERSION}.deb release-assets/claude-switch_${VERSION}.deb
+
+          # Create .rpm spec
+          mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+          cat > rpmbuild/SPECS/claude-switch.spec << EOF
+          Name:           claude-switch
+          Version:        ${VERSION}
+          Release:        1
+          Summary:        Multi-provider routing for Claude Code CLI
+          License:        MIT
+          URL:            https://github.com/FlorianBruniaux/cc-copilot-bridge
+          BuildArch:      noarch
+          Requires:       bash >= 4.0, jq, nc
+
+          %description
+          Route Claude Code through Anthropic Direct, GitHub Copilot, or Ollama.
+          Switch between providers with simple aliases (ccd, ccc, cco).
+
+          %install
+          mkdir -p %{buildroot}/usr/local/bin
+          mkdir -p %{buildroot}/usr/local/share/cc-copilot-bridge
+          install -m 755 %{_sourcedir}/claude-switch %{buildroot}/usr/local/bin/
+          cp -r %{_sourcedir}/scripts %{buildroot}/usr/local/share/cc-copilot-bridge/
+          cp -r %{_sourcedir}/mcp-profiles %{buildroot}/usr/local/share/cc-copilot-bridge/
+          cp %{_sourcedir}/aliases.sh %{buildroot}/usr/local/share/cc-copilot-bridge/
+
+          %files
+          /usr/local/bin/claude-switch
+          /usr/local/share/cc-copilot-bridge/*
+
+          %changelog
+          * $(date '+%a %b %d %Y') Florian Bruniaux <florian@bruniaux.com> - ${VERSION}-1
+          - Release ${VERSION}
+          EOF
+
+          # Copy sources for .rpm
+          cp claude-switch rpmbuild/SOURCES/
+          cp -r scripts mcp-profiles aliases.sh rpmbuild/SOURCES/
+
+          # Build .rpm
+          rpmbuild --define "_topdir $(pwd)/rpmbuild" -bb rpmbuild/SPECS/claude-switch.spec
+          mv rpmbuild/RPMS/noarch/claude-switch-${VERSION}-1.noarch.rpm release-assets/
+
+          ls -lah release-assets/
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --title "cc-copilot-bridge v${{ steps.get_version.outputs.version }}" \
+            --notes-file changelog.txt \
+            release-assets/*

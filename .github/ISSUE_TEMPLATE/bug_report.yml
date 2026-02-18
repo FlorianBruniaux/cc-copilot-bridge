@@ -1,0 +1,70 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in cc-copilot-bridge
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this issue!
+
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider
+      description: Which provider is affected?
+      options:
+        - Anthropic Direct (ccd)
+        - GitHub Copilot (ccc)
+        - Ollama Local (cco)
+        - Multiple providers
+        - Provider switching (ccs)
+        - Installation / Setup
+        - MCP Profiles
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Clear description of the bug
+      placeholder: "When I do X, I expect Y but Z happens instead"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal steps to reproduce the behavior
+      placeholder: |
+        1. Run `ccc`
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Your system details
+      value: |
+        - cc-copilot-bridge version:
+        - OS:
+        - Shell:
+        - Claude Code version:
+        - copilot-api version (if using Copilot):
+        - Ollama version (if using Ollama):
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Output from `tail -n 50 ~/.claude/claude-switch.log`
+      render: shell
+    validations:
+      required: false

@@ -1,0 +1,79 @@
+name: Feature Request
+description: Suggest a new feature or improvement for cc-copilot-bridge
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest an improvement!
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of cc-copilot-bridge does this affect?
+      options:
+        - Provider Routing
+        - Model Selection
+        - MCP Profiles
+        - Health Checks
+        - Logging
+        - Installation
+        - Aliases / Commands
+        - Documentation
+        - New Provider
+        - Performance
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this solve? What's missing today?
+      placeholder: "I want to... but currently I have to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this to work?
+      placeholder: "It would be great if cc-copilot-bridge could..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any workarounds or alternative approaches you've thought about?
+      placeholder: "I currently work around this by..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: providers
+    attributes:
+      label: Providers Affected
+      description: Which providers should support this feature?
+      options:
+        - All providers (Direct, Copilot, Ollama)
+        - Anthropic Direct only
+        - GitHub Copilot only
+        - Ollama only
+        - Multiple (specify in description)
+        - Not applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Screenshots, examples, or any other context
+    validations:
+      required: false

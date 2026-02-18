@@ -1,0 +1,66 @@
+name: Question
+description: Ask a question about cc-copilot-bridge usage or configuration
+title: "[Question]: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before asking, please check:
+        - [README](https://github.com/FlorianBruniaux/cc-copilot-bridge#readme)
+        - [Documentation](https://github.com/FlorianBruniaux/cc-copilot-bridge/tree/main/docs)
+        - [Existing Issues](https://github.com/FlorianBruniaux/cc-copilot-bridge/issues)
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What's your question about?
+      options:
+        - Usage / How-to
+        - Configuration
+        - Provider Selection
+        - Model Selection
+        - MCP Profiles
+        - Installation
+        - Troubleshooting
+        - Performance
+        - Security / Privacy
+        - GitHub Copilot Quotas
+        - Ollama Setup
+        - Integration with other tools
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+      placeholder: "How do I..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What have you tried? What's your use case?
+      placeholder: |
+        I'm trying to...
+        I've looked at...
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: System details if related to your question
+      value: |
+        - OS:
+        - Shell:
+        - cc-copilot-bridge version:
+    validations:
+      required: false
