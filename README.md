@@ -1,5 +1,8 @@
 # cc-copilot-bridge
 
+> [!NOTE]
+> **V2 is coming soon.** This repository holds cc-copilot-bridge V1, the Bash version (`claude-switch`), and stays online as is. V2 is a Rust rewrite that has grown into a policy-aware gateway for coding agents: 12 model providers, per-turn model routing, and a lockdown mode that restricts all traffic to one approved provider and account. It will be announced here and on https://ccbridge.bruniaux.com/ when it is published.
+
 > **TL;DR**: Bash script that routes Claude Code CLI through multiple AI providers. Switch between Anthropic Direct API, GitHub Copilot (via copilot-api proxy), or Ollama local with simple aliases (`ccd`, `ccc`, `cco`).
 
 > 📖 **New to Claude Code?** Check out the [Claude Code Ultimate Guide](https://cc.bruniaux.com/) for comprehensive documentation, tips, and best practices.
